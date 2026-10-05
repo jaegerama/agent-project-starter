@@ -10,8 +10,11 @@ Status per 2026-10-05.
 
 ## Next Immediate Steps
 
-1. **Read the first CI run** of `.github/workflows/selftest.yml`. Ubuntu and
-   macOS are the first time these tools run anywhere but Windows.
+1. ~~**Read the first CI run** of `.github/workflows/selftest.yml`.~~ **Done
+   2026-10-05**: run 37326266758 on `v0.1.0`, 4 of 4 jobs green (macOS and
+   Windows on Node 24, Ubuntu on 22 and 24). The step fails on any failed
+   case, so each job had 0 failed; the per-job counts are in the job logs,
+   which need a signed-in GitHub account to read.
 2. **Confirm the Gemini CLI import once.** In a project made from the starter,
    ask a Gemini CLI session which files it loaded; mark `AGENTS.md` §11
    verified, or say what it read instead.

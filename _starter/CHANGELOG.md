@@ -13,6 +13,17 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Added: CI runs the self-test on Ubuntu, macOS and Windows (2026-10-05)
+
+The tools had been run on one Windows machine only, while projects are worked
+on from all three. `.github/workflows/selftest.yml` runs `_starter/selftest.mjs`
+and `tools/docs-drift.mjs` on every push to `main` and every pull request, on
+Node 24 everywhere and Node 22 on Ubuntu, through bash, the shell Claude Code
+runs hooks with. The actions are pinned to commit SHAs and the token can only
+read. bootstrap removes the workflow from projects. `.gitattributes` keeps
+every checkout LF, so adopt's and the self-test's byte comparisons agree
+across machines.
+
 ### Fixed: `git push -f` and `git clean` were allowed, home credentials readable (2026-10-05)
 
 `git push --force` was denied and `git push -f` was not, and nothing denied

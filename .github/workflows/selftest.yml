@@ -1,0 +1,40 @@
+name: selftest
+
+# The starter's own tests, on every OS a project might be worked on from.
+# bootstrap removes this file from projects: it runs _starter/selftest.mjs.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  selftest:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [24]
+        include:
+          - os: ubuntu-latest
+            node: 22
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        # Git Bash on Windows, the shell Claude Code runs hooks through.
+        shell: bash
+    steps:
+      # Full history: bootstrap recognises a copied starter by its root commit.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+      # The self-test commits fixtures in temporary repositories.
+      - run: git config --global user.name selftest && git config --global user.email selftest@users.noreply.github.com
+      - run: node _starter/selftest.mjs
+      - run: node tools/docs-drift.mjs

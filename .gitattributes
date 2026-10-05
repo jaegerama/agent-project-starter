@@ -1,0 +1,7 @@
+# LF in the repository and in every checkout, so a file compares equal on every
+# machine: adopt and the self-test compare files byte for byte.
+* text=auto eol=lf
+
+# Windows command scripts need CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf

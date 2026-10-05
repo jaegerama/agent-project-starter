@@ -38,10 +38,15 @@ const { slotsOf } = await import(pathToFileURL(join(root, '.claude/tools/lib/slo
 
 let passed = 0
 let failed = 0
+let skipped = 0
 const check = (name, ok, detail = '') => {
   if (ok) passed += 1
   else failed += 1
   console.log(`${ok ? 'ok  ' : 'FAIL'}  ${name}${!ok && detail ? `\n      ${detail}` : ''}`)
+}
+const skip = (name, reason) => {
+  skipped += 1
+  console.log(`SKIP  ${name}\n      ${reason}`)
 }
 const section = (title) => console.log(`\n== ${title}`)
 
@@ -69,10 +74,20 @@ const treeHash = (dir) => {
   walk(dir)
   return h.digest('hex')
 }
-const hook = (cwd, file, input) =>
-  node(cwd, ['.claude/hooks/guard-slots.mjs'], {
-    input: input ?? JSON.stringify({ tool_name: 'Write', tool_input: { file_path: join(cwd, file) }, cwd }),
+// Claude Code sets CLAUDE_PROJECT_DIR, and the hook prefers it to the payload,
+// so no call inherits it from the shell running this suite.
+const baseEnv = { ...process.env }
+delete baseEnv.CLAUDE_PROJECT_DIR
+const runHook = ({ project, cwd = project, input, env = { CLAUDE_PROJECT_DIR: project } }) =>
+  node(cwd, [join(project, '.claude/hooks/guard-slots.mjs')], {
+    input: typeof input === 'string' ? input : JSON.stringify(input),
+    env: { ...baseEnv, ...env },
   }).status
+const write = (file_path, cwd) => ({ tool_name: 'Write', tool_input: { file_path }, cwd })
+const hook = (cwd, file, input) => runHook({ project: cwd, input: input ?? write(join(cwd, file), cwd) })
+const HOOK_CMD = 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/guard-slots.mjs"'
+const hookCommands = (body) =>
+  (JSON.parse(body).hooks?.PreToolUse ?? []).flatMap((m) => (m.hooks ?? []).map((h) => h.command)).filter((c) => c.includes('guard-slots'))
 
 // ── 1. The slot pattern ──────────────────────────────────────────────────────
 section('slot pattern')
@@ -113,14 +128,37 @@ check(
 // ── 2. The docs-first hook ───────────────────────────────────────────────────
 section('docs-first hook (starter itself, AGENTS.md has slots)')
 check('application code is blocked (exit 2)', hook(root, 'src/app.ts') === 2)
-for (const f of ['AGENTS.md', 'CLAUDE.md', 'HANDOFF.md', 'DESIGN.md', 'docs/BRIEF.md', 'tools/adopt.mjs', '.claude/settings.json']) {
+for (const f of ['AGENTS.md', 'CLAUDE.md', 'HANDOFF.md', 'DESIGN.md', 'LICENSE', '.gitattributes', 'docs/BRIEF.md', 'tools/adopt.mjs', 'tools/docs-drift.mjs', '.claude/settings.json']) {
   check(`setup file allowed: ${f}`, hook(root, f) === 0)
 }
 check('malformed input fails open, as documented', hook(root, 'x', 'not json') === 0)
+check('application code under tools/ is blocked', hook(root, 'tools/server.ts') === 2)
+check('a relative path that climbs out of docs/ is blocked', runHook({ project: root, input: write('docs/../src/app.ts', root) }) === 2)
 check(
-  'settings.json wires the hook at its current path',
-  read(join(root, '.claude/settings.json')).includes('"node .claude/hooks/guard-slots.mjs"'),
+  'a notebook outside setup is blocked (NotebookEdit names notebook_path)',
+  runHook({ project: root, input: { tool_name: 'NotebookEdit', tool_input: { notebook_path: join(root, 'src', 'nb.ipynb') }, cwd: root } }) === 2,
 )
+const docsDir = join(root, 'docs')
+check('session cwd moved to docs/: still blocked (a cd once opened it)', runHook({ project: root, cwd: docsDir, input: write(join(root, 'src', 'app.ts'), docsDir) }) === 2)
+check('a relative path from a moved cwd resolves against that cwd', runHook({ project: root, cwd: docsDir, input: write('../src/app.ts', docsDir) }) === 2)
+check(
+  'without CLAUDE_PROJECT_DIR the payload cwd is the root',
+  runHook({ project: root, cwd: docsDir, input: write(join(root, 'src', 'app.ts'), root), env: {} }) === 2,
+)
+const settingsCommand = hookCommands(read(join(root, '.claude/settings.json'))).join()
+check('settings.json starts the hook from $CLAUDE_PROJECT_DIR', settingsCommand === HOOK_CMD, settingsCommand)
+// Claude Code runs hook commands through bash, Git Bash on Windows.
+if (process.platform !== 'win32' || process.env.MSYSTEM) {
+  const viaBash = spawnSync('bash', ['-c', settingsCommand], {
+    cwd: docsDir,
+    input: JSON.stringify(write(join(root, 'src', 'app.ts'), docsDir)),
+    env: { ...baseEnv, CLAUDE_PROJECT_DIR: root },
+    encoding: 'utf8',
+  })
+  check('the settings.json command blocks from a subdirectory, run through bash', viaBash.status === 2, `exit ${viaBash.status}: ${viaBash.stderr}`)
+} else {
+  skip('the settings.json command blocks from a subdirectory, run through bash', 'not inside Git Bash (MSYSTEM unset), so no bash to run it with')
+}
 
 // ── 3. agent-check, against a fake home ──────────────────────────────────────
 section('agent-check (fake home, real profile untouched)')
@@ -291,7 +329,7 @@ const midSetup = makeRepo('mid-setup', {
   '.claude/settings.json': hookEntry('node .claude/hooks/guard-slots.mjs'),
 })
 out = adopt(midSetup, true)
-check('new project mid-setup: its wired hook is kept, not removed', read(join(midSetup, '.claude/settings.json')).includes('node .claude/hooks/guard-slots.mjs'), out.stdout)
+check('new project mid-setup: its hook is kept, and moved to the current command', hookCommands(read(join(midSetup, '.claude/settings.json'))).join() === HOOK_CMD, out.stdout)
 const oldPath = makeRepo('old-hook-path', {
   '.gitignore': 'node_modules/\n',
   'AGENTS.md': '# AGENTS.md\n\nrules\n',
@@ -301,7 +339,7 @@ adopt(oldPath, true)
 const migrated = read(join(oldPath, '.claude/settings.json'))
 check(
   'hook at the old tools/hooks/ path: moved to exactly one current entry',
-  migrated.split('guard-slots.mjs').length - 1 === 1 && migrated.includes('node .claude/hooks/guard-slots.mjs'),
+  hookCommands(migrated).join() === HOOK_CMD,
 )
 
 const agentsOnly = { '.gitignore': 'x\n', 'AGENTS.md': '# AGENTS.md\n\nrules\n' }
@@ -332,5 +370,5 @@ try {
 } catch {
   console.log(`\n(could not remove ${tmp}; delete it by hand)`)
 }
-console.log(`\n${passed} passed, ${failed} failed, of ${passed + failed}`)
+console.log(`\n${passed} passed, ${failed} failed, ${skipped} skipped, of ${passed + failed + skipped}`)
 process.exit(failed === 0 ? 0 : 1)

@@ -39,11 +39,12 @@ one: otherwise a private-agents project keeps `AGENTS.md` and `.claude/`
 tracked, and pushes them on the first push. Without `--apply` it is a dry run,
 and it refuses to run inside a folder called `project-starter`.
 
-In Claude Code, "no code before `AGENTS.md` is filled" is **machine-enforced**:
-the hook `.claude/hooks/guard-slots.mjs` refuses Write/Edit on application
-code while `AGENTS.md` has unfilled slots. In Codex, Antigravity and Gemini that
-hook does not run: there it is still an intention, and the gate has to be run
-by hand.
+In Claude Code, "no code before `AGENTS.md` is filled" is **machine-enforced
+for the file tools**: the hook `.claude/hooks/guard-slots.mjs` refuses Write,
+Edit and NotebookEdit on application code while `AGENTS.md` has unfilled
+slots. A file written through Bash is not seen by it. In Codex, Antigravity and
+Gemini that hook does not run: there it is still an intention, and the gate has
+to be run by hand.
 
 ## An existing project: adopt
 

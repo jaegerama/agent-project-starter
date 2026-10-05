@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/guard-slots.mjs"
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-slots.mjs\""
           }
         ]
       }

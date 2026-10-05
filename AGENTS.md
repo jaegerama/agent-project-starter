@@ -493,7 +493,7 @@ is not inherited across tools automatically. Its master is
 | Rule | Claude Code | Codex / Antigravity / Gemini |
 |---|---|---|
 | This file is in the agent's context | **Mechanism** (observed 2026-09-24) — the `@AGENTS.md` import | Codex, Antigravity: native. Gemini: **Intention** — the pointer asks in words |
-| No application code until `AGENTS.md` is filled | **Mechanism** — the PreToolUse hook `.claude/hooks/guard-slots.mjs` blocks Write/Edit | **Intention** — no hook, only `node .claude/tools/agent-check.mjs` |
+| No application code until `AGENTS.md` is filled | **Mechanism for the file tools**: the PreToolUse hook `.claude/hooks/guard-slots.mjs` blocks Write, Edit and NotebookEdit from any working directory. A file written through Bash is not seen | **Intention**: no hook, only `node .claude/tools/agent-check.mjs` |
 | Zero unfilled slots in `AGENTS.md` | **Mechanism** — gate goes red | **Mechanism** — same gate, run by hand |
 | Pointer files carry no rules | **Mechanism** — gate goes red | **Mechanism** |
 | Docs-first, scope containment, CHANGELOG first | **Intention** | **Intention** |

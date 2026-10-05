@@ -254,7 +254,8 @@ if (agents === null && claude !== null && !isPointer(claude)) {
 
 // ── Hook wiring in .claude/settings.json ─────────────────────────────────────
 const slots = agents === null ? [] : slotsOf(agents)
-const HOOK = 'node .claude/hooks/guard-slots.mjs'
+// Started from CLAUDE_PROJECT_DIR: a relative command is not found after a `cd`.
+const HOOK = 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/guard-slots.mjs"'
 const settingsPath = '.claude/settings.json'
 const settingsRaw = read(target, settingsPath)
 let settings
@@ -265,8 +266,8 @@ try {
   note(settingsPath, `not valid JSON, left alone: ${error.message}`)
 }
 if (settings !== undefined) {
-  // The starter's hook used to live at tools/hooks/; any entry calling
-  // guard-slots under either path is the same hook.
+  // The starter's hook used to live at tools/hooks/, and later ran from a
+  // relative path; any entry calling guard-slots is the same hook.
   const isGuard = (m) => (m.hooks ?? []).some((h) => String(h.command ?? '').includes('guard-slots.mjs'))
   // A settings file created here starts from the starter's, minus the hook:
   // whether this project gets the hook is decided below, not inherited.
@@ -287,7 +288,7 @@ if (settings !== undefined) {
       { matcher: 'Write|Edit|NotebookEdit', hooks: [{ type: 'command', command: HOOK }] },
     ]
     changed = true
-    note('hook', `moved to the current path${tag}`)
+    note('hook', `moved to the current command${tag}`)
   } else if (current) {
     note('hook', slots.length ? `wired, kept: AGENTS.md has ${slots.length} slots and the hook is guarding setup` : 'wired')
   } else if (slots.length > 0) {

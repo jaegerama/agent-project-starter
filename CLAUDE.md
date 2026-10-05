@@ -23,10 +23,12 @@ truth, and they drift.
 | Global operator profile | `~/.claude/CLAUDE.md` (or platform equivalent) |
 
 **A hook blocks while `AGENTS.md` has slots**, when `.claude/settings.json`
-wires it: `.claude/hooks/guard-slots.mjs` refuses Write and Edit outside the
-setup files. That is what makes docs-first a mechanism rather than prose. If a
-genuine setup file gets blocked, add its path to `SETUP_PATHS`/`SETUP_DIRS` in
-that script. Do not disable the hook.
+wires it: `.claude/hooks/guard-slots.mjs` refuses Write, Edit and NotebookEdit
+outside the setup files, from any working directory. That makes docs-first a
+mechanism for the file tools. A file written through Bash never reaches the
+hook, and the gate stays red for it. If a genuine setup file gets blocked, the
+owner adds its path to `SETUP_PATHS`/`SETUP_DIRS` in that script. Do not
+disable the hook.
 
 **Inheriting the global profile is conditional.** Claude Code reads it because
 that file sits in a parent directory of this project, not because of a global

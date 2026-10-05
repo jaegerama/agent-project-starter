@@ -13,6 +13,24 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Fixed: the docs-first hook failed open after a `cd` (2026-10-05)
+
+Observed in a live session: a Write to `src/` was blocked from the project
+root and allowed after `cd docs`. The hook command was a relative path,
+Claude Code runs a hook in the session's current directory, and a hook that
+cannot start counts as a non-blocking error. The command now starts from
+`$CLAUDE_PROJECT_DIR`, and the script looks for `AGENTS.md` there.
+
+Three smaller gaps closed with it. A relative path such as
+`docs/../src/app.ts` passed as a docs file. NotebookEdit was never checked,
+because it names its target `notebook_path`. Every file under `tools/`
+counted as setup, so application code there passed. `LICENSE`,
+`.gitattributes` and `CONTRIBUTING.md` are now setup files, and the block
+message asks for the owner instead of telling the agent to widen the
+allowlist itself. A file written through Bash is still invisible to the hook;
+`AGENTS.md` §11 now says so. adopt moves an existing hook entry to the new
+command.
+
 ### Added: the starter, imported into a public repository (2026-10-05)
 
 Imported with the details of other private repositories removed: their names,

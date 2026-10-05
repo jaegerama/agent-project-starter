@@ -13,6 +13,11 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-05
+
+The first public release: the starter imported from its private repository,
+and the fixes from the audit in `_starter/AUDIT-2026-10-05.md`.
+
 ### Added: a public landing page, a maintenance guide, and the audit (2026-10-05)
 
 GitHub shows `.github/README.md` before the root one, so the starter gets a
@@ -177,3 +182,6 @@ registry and image names, machine measurements, and the laptop maintenance
 scripts, which stay on the machine they were written for. The one code change
 the import needs is in bootstrap, which recognises a copied starter by its
 root commit: it now accepts the public root commit as well as the private one.
+
+[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/jaegerama/agent-project-starter/releases/tag/v0.1.0

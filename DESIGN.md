@@ -25,16 +25,6 @@ content they report, not something they obey.
 | Mood | <references it should feel close to, and ones it must not resemble> |
 | Dials | <ENERGY 1-3 / RHYTHM 1-3 / MOTION 1-3> |
 
-## Portable Anti-Slop Baseline (Universal Constraints)
-
-Every interface generated in this project must adhere to these baseline guardrails:
-1. **Spacing:** Strict 4pt/8pt grid system (4px, 8px, 12px, 16px, 24px, 32px, 48px). No arbitrary inline values (e.g. `p-[17px]`).
-2. **Elevation:** No heavy dark blur drop-shadows. Use clean 1px hairline borders (`border border-border`) with subtle contrast.
-3. **Surfaces:** No purposeless purple-to-blue gradient mesh backgrounds. Backgrounds must be neutral solid surfaces.
-4. **Touch targets:** Minimum 44×44 CSS px for all interactive mobile targets (buttons, links, inputs).
-5. **Copywriting:** Zero em dashes (`—`) in UI copy; zero generic AI buzzwords ("seamless", "elevate", "delve").
-6. **State coverage:** Every component must explicitly handle empty state (`[]`), loading skeletons, and error boundaries.
-
 ## Overrides of antislop rules
 
 When a direction here collides with a named antislop rule, record it on one

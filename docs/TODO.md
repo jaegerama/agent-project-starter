@@ -7,12 +7,11 @@ existed.
 
 Status: `TODO` · `WIP` · `REVIEW` · `DONE` · `BLOCKED`
 
-## Execution Rules for Agents
+## Execution rules
 
-1. **One story at a time:** Exactly ONE story may be in `WIP` status across the entire project. Never start a new story while one is in progress.
-2. **Phase 0 must come first:** Epic 0 (Walking Skeleton) must be `DONE` and verified green before any business feature is built.
-3. **No synthetic passes:** A story cannot move to `DONE` without runnable terminal evidence (exit code, test pass count, HTTP status).
-4. **No unrequested dependencies:** Implement acceptance criteria using stdlib and existing packages. Never install new dependencies without PRD scope.
+They live in `AGENTS.md` §0.1: one story in WIP at a time, and Epic 0 first.
+`node tools/docs-drift.mjs` checks both against the headings below, so keep
+their shape: `### [STATUS] S<epic>.<n> title`.
 
 ---
 

@@ -15,7 +15,7 @@ truth, and they drift.
 
 | | |
 |---|---|
-| Review severity ladder | `.claude/rules/review-severity.md` (and embedded in `AGENTS.md` §6) |
+| Review severity ladder | `.claude/rules/review-severity.md`, auto-loaded like every file in `.claude/rules/` |
 | Commands | `/gate`, `/docs-drift` |
 | Agent | `silent-failure-hunter` |
 | Agent-configuration check | `node .claude/tools/agent-check.mjs` |

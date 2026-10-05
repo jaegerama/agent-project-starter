@@ -19,7 +19,7 @@
 
 | File | What it holds |
 |---|---|
-| [`AGENTS.md`](AGENTS.md) | This project's working rules — the single source of truth |
+| [`AGENTS.md`](AGENTS.md) | This project's working rules, the single source of truth |
 | [`docs/PRD.md`](docs/PRD.md) | What is being built, for whom, and what is out of scope |
 | [`docs/TODO.md`](docs/TODO.md) | Epics → stories → acceptance criteria |
 | [`docs/QUESTIONS.md`](docs/QUESTIONS.md) | What still needs a human answer |
@@ -27,5 +27,5 @@
 
 ---
 
-> This file is still a template. Documentation about the starter itself lives in
-> [`_starter/`](_starter/) — delete that directory once this project is running.
+> This file is still a template: replace it during setup. bootstrap has already
+> removed the starter's own documentation, `_starter/`, if it has run.

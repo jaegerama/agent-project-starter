@@ -13,6 +13,25 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: one copy of each rule, and claims that match the mechanisms (2026-10-05)
+
+Three changes made on 2026-10-05, before the import, put the review severity
+ladder, a UI baseline and the general working process into `AGENTS.md` a
+second time, and the copies had already drifted: the ladder in `AGENTS.md`
+listed 4 CRITICAL shapes against the rules file's 11, and the two UI
+baselines disagreed on the spacing scale. Each rule has one home again. The
+ladder lives in `.claude/rules/review-severity.md`. The UI baseline is gone
+from `DESIGN.md`, which only the owner writes: it prescribed hairline borders
+on neutral solid surfaces, the pattern antislop calls the Sterile Default.
+`AGENTS.md` keeps one paragraph of antislop's hard gates, by rule number, for
+tools without antislop. The working-process rules are in the example profile.
+
+§3 no longer overrules a framework's own layout. §0.1 puts the PRD
+decomposition first, the order setup already used. §7 maps commit types to
+version bumps as Conventional Commits does, so `chore:` and `refactor:` no
+longer bump PATCH. §11 says what each rule is in each tool, partial ones
+included.
+
 ### Added: an example operator profile, and an import in GEMINI.md (2026-10-05)
 
 `AGENTS.md` leaves the working process, verification, reporting and git rules

@@ -41,9 +41,9 @@ only job is the brief; everything else below is the agent's.
    list in the operator profile is background, not a default.
 4. **Every slot the brief does not answer** becomes a numbered question in
    `docs/QUESTIONS.md` and stays a slot. Never fill one with a guess.
-5. **Decompose the PRD into `docs/TODO.md`**: Follow §0.1 (Autonomous Execution
-   Pipeline). Seed Epic 0 (Walking Skeleton) and break core user flows into
-   atomic stories with testable criteria. Work strictly one story at a time.
+5. **Decompose the PRD into `docs/TODO.md`**, step 1 of §0.1: Epic 0, the
+   walking skeleton, then the core flows as atomic stories with testable
+   criteria.
 6. **Delete what does not apply**: the Money section with no money; the
    Interface section and `DESIGN.md` with no interface.
 7. **Adapt the example checks in `tools/docs-drift.mjs`** to this stack's
@@ -83,25 +83,25 @@ gets reopened only when the reason stops being true, which is correct.
 1. <e.g. single repository, no monorepo tooling — because ...>
 2. <e.g. who owns the source of truth for X — because ...>
 
-## 0.1 Autonomous Execution Pipeline
+## 0.1 From PRD to Done
 
-When executing from a PRD, work in disciplined, verifiable stages. Never implement
-multiple unverified features in one leap.
+Work in stages that can each be verified. Never build several unverified
+features in one leap.
 
-1. **Phase 0: The Walking Skeleton**
-   Before building any feature from the PRD, scaffold the minimal project harness
-   (entrypoint, test runner, gate configuration). Add one passing assertion and
-   prove the gate (§4) exits 0. Feature stories are blocked until Phase 0 is green.
+1. **Decompose the PRD into `docs/TODO.md`**, during setup: epics and atomic
+   stories, each with acceptance criteria checkable from a terminal (command
+   output, HTTP status, a database query). Epic 0 is the walking skeleton.
+2. **Build the walking skeleton first**: entrypoint, test runner, the gate in
+   §4, and one passing assertion. No story past Epic 0 starts until the gate
+   exits 0.
+3. **One story at a time.** Exactly one story is `[WIP]`. Red, then green, then
+   refactor. Record the real terminal proof in `HANDOFF.md`, mark the story
+   `[DONE]`, and only then start the next.
 
-2. **Phase 1: PRD Decomposition into `docs/TODO.md`**
-   Break `docs/PRD.md` into discrete Epics and atomic Stories. Every story must
-   have testable acceptance criteria verifiable via terminal (command output,
-   HTTP status, DB query).
-
-3. **Phase 2: One Story at a Time (Atomic Execution)**
-   - Strict rule: Exactly ONE story may be in `[WIP]` across the project at any time.
-   - Follow red-green-refactor: assert failure, implement minimal code, verify green.
-   - Once verified, record real terminal proof in `HANDOFF.md`, mark `[DONE]`, and only then proceed.
+`node tools/docs-drift.mjs` checks the story headings in `docs/TODO.md` for
+both rules: one story in WIP, and nothing past Epic 0 started before it is
+DONE. Nothing in the repository can prove that the proof in `HANDOFF.md` is
+real; a gate re-run by CI, not by the agent that wrote the proof, can.
 
 ---
 
@@ -147,9 +147,12 @@ local image. What the servers run is recorded in the two rows above, or it is
 a question.
 
 **Tooling harness vs application runtime:** Node.js is the harness for repository
-governance scripts (`tools/*.mjs`), regardless of whether the application itself
-is written in Python, Go, Rust, or Node. For non-Node projects, Node.js remains
-present only for repository gates; application code obeys its own runtime.
+governance scripts (`tools/*.mjs` and `.claude/`), regardless of whether the
+application itself is written in Python, Go, Rust, or Node. For non-Node
+projects, Node.js remains present only for repository gates; application code
+obeys its own runtime. Node.js 22 or newer must be installed wherever an agent
+works on this project: without it the docs-first hook fails open and the gate
+cannot run.
 
 ### 2.1 Agent skills (optional, installed by the owner)
 
@@ -178,11 +181,11 @@ and, where it is not obvious, what does not.
 <the directory tree>
 ```
 
-**Colocation principle:** Organize by domain feature or vertical slice, not horizontal
-layer. Keep routes, handlers, UI components, tests, and schemas co-located within
-their feature folder. Avoid sprawling horizontal MVC directories (`controllers/`,
-`routes/`, `models/` split across the tree) that inflate agent context and scatter
-changes across files.
+**Colocation:** where the framework has a layout of its own (Laravel, Rails,
+Django, the Next.js app router), follow it: the layout its documentation and
+tooling expect beats a tidier one they do not. Where it has none, colocate by
+feature: a feature's routes, handlers, components, tests and schemas in one
+folder, so one change touches one place and an agent reads one folder, not five.
 
 **Output isolation:** every generated file lands inside this tree. Never write
 to a parent directory or a sibling project.
@@ -243,7 +246,7 @@ restates something the code defines, and what drifts between them.
 | Document | Source of truth in code | What drifts |
 |---|---|---|
 | <doc and section> | <file> | <the specific claims> |
-| `CHANGELOG.md` | `git log --oneline` | Commits with no entry. The rule is the entry comes **first** |
+| `CHANGELOG.md` | `git log --oneline` | Commits with no entry. The rule is the entry comes **first**. Checked by reading (`/docs-drift`), not by the script |
 | `AGENTS.md` §4 | the project manifest | Gate commands that no longer exist, or were renamed |
 | <config example> | <the module that reads it> | A variable in one and not the other — **either** direction is a defect |
 
@@ -264,75 +267,47 @@ first, then cause, then fix: people search by symptom.
 ## 5. Working rules specific to this project
 
 The general working process (docs-first, scope containment, targeted reads,
-verification, how to report) lives in the global operator profile and is **not
-repeated here** — repeating it would create a second source of truth. Only the
-project-specific rules belong below:
+verification, how to report) lives in the operator profile and is **not
+repeated here**: repeating it would create a second source of truth. Only the
+project's own rules belong in this section.
 
 1. **Never scan:** <dependency dir>, <build output>, `.git/`, migrations,
    lockfiles, any volume mount.
 2. <any other rule that only applies here>
 
-### Code minimalism (The Ponytail ladder)
+### Defaults this project starts with
 
-The best code is the code never written. Before writing application code, evaluate
-in strict order and stop at the first rung that holds:
-1. **YAGNI:** Does this need to exist right now? Deletion before addition.
-2. **Stdlib:** Language standard library solves it? Use stdlib.
-3. **Native platform:** Platform feature covers it? Prefer HTML5 tags, CSS rules,
-   or database constraints over custom application code.
-4. **Existing dependencies:** An existing package solves it? Never add a new
-   dependency for what existing tools or a few lines can do.
-5. **One-liner:** Can it be a clean one-liner? Ship the one-liner.
-6. **Minimum code:** Zero unrequested abstractions (no factory for one product,
-   no interface for one implementation, no config for a constant).
-7. **Intentional simplifications:** Mark with `// ponytail: [boundary and upgrade path]`.
+Every project created from the starter begins with the two rules below. They are
+this project's own now: keep them, change them, or delete them.
 
-### Dependency creep ban (Negative boundary)
+**Code minimalism (the Ponytail ladder).** The best code is the code never
+written. Before writing application code, go down the ladder and stop at the
+first rung that holds:
 
-Never install or add new packages/dependencies (npm, pip, go get, cargo) without an
-explicit directive in `docs/PRD.md` or explicit operator approval. Solve problems strictly
-within the existing manifest and standard library.
+1. **YAGNI:** does this need to exist right now? Deletion before addition.
+2. **Standard library:** does the language's standard library solve it?
+3. **Native platform:** does a platform feature cover it? Prefer HTML elements,
+   CSS, or a database constraint over custom application code.
+4. **Existing dependencies:** does a package already in the manifest solve it?
+5. **One-liner:** can it be one clear line?
+6. **Minimum code:** no unrequested abstraction: no factory for one product, no
+   interface for one implementation, no config for a constant.
+7. **Intentional simplification:** mark it with a `ponytail:` comment, in the
+   language's own comment syntax, naming the boundary and the upgrade path.
 
-### Token & Context Discipline
-
-Agents must operate with token conservation as a hard operational constraint. Context
-bloat degrades model reasoning and inflates session costs:
-
-1. **Grep-first, targeted reads:** Never read an entire file when searching for a symbol
-   or implementation. Use grep/search first; read only bounded windows (50–150 lines)
-   around the exact match.
-2. **Output guard:** Never dump large compiler logs, raw JSON dumps, or full test suites
-   into chat or agent context. Pipe commands through head/tail or summarize counts.
-   Full logs belong in temporary files on disk.
-3. **No re-scanning established trees:** Trust `AGENTS.md` and `HANDOFF.md`. Never re-read
-   directory structures, `.gitignore`, or package manifests after they are established.
-4. **State on disk, not in context:** Maintain persistent project state in `docs/TODO.md`
-   and `HANDOFF.md`. Never rely on conversational memory across multi-turn chats.
-5. **Ultra-terse communication:** Strip conversational filler, prompt echoes, and polite
-   status phrases. The deliverable is working code backed by real terminal proof.
+**No new dependency without approval.** Never add a package (npm, pip, go get,
+cargo, composer) unless `docs/PRD.md` names it or the owner approves it. Solve
+the problem with the manifest and the standard library as they are.
 
 ---
 
 ## 6. Conventions
 
-### Review severity ladder (Universal for Claude, Codex, Antigravity, Gemini)
+### Review severity
 
-Every review and self-check uses this ladder:
-
-| Level | Meaning | Action |
-|---|---|---|
-| **CRITICAL** | Security hole, money computed wrong, or audit integrity broken | **BLOCK.** Not negotiable, not deferrable |
-| **HIGH** | A real defect, or a Definition-of-Done item genuinely unmet | **WARN.** Fix before the story closes |
-| **MEDIUM** | Maintainability defect. Costs the next session or person time | **NOTE.** Fix when touching that code |
-| **LOW** | Style, naming, a clearer comment | **OPTIONAL.** Say it once |
-
-Verdict: **BLOCK** on any CRITICAL · **WARN** on HIGH only · **PASS** otherwise.
-
-CRITICAL violations in this repo:
-- Client-side-only authorization; unauthenticated mutating entrypoints.
-- Missing audit row in the same transaction as data mutation.
-- Floating-point type used for money, financial math, or ledger balance.
-- Unverified JWT / webhook signatures or plaintext credential logging.
+Every review and self-check uses the ladder in `.claude/rules/review-severity.md`.
+Claude Code loads it at session start; other tools read it before a review.
+This project's own CRITICAL shapes are added there, under its list, not here.
 
 ### Security — non-negotiable
 
@@ -364,23 +339,23 @@ CRITICAL violations in this repo:
 
 ### Interface <delete if this project is an API / CLI / library / job>
 
-The general UI mandates (dark mode, i18n dictionaries, WCAG 2.1 AA, static modal
-backdrop, one h1 per page, unique ids) live in the global operator profile. What
-this project adds:
+UI mandates that hold on every project of this machine, where the operator
+profile has any, apply here too. What this project adds:
 
 - Breakpoints verified before a story closes: <>
 - Dictionary languages: <>
 - <design system / component library>
 - Direction comes from `DESIGN.md`. UI, copy and code-comment work goes through
-  antislop, which the operator profile loads on this machine; without
-  `DESIGN.md` any UI is a draft, not a deliverable (antislop R-37).
+  antislop where it is installed; without `DESIGN.md` any UI is a draft, not a
+  deliverable (antislop R-37).
 
-**Portable UI & Anti-Slop Fallback Defaults (active across all agents):**
-- **No visual slop:** No purple-to-blue gradient mesh backgrounds; no heavy dark blur drop-shadows (use 1px `border-border` hairline); no emoji headings.
-- **No copywriting slop:** No em dashes (`—`) in UI copy; no generic AI buzzwords ("seamless", "elevate", "delve").
-- **Touch targets:** Minimum 44×44 CSS px for all interactive mobile targets (buttons, links, inputs).
-- **Spacing system:** Strict 4pt/8pt grid (`4px`, `8px`, `12px`, `16px`, `24px`, `32px`). No arbitrary values (`p-[17px]`).
-- **State coverage:** Every component must explicitly handle empty state (`[]`), loading skeletons, and error boundaries.
+**Where antislop is not installed**, its hard gates still apply, and they are
+about function and access, not style: no em dash in UI text (R-02); 44×44 px
+touch targets and no horizontal overflow on mobile (R-03); WCAG AA contrast
+(R-25); every control reachable by keyboard, with a visible focus (R-32); an
+empty, a loading and an error state for every view that shows data (R-27).
+Palette, type, spacing, borders and backgrounds come from `DESIGN.md`, never
+from a default.
 
 ---
 
@@ -389,28 +364,30 @@ this project adds:
 - **Conventional Commits v1.0.0**, in English: `type(scope)!: summary`,
   imperative mood, lowercase summary, no trailing period. The body explains why.
   Breaking changes use `!` before the colon and/or a `BREAKING CHANGE:` footer.
-  Scopes: <list them — a closed list is what makes them searchable>.
-
-### Semantic Versioning (SemVer 2.0.0)
-
-Every project follows strict Semantic Versioning (`MAJOR.MINOR.PATCH`):
-- **PATCH bump (`x.y.Z`):** Backward-compatible bug fixes (`fix:`), refactoring
-  (`refactor:`), performance (`perf:`), or build chores (`chore:`).
-- **MINOR bump (`x.Y.0`):** New backward-compatible functionality (`feat:`).
-  Resets PATCH to 0.
-- **MAJOR bump (`X.0.0`):** Incompatible API changes (`BREAKING CHANGE:` or
-  `type(scope)!:`). Resets MINOR and PATCH to 0.
-- **Pre-v1.0.0 rules:** Initial development starts at `0.1.0`. Breaking changes
-  in `0.x` bump MINOR (`0.1.0` -> `0.2.0`); bug fixes bump PATCH (`0.1.0` ->
-  `0.1.1`). Promoted to `1.0.0` upon production readiness.
-- **Release synchronization:** Version numbers must be synchronized across the
-  manifest (`package.json`, `pyproject.toml`, or `version.go`), `CHANGELOG.md`,
-  and git tags (`vX.Y.Z`).
-
+  Scopes: <list them: a closed list is what makes them searchable>.
 - **Commit with the machine's own git config.** Never override the identity, and
   never add a `Co-Authored-By` or any AI/tool trailer.
 - Branches: <model>.
 - **`CHANGELOG.md` is updated BEFORE the code change**, not after.
+
+### Semantic Versioning (SemVer 2.0.0)
+
+Versions are `MAJOR.MINOR.PATCH`, and the commits since the last release decide
+the bump. Types other than `feat` and `fix` have no effect of their own, as
+Conventional Commits defines them.
+
+| The commits since the last release include | Bump |
+|---|---|
+| `!` after the type, or a `BREAKING CHANGE:` footer | MAJOR, or MINOR while the version is `0.x` |
+| `feat:` | MINOR |
+| `fix:` or `perf:` | PATCH |
+| only `docs:`, `test:`, `ci:`, `build:`, `chore:`, `refactor:`, `style:` | none: they ship with the next release |
+
+- A project starts at `0.1.0`, and goes to `1.0.0` when it is ready for production.
+- **One version everywhere:** the manifest (`package.json`, `pyproject.toml`,
+  `version.go` or the like), the `CHANGELOG.md` heading and the git tag `vX.Y.Z`.
+  A release is one commit, `chore(release): X.Y.Z`, that turns `[Unreleased]`
+  into the version heading and is tagged.
 
 ---
 
@@ -483,7 +460,7 @@ itself says so.
 | Codex | `AGENTS.md` (this file) + `~/.codex/AGENTS.md` | Official Codex convention |
 | Cursor / Copilot | `AGENTS.md` (this file) | Official convention |
 | Gemini CLI | `GEMINI.md`, which imports this file with `@./AGENTS.md`; plus `~/.gemini/GEMINI.md` | **Documented, not yet observed**: Gemini CLI documents `@` imports in `GEMINI.md`. Confirm it once in a session (ask which files it loaded), then mark it verified |
-| Antigravity | assumed `AGENTS.md` | **UNVERIFIED** — test it once in this project (ask the agent: "which rules did you read?") then update this row |
+| Antigravity | assumed `AGENTS.md` | **UNVERIFIED**: test it once in this project (ask the agent which rules it read), then update this row |
 
 The operator profile (working process, verification, reporting, git) is not
 inherited across tools automatically. Its master is `~/CLAUDE.md`, or
@@ -498,13 +475,16 @@ in the starter repository.
 |---|---|---|
 | This file is in the agent's context | **Mechanism** (observed 2026-09-24): the `@AGENTS.md` import | Codex, Cursor: native. Gemini: the `@./AGENTS.md` import, documented, not yet observed. Antigravity: unverified |
 | No application code until `AGENTS.md` is filled | **Mechanism for the file tools**: the PreToolUse hook `.claude/hooks/guard-slots.mjs` blocks Write, Edit and NotebookEdit from any working directory. A file written through Bash is not seen | **Intention**: no hook, only `node .claude/tools/agent-check.mjs` |
-| Zero unfilled slots in `AGENTS.md` | **Mechanism** — gate goes red | **Mechanism** — same gate, run by hand |
+| Zero unfilled slots in `AGENTS.md` | **Mechanism**: gate goes red | **Mechanism**: same gate, run by hand |
 | Pointer files carry no rules, and `CLAUDE.md` keeps its import line | **Mechanism**: gate goes red | **Mechanism** |
+| One story in WIP; nothing past Epic 0 before it is DONE | **Mechanism**: `tools/docs-drift.mjs` reads the story headings | **Mechanism**: same gate, run by hand |
+| Secret files are not read | **Partial**: the Read tool and common shell readers are denied, even in `bypassPermissions` mode; an interpreter one-liner is not. The sandbox closes that, on macOS, Linux and WSL2 only | **Intention** |
+| No new dependency without approval | **Partial**: in the default permission mode, a command that is not allowlisted asks first. `bypassPermissions` and a direct edit of the manifest are not guarded | **Intention** |
 | Docs-first, scope containment, CHANGELOG first | **Intention** | **Intention** |
-| antislop applied to UI, copy and comments | **Intention** — loaded globally; transcripts show sessions writing UI copy without it | **Intention** |
+| antislop applied to UI, copy and comments | **Intention**: loaded globally, and transcripts show sessions writing UI copy without it | **Intention** |
 | Agent files match the current starter | **Mechanism only when** `node tools/adopt.mjs` is re-run from the starter; otherwise they drift silently | same |
 
-Hooks are a Claude Code feature. Working in Codex or Antigravity, the first row
-guards nothing — run the gate yourself. Relaxing against a net that is not
+Hooks are a Claude Code feature. Working in Codex or Antigravity, the hook row
+guards nothing: run the gate yourself. Relaxing against a net that is not
 strung in the tool you are actually using is the most expensive failure mode in
 this repo.

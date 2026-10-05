@@ -1,0 +1,27 @@
+# Secrets — never committed
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Dependencies and build output — trim to this project's stack
+node_modules/
+vendor/
+dist/
+build/
+.next/
+__pycache__/
+*.log
+
+# Per-machine preferences. The rest of `.claude/` is committed ON PURPOSE, so
+# the agent tooling travels with the repo.
+.claude/settings.local.json
+
+# Backups tools/adopt.mjs writes before it replaces a file. They hold copies of
+# agent files, and one `git add -A` would commit them.
+.claude.backup-*/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,53 @@
+# TODO — <PROJECT NAME>
+
+A story gets **one** status marker and never two. One project once carried the
+same story under two headings 941 lines apart (one open, one closed, both true
+when written), and somebody picked up work to build something that already
+existed.
+
+Status: `TODO` · `WIP` · `REVIEW` · `DONE` · `BLOCKED`
+
+## Execution Rules for Agents
+
+1. **One story at a time:** Exactly ONE story may be in `WIP` status across the entire project. Never start a new story while one is in progress.
+2. **Phase 0 must come first:** Epic 0 (Walking Skeleton) must be `DONE` and verified green before any business feature is built.
+3. **No synthetic passes:** A story cannot move to `DONE` without runnable terminal evidence (exit code, test pass count, HTTP status).
+4. **No unrequested dependencies:** Implement acceptance criteria using stdlib and existing packages. Never install new dependencies without PRD scope.
+
+---
+
+## Epic 0 — Walking Skeleton (Harness & Verification)
+
+### [TODO] S0.1 — Scaffold minimal project & prove verification gate
+
+**Acceptance criteria**
+
+- [ ] Minimal project structure and runtime configuration in place
+- [ ] At least one automated assertion/test runs and passes
+- [ ] Full gate command exits 0 with all checks green
+
+**Out of scope for this story** — Business logic, database entities, UI styling.
+
+---
+
+## Epic 1 — <name>
+
+### [TODO] S1.1 — <story title>
+
+A story is not a title, it is **acceptance criteria**. A criterion that cannot
+be checked by looking at something is a wish, not a criterion.
+
+**Acceptance criteria**
+
+- [ ] <what can be seen / run / queried to prove it>
+- [ ] <>
+
+**Out of scope for this story** — <what is deliberately untouched, so the blast radius is explicit>
+
+**Notes** — <decisions or traps found while doing it>
+
+---
+
+## Done
+
+<Move stories here once DONE. Do not leave a copy above.>

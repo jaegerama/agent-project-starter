@@ -1,0 +1,336 @@
+#!/usr/bin/env node
+/**
+ * The starter's own test suite: slot pattern, hook, agent-check, bootstrap,
+ * adopt. Run it from the starter's root before committing a change to any of
+ * them:
+ *
+ *     node _starter/selftest.mjs
+ *
+ * ## Why it exists
+ *
+ * Every defect below was found once by hand and fixed, and nothing kept it
+ * fixed: the checks lived in a scratch directory and vanished with the
+ * session. A starter that teaches "a rule is a mechanism or it is an
+ * intention" had no mechanism guarding its own tools. Each case here names the
+ * defect it pins.
+ *
+ * ## What it touches
+ *
+ * Only a temporary directory. Agent-check runs against a fake home directory
+ * (USERPROFILE and HOME point at it), so the real operator profile is never
+ * read or written. It lives in _starter/, so bootstrap deletes it from every
+ * copy: it tests the starter, not a project.
+ */
+
+import { readFileSync, writeFileSync, existsSync, mkdirSync, mkdtempSync, rmSync, cpSync, readdirSync, statSync, appendFileSync } from 'node:fs'
+import { join, relative, sep } from 'node:path'
+import { tmpdir } from 'node:os'
+import { spawnSync } from 'node:child_process'
+import { pathToFileURL } from 'node:url'
+import { createHash } from 'node:crypto'
+
+const root = process.cwd()
+if (!existsSync(join(root, '_starter', 'selftest.mjs'))) {
+  console.error('Run this from the starter root: node _starter/selftest.mjs')
+  process.exit(1)
+}
+const { slotsOf } = await import(pathToFileURL(join(root, '.claude/tools/lib/slot.mjs')).href)
+
+let passed = 0
+let failed = 0
+const check = (name, ok, detail = '') => {
+  if (ok) passed += 1
+  else failed += 1
+  console.log(`${ok ? 'ok  ' : 'FAIL'}  ${name}${!ok && detail ? `\n      ${detail}` : ''}`)
+}
+const section = (title) => console.log(`\n== ${title}`)
+
+const node = (cwd, args, extra = {}) => spawnSync('node', args, { cwd, encoding: 'utf8', ...extra })
+const git = (cwd, ...args) => spawnSync('git', args, { cwd, encoding: 'utf8' })
+const read = (p) => (existsSync(p) ? readFileSync(p, 'utf8') : null)
+
+const tmp = mkdtempSync(join(tmpdir(), 'starter-selftest-'))
+const copyStarter = (name) => {
+  const dir = join(tmp, name)
+  cpSync(root, dir, { recursive: true })
+  return dir
+}
+// Hash of every file outside .git, to prove a dry run or a refusal wrote nothing.
+const treeHash = (dir) => {
+  const h = createHash('sha256')
+  const walk = (d) => {
+    for (const e of readdirSync(d).sort()) {
+      if (e === '.git') continue
+      const full = join(d, e)
+      if (statSync(full).isDirectory()) walk(full)
+      else h.update(relative(dir, full).split(sep).join('/')).update(readFileSync(full))
+    }
+  }
+  walk(dir)
+  return h.digest('hex')
+}
+const hook = (cwd, file, input) =>
+  node(cwd, ['.claude/hooks/guard-slots.mjs'], {
+    input: input ?? JSON.stringify({ tool_name: 'Write', tool_input: { file_path: join(cwd, file) }, cwd }),
+  }).status
+
+// ── 1. The slot pattern ──────────────────────────────────────────────────────
+section('slot pattern')
+const slotCases = [
+  ['<PROJECT NAME>', true],
+  ['<what it is, who uses it>', true],
+  ['<Indonesian / English>', true],
+  ['<https://example.com or none>', true],
+  ['| **Name** | <> |', true],
+  ['| Tests | <> | |', true],
+  ['<>', true],
+  ['- Dictionary languages: <>', true],
+  // generics and tags: the docblock once promised Map<string, Item> was not caught, and it was
+  ['Map<string, Item>', false],
+  ['<div>', false],
+  ['<slot>', false],
+  // git identities: every AGENTS.md section 7 has one, and they kept a filled file red
+  ['jaegerama <hello@example.com>', false],
+  ['see <https://keepachangelog.com/en/1.1.0/>', false],
+  // <> that is not an empty slot
+  ['  <>', false],
+  ['return <></>', false],
+  ['a fragment `<>` in prose', false],
+  ['no unfilled <> slots remain', false],
+]
+for (const [text, want] of slotCases) {
+  check(`${want ? 'slot    ' : 'no slot '} ${JSON.stringify(text)}`, slotsOf(text).length > 0 === want)
+}
+check('three empty slots on three lines count as three', slotsOf('| a | <> |\n| b | <> |\n<>\n').length === 3)
+const template = read(join(root, 'AGENTS.md'))
+const templateSlots = slotsOf(template)
+check(
+  'the template has named AND empty slots (the 25 empty ones were once invisible)',
+  templateSlots.some((s) => s.startsWith('<> at line')) && templateSlots.includes('<PROJECT NAME>'),
+  `found: ${templateSlots.length}`,
+)
+
+// ── 2. The docs-first hook ───────────────────────────────────────────────────
+section('docs-first hook (starter itself, AGENTS.md has slots)')
+check('application code is blocked (exit 2)', hook(root, 'src/app.ts') === 2)
+for (const f of ['AGENTS.md', 'CLAUDE.md', 'HANDOFF.md', 'DESIGN.md', 'docs/BRIEF.md', 'tools/adopt.mjs', '.claude/settings.json']) {
+  check(`setup file allowed: ${f}`, hook(root, f) === 0)
+}
+check('malformed input fails open, as documented', hook(root, 'x', 'not json') === 0)
+check(
+  'settings.json wires the hook at its current path',
+  read(join(root, '.claude/settings.json')).includes('"node .claude/hooks/guard-slots.mjs"'),
+)
+
+// ── 3. agent-check, against a fake home ──────────────────────────────────────
+section('agent-check (fake home, real profile untouched)')
+const home = join(tmp, 'home')
+const block = '<!-- antislop:start -->\n# ANTISLOP\nthe block\n<!-- antislop:end -->\n'
+const writeHome = () => {
+  for (const d of ['.claude', '.codex', '.gemini']) mkdirSync(join(home, d), { recursive: true })
+  const master = `# profile\n\nrules\n\n${block}`
+  writeFileSync(join(home, 'CLAUDE.md'), master)
+  writeFileSync(join(home, '.codex', 'AGENTS.md'), master)
+  writeFileSync(join(home, '.gemini', 'GEMINI.md'), master)
+  writeFileSync(join(home, '.claude', 'CLAUDE.md'), `# global\n\n${block}`)
+}
+const ac = copyStarter('ac')
+const env = { ...process.env, USERPROFILE: home, HOME: home }
+const agentCheck = () => node(ac, ['.claude/tools/agent-check.mjs'], { env })
+const line = (out, name) => (out.stdout + out.stderr).split('\n').find((l) => l.includes(name)) ?? ''
+const pointer = read(join(ac, 'CLAUDE.md'))
+
+writeHome()
+let out = agentCheck()
+check('baseline: red only on template slots', out.status === 1 && line(out, 'unfilled <> slots').startsWith('FAIL'))
+check('baseline: pointers, profile and antislop block green', ['still pointers', 'operator profile', 'antislop block'].every((n) => line(out, n).startsWith('ok')))
+
+writeFileSync(join(ac, 'CLAUDE.md'), pointer + '\n'.repeat(70))
+check('pointer grown past 60 lines -> red', line(agentCheck(), 'still pointers').startsWith('FAIL'))
+writeFileSync(join(ac, 'CLAUDE.md'), '# CLAUDE.md\n\nsee the rules file\n')
+check('pointer that lost its AGENTS.md reference -> red', line(agentCheck(), 'still pointers').startsWith('FAIL'))
+writeFileSync(join(ac, 'CLAUDE.md'), pointer)
+
+appendFileSync(join(home, '.codex', 'AGENTS.md'), 'drift\n')
+check('a profile mirror drifts -> red', line(agentCheck(), 'operator profile').startsWith('FAIL'))
+writeHome()
+writeFileSync(join(home, '.claude', 'CLAUDE.md'), `# global\n\n${block.replace('the block', 'another block')}`)
+check('the global antislop block drifts -> red', line(agentCheck(), 'antislop block').startsWith('FAIL'))
+writeFileSync(join(home, '.claude', 'CLAUDE.md'), '# global\n')
+check('the global antislop block goes missing -> red', line(agentCheck(), 'antislop block').startsWith('FAIL'))
+writeFileSync(join(home, 'CLAUDE.md'), '# profile\n')
+writeFileSync(join(home, '.codex', 'AGENTS.md'), '# profile\n')
+writeFileSync(join(home, '.gemini', 'GEMINI.md'), '# profile\n')
+check('no antislop block anywhere -> SKIP, not a pass', line(agentCheck(), 'antislop block').startsWith('SKIP'))
+writeHome()
+
+// ── 4. bootstrap ─────────────────────────────────────────────────────────────
+section('bootstrap')
+check('refuses to run inside the starter itself', node(root, ['tools/bootstrap.mjs', '--name', 'X', '--apply']).status === 1)
+
+const committed = copyStarter('demo-committed')
+const before = treeHash(committed)
+node(committed, ['tools/bootstrap.mjs', '--name', 'Demo App', '--private-agents'])
+check('dry run changes nothing', treeHash(committed) === before)
+
+out = node(committed, ['tools/bootstrap.mjs', '--name', 'Demo App', '--apply'])
+check('apply exits 0', out.status === 0, out.stderr)
+check('_starter/ deleted', !existsSync(join(committed, '_starter')))
+check(
+  'no <PROJECT NAME> left in the templates',
+  ['AGENTS.md', 'README.md', 'CLAUDE.md', 'HANDOFF.md', 'DESIGN.md'].every((f) => !(read(join(committed, f)) ?? '').includes('<PROJECT NAME>')),
+)
+check(
+  "the starter's inherited git history is gone (Explorer copies .git too)",
+  git(committed, 'rev-list', '--all', '--count').stdout.trim() === '0',
+)
+git(committed, 'add', '-A')
+const stagedCommitted = git(committed, 'diff', '--cached', '--name-only').stdout.split('\n')
+check('committed mode: AGENTS.md and .claude/ would be committed', stagedCommitted.includes('AGENTS.md') && stagedCommitted.some((f) => f.startsWith('.claude/')))
+out = node(committed, ['tools/bootstrap.mjs', '--name', 'Demo App', '--apply'])
+check('second run: "already a repo", history untouched', out.stdout.includes('already a repo'))
+check('a new project ignores adopt backups from day one', git(committed, 'check-ignore', '-q', '.claude.backup-adopt-x/CLAUDE.md').status === 0)
+
+const priv = copyStarter('demo-private')
+node(priv, ['tools/bootstrap.mjs', '--name', 'Demo App', '--private-agents', '--apply'])
+node(priv, ['tools/bootstrap.mjs', '--name', 'Demo App', '--private-agents', '--apply'])
+git(priv, 'add', '-A')
+const stagedPrivate = git(priv, 'diff', '--cached', '--name-only').stdout.split('\n').filter(Boolean)
+check(
+  'private mode: no agent file would be committed (11 once stayed tracked)',
+  !stagedPrivate.some((f) => /^(AGENTS|CLAUDE|GEMINI)\.md$|^\.claude\/|copilot-instructions/.test(f)),
+  stagedPrivate.join(' '),
+)
+check('private mode: the .gitignore block appears once after two runs', read(join(priv, '.gitignore')).split('bootstrap --private-agents').length - 1 === 1)
+
+const later = copyStarter('demo-later')
+rmSync(join(later, '_starter'), { recursive: true, force: true })
+out = node(later, ['tools/bootstrap.mjs', '--name', 'Demo App', '--apply'])
+check(
+  'inherited history with _starter/ gone: warned and kept (it may hold real commits)',
+  out.stdout.includes('WARNING') && Number(git(later, 'rev-list', '--all', '--count').stdout.trim()) > 0,
+)
+
+// ── 5. The lifecycle of a new project ────────────────────────────────────────
+section('new project lifecycle (the false green of 2026-09-23)')
+const agentsPath = join(committed, 'AGENTS.md')
+const agentsBody = read(agentsPath)
+const { SLOT } = await import(pathToFileURL(join(committed, '.claude/tools/lib/slot.mjs')).href)
+check('before setup: application code blocked', hook(committed, 'src/pos.ts') === 2)
+writeFileSync(agentsPath, agentsBody.replace(SLOT, '(answered)'))
+out = node(committed, ['.claude/tools/agent-check.mjs'], { env })
+check('named slots filled, empty ones not: gate still red', out.status === 1)
+check('named slots filled, empty ones not: code still blocked', hook(committed, 'src/pos.ts') === 2)
+writeFileSync(agentsPath, agentsBody.replace(SLOT, '(answered)').replace(/<>/g, '(answered)'))
+out = node(committed, ['.claude/tools/agent-check.mjs'], { env })
+check('every slot filled: gate green', out.status === 0, out.stdout + out.stderr)
+check('every slot filled: code allowed', hook(committed, 'src/pos.ts') === 0)
+
+// ── 6. adopt ─────────────────────────────────────────────────────────────────
+section('adopt')
+const adopt = (target, apply) => node(root, ['tools/adopt.mjs', '--into', target, ...(apply ? ['--apply'] : [])])
+const IGNORE_PRIVATE = 'AGENTS.md\nCLAUDE.md\nGEMINI.md\n.github/copilot-instructions.md\n.claude/\n.claude.backup-*/\n'
+const makeRepo = (name, files) => {
+  const dir = join(tmp, name)
+  for (const [p, body] of Object.entries(files)) {
+    mkdirSync(join(dir, p, '..'), { recursive: true })
+    writeFileSync(join(dir, p), body)
+  }
+  git(dir, 'init', '-q')
+  git(dir, 'add', '-A')
+  git(dir, '-c', 'commit.gpgsign=false', 'commit', '-qm', 'fixture')
+  return dir
+}
+const rules =
+  '\uFEFF# CLAUDE.md — Fixture\n\n' +
+  '├── CLAUDE.md                 # this file\n' +
+  Array.from({ length: 80 }, (_, i) => `- rule ${i + 1}, identity jaegerama <hello@example.com>`).join('\n') +
+  '\n'
+
+check('refuses when the target is the starter', adopt(root, false).status === 1)
+check('refuses to run from outside the starter', node(tmp, [join(root, 'tools/adopt.mjs'), '--into', tmp]).status === 1)
+
+const team = makeRepo('team', { '.gitignore': IGNORE_PRIVATE, 'CLAUDE.md': rules, 'HANDOFF.md': '# HANDOFF\n' })
+const teamBefore = treeHash(team)
+out = adopt(team, false)
+check('dry run changes nothing', treeHash(team) === teamBefore && out.status === 0)
+out = adopt(team, true)
+check('private mode detected', out.stdout.includes('private agents'))
+const moved = read(join(team, 'AGENTS.md'))
+check('rules moved verbatim: only the title differs', moved === rules.replace('# CLAUDE.md', '# AGENTS.md'))
+check('the BOM is kept (a title rename was once lost to one)', moved.startsWith('\uFEFF# AGENTS.md'))
+check('CLAUDE.md is the starter pointer, with the import', read(join(team, 'CLAUDE.md')) === read(join(root, 'CLAUDE.md')))
+const backups = readdirSync(team).filter((e) => e.startsWith('.claude.backup-adopt-'))
+check('the original CLAUDE.md is backed up byte for byte', backups.length === 1 && read(join(team, backups[0], 'CLAUDE.md')) === rules)
+check('self-references carried over by the move are listed for review', out.stdout.includes('review AGENTS.md:3'))
+check('a filled AGENTS.md (git identities included) gets the hook wired', read(join(team, '.claude/settings.json')).includes('guard-slots.mjs'))
+check('nothing tracked changed in the team repository', git(team, 'status', '--porcelain').stdout.trim() === '')
+const teamAfter = treeHash(team)
+adopt(team, true)
+check('second run: idempotent, no new backup', treeHash(team) === teamAfter && readdirSync(team).filter((e) => e.startsWith('.claude.backup-adopt-')).length === 1)
+
+const exposed = makeRepo('exposed', { '.gitignore': IGNORE_PRIVATE.replace('GEMINI.md\n', ''), 'CLAUDE.md': rules })
+const exposedBefore = treeHash(exposed)
+out = adopt(exposed, true)
+check('private repo that does not ignore GEMINI.md: refused, exit 1', out.status === 1 && out.stderr.includes('GEMINI.md'))
+check('the refusal wrote nothing (checked before any write)', treeHash(exposed) === exposedBefore)
+
+const fresh = makeRepo('fresh', { '.gitignore': 'node_modules/\n', 'README.md': '# fresh\n' })
+out = adopt(fresh, true)
+check('no agent files: AGENTS.md seeded from the template', (read(join(fresh, 'AGENTS.md')) ?? '').includes('## Setup'))
+check('slots remain: the hook is NOT wired (it would block running work)', !(read(join(fresh, '.claude/settings.json')) ?? '').includes('guard-slots.mjs'))
+check('HANDOFF.md seeded where there is none', existsSync(join(fresh, 'HANDOFF.md')))
+
+// 2026-09-24: a new project mid-setup, hook wired by its copy of the
+// starter. adopt used to remove the hook because slots remained.
+const hookEntry = (command) => JSON.stringify({ hooks: { PreToolUse: [{ matcher: 'Write|Edit|NotebookEdit', hooks: [{ type: 'command', command }] }] } }, null, 2)
+const midSetup = makeRepo('mid-setup', {
+  '.gitignore': 'node_modules/\n',
+  'AGENTS.md': read(join(root, 'AGENTS.md')),
+  'CLAUDE.md': read(join(root, 'CLAUDE.md')),
+  '.claude/settings.json': hookEntry('node .claude/hooks/guard-slots.mjs'),
+})
+out = adopt(midSetup, true)
+check('new project mid-setup: its wired hook is kept, not removed', read(join(midSetup, '.claude/settings.json')).includes('node .claude/hooks/guard-slots.mjs'), out.stdout)
+const oldPath = makeRepo('old-hook-path', {
+  '.gitignore': 'node_modules/\n',
+  'AGENTS.md': '# AGENTS.md\n\nrules\n',
+  '.claude/settings.json': hookEntry('node tools/hooks/guard-slots.mjs'),
+})
+adopt(oldPath, true)
+const migrated = read(join(oldPath, '.claude/settings.json'))
+check(
+  'hook at the old tools/hooks/ path: moved to exactly one current entry',
+  migrated.split('guard-slots.mjs').length - 1 === 1 && migrated.includes('node .claude/hooks/guard-slots.mjs'),
+)
+
+const agentsOnly = { '.gitignore': 'x\n', 'AGENTS.md': '# AGENTS.md\n\nrules\n' }
+const pointerCase = (name, claude) => makeRepo(name, claude === null ? agentsOnly : { ...agentsOnly, 'CLAUDE.md': claude })
+const custom = read(join(root, 'CLAUDE.md')).replace('| Agent | `silent-failure-hunter` |', '| Agents | `silent-failure-hunter`, `db-reviewer` |')
+const oldPointer = '# CLAUDE.md\n\nThis project\'s rules live in **[AGENTS.md](AGENTS.md)**. Read it in full at\nsession start.\n'
+
+const pIdentical = pointerCase('p-identical', read(join(root, 'CLAUDE.md')))
+// Matched on the CLAUDE.md line itself: "current" appears on many other lines,
+// and a check that searched the whole output could not fail.
+check('pointer identical to the starter: "current"', /^ {2}CLAUDE\.md +current$/m.test(adopt(pIdentical, false).stdout))
+const pCustom = pointerCase('p-custom', custom)
+adopt(pCustom, true)
+check("customised pointer with the import is kept (a project's own table was once nearly erased)", read(join(pCustom, 'CLAUDE.md')) === custom)
+const pOld = pointerCase('p-old', oldPointer)
+adopt(pOld, true)
+check(
+  'old pointer asking in words: only the import line is added',
+  read(join(pOld, 'CLAUDE.md')) === oldPointer.replace('# CLAUDE.md\n', '# CLAUDE.md\n\n@AGENTS.md\n'),
+)
+const pNone = pointerCase('p-none', null)
+adopt(pNone, true)
+check('no pointer at all: the full pointer is written', read(join(pNone, 'CLAUDE.md')) === read(join(root, 'CLAUDE.md')))
+
+// ── Summary ──────────────────────────────────────────────────────────────────
+try {
+  rmSync(tmp, { recursive: true, force: true })
+} catch {
+  console.log(`\n(could not remove ${tmp}; delete it by hand)`)
+}
+console.log(`\n${passed} passed, ${failed} failed, of ${passed + failed}`)
+process.exit(failed === 0 ? 0 : 1)

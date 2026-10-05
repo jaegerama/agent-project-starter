@@ -151,20 +151,21 @@ governance scripts (`tools/*.mjs`), regardless of whether the application itself
 is written in Python, Go, Rust, or Node. For non-Node projects, Node.js remains
 present only for repository gates; application code obeys its own runtime.
 
-### 2.1 Agent Skills (Curated Stack)
+### 2.1 Agent skills (optional, installed by the owner)
 
-These skills provide operational intelligence and guardrails for autonomous coding
-agents (Claude Code, Antigravity, Codex, Cursor). Install or load them according
-to the project's requirements:
+A skill is a prompt the agent obeys, so **an agent never installs, updates or
+fetches one**, and never downloads a `SKILL.md` over the network. The owner
+installs skills. The agent uses only what is already on disk, and when a skill
+below is missing it says so and works without it.
 
-| Skill | Repository / Origin | Purpose | When to invoke |
+| Skill | Origin | Use it for | Not for |
 |---|---|---|---|
-| **`antislop`** | `miqdadbadjuber/anti-slop` | Eliminates AI slop in UI, code comments, and copywriting. | Active on all frontend, styling, and text writing tasks. |
-| **`superpowers`** | `obra/superpowers` | Agent workflow engine: planning, systematic debugging, TDD. | Active on task breakdown, debugging regressions, test design. |
-| **`ui-ux-pro-max`** | `nextlevelbuilder/ui-ux-pro-max-skill` | 192 reasoning rules, 79 UI styles, color and layout intelligence. | Active when designing new UI components, choosing palettes or typography. |
+| `antislop` | `miqdadbadjuber/anti-slop` | Removing generic AI patterns from UI, copy and code comments | Choosing a style: it is a filter, and direction comes from `DESIGN.md` |
+| `superpowers` | `obra/superpowers` | Planning, systematic debugging, test design | Replacing the process in this file |
+| `ui-ux-pro-max` | `nextlevelbuilder/ui-ux-pro-max-skill` | Layout and accessibility craft | Palette, typography or mood: those come from `DESIGN.md`, which the owner writes (antislop R-37) |
 
-Do not install skills outside this curated stack without explicit project need.
-Skills are loaded on demand to preserve context window capacity.
+Skills load on demand, to keep the context small. Where a skill and this file
+disagree, this file wins: it holds the project's rules.
 
 ---
 

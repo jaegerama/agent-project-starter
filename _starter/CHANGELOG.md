@@ -13,6 +13,16 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Security: agents no longer install skills (2026-10-05)
+
+`AGENTS.md` §2.1 told agents to install three third-party skills. A skill is
+the agent's next prompt, so installing one means running instructions fetched
+from the network, with the agent's permissions. The owner installs skills now;
+an agent never installs, updates or fetches one, and works without a skill
+that is missing. ui-ux-pro-max is for layout and accessibility craft, not for
+choosing a palette or a typeface: those come from `DESIGN.md`, which the owner
+writes.
+
 ### Added: a check that one story is in WIP and Epic 0 comes first (2026-10-05)
 
 A new check in `tools/docs-drift.mjs` reads the story headings in

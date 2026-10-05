@@ -13,6 +13,23 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Added: a check that one story is in WIP and Epic 0 comes first (2026-10-05)
+
+A new check in `tools/docs-drift.mjs` reads the story headings in
+`docs/TODO.md`: more than one story in WIP, or a story past Epic 0 started
+while the walking skeleton is not DONE, turns the gate red. Until now only
+`AGENTS.md` §0.1 said so. `tools/docs-drift.mjs` belongs to the project: new
+projects get the check, and adopt leaves an existing project's copy alone.
+
+### Fixed: the gate-command check was red on correct gates (2026-10-05)
+
+The check that a gate's commands exist read `pnpm install`, `pnpm run build`,
+`yarn run lint`, `composer install` and `composer run lint` as calls to
+scripts named `install` and `run`, so a correct gate for those package
+managers went red. It now knows each manager's own subcommands, reads commands
+only from code in the document, and catches `npm test` with no `test` script,
+which it used to pass.
+
 ### Fixed: bootstrap could dismantle a clone of the starter, and projects inherited its license (2026-10-05)
 
 bootstrap refused to run only in a folder named `project-starter`. A

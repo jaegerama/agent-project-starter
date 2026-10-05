@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * The starter's own test suite: slot pattern, hook, agent-check, bootstrap,
- * adopt. Run it from the starter's root before committing a change to any of
+ * adopt, and the example checks in docs-drift. Run it from the starter's root before committing a change to any of
  * them:
  *
  *     node _starter/selftest.mjs
@@ -436,6 +436,42 @@ check('no pointer at all: the full pointer is written', read(join(pNone, 'CLAUDE
 // The gate and adopt once counted the same 60-line file differently.
 const pSixty = makeRepo('p-sixty', { '.gitignore': 'x\n', 'CLAUDE.md': sixty })
 check('a 60-line CLAUDE.md is a pointer to adopt as well', /CLAUDE\.md +CONFLICT: a pointer/.test(adopt(pSixty, false).stdout))
+
+// ── 7. docs-drift ────────────────────────────────────────────────────────────
+section('docs-drift (the checks a new project starts with)')
+const driftIn = (name, files) => {
+  const dir = join(tmp, name)
+  mkdirSync(join(dir, 'tools'), { recursive: true })
+  cpSync(join(root, 'tools', 'docs-drift.mjs'), join(dir, 'tools', 'docs-drift.mjs'))
+  for (const [p, body] of Object.entries(files)) {
+    mkdirSync(join(dir, p, '..'), { recursive: true })
+    writeFileSync(join(dir, p), body)
+  }
+  const r = node(dir, ['tools/docs-drift.mjs'])
+  return r.stdout + r.stderr
+}
+const lineWith = (text, name) => text.split('\n').find((l) => l.includes(name)) ?? ''
+const gateIs = (files, name) => lineWith(driftIn(name, files), 'runs commands that actually exist')
+const todoIs = (files, name) => lineWith(driftIn(name, files), 'docs/TODO.md has')
+const fence = (...cmds) => '```bash\n' + cmds.join('\n') + '\n```\n'
+const scripts = (...names) => JSON.stringify({ scripts: Object.fromEntries(names.map((n) => [n, 'x'])) })
+
+// pnpm install, yarn run and composer install were once read as scripts named install and run.
+check(
+  'package-manager subcommands are not scripts',
+  gateIs({ 'package.json': scripts('build', 'lint', 'test'), 'AGENTS.md': fence('pnpm install', 'pnpm run build', 'yarn run lint', 'pnpm test', 'npm ci', 'composer install') }, 'd-builtins').startsWith('ok'),
+)
+check('a gate script the manifest lacks -> red', gateIs({ 'package.json': scripts('lint'), 'AGENTS.md': fence('npm run typecheck') }, 'd-missing').startsWith('FAIL'))
+check('npm test with no test script -> red (it once passed)', gateIs({ 'package.json': scripts('lint'), 'AGENTS.md': fence('npm test') }, 'd-npmtest').startsWith('FAIL'))
+check('a composer custom script is checked', gateIs({ 'composer.json': scripts('analyse'), 'AGENTS.md': fence('composer analyse', 'composer stan') }, 'd-composer').startsWith('FAIL'))
+check('prose is not a command ("pnpm or yarn")', gateIs({ 'package.json': scripts('lint'), 'AGENTS.md': 'We use pnpm or yarn workspaces.\n' }, 'd-prose').startsWith('ok'))
+
+const story = (status, id) => `### [${status}] ${id} title\n`
+check('two stories in WIP -> red', todoIs({ 'docs/TODO.md': story('DONE', 'S0.1') + story('WIP', 'S1.1') + story('WIP', 'S1.2') }, 't-two').startsWith('FAIL'))
+check('a story past Epic 0 started before it is DONE -> red', todoIs({ 'docs/TODO.md': story('TODO', 'S0.1') + story('WIP', 'S1.1') }, 't-early').startsWith('FAIL'))
+check('Epic 0 DONE and one story in WIP -> green', todoIs({ 'docs/TODO.md': story('DONE', 'S0.1') + story('WIP', 'S1.1') + story('TODO', 'S1.2') }, 't-ok').startsWith('ok'))
+check("the template's own docs/TODO.md -> green", todoIs({ 'docs/TODO.md': read(join(root, 'docs', 'TODO.md')) }, 't-template').startsWith('ok'))
+check('no story headings -> SKIP, not a pass', todoIs({ 'docs/TODO.md': '# TODO\n' }, 't-none').startsWith('SKIP'))
 
 // ── Summary ──────────────────────────────────────────────────────────────────
 try {

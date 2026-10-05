@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Wahyu Rahmadani. https://github.com/jaegerama/agent-project-starter
+
 /**
  * One definition of "an unfilled slot", shared by four callers:
  * .claude/tools/agent-check.mjs (the gate), tools/bootstrap.mjs (the report),

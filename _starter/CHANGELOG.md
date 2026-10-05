@@ -13,6 +13,24 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Fixed: bootstrap could dismantle a clone of the starter, and projects inherited its license (2026-10-05)
+
+bootstrap refused to run only in a folder named `project-starter`. A
+`git clone` of the public repository lands in `agent-project-starter`, where a
+dry run reported it would delete `_starter/` and the git history. The
+self-test runs that very command in the starter's root, so on CI, whose
+checkout carries the repository's name, it would have dismantled the checkout
+it was testing. Both names are refused now. `--name --apply` named the project
+`--apply` and applied; a name that starts with `-` is refused.
+
+Every bootstrapped project also kept the starter's `LICENSE`, so a company
+project carried an MIT license with a personal copyright. On its first run
+bootstrap now removes the files that belong to the starter alone: `_starter/`,
+`LICENSE`, `.github/README.md` and the self-test workflow. The tool files that
+travel into projects carry an SPDX line with the MIT notice instead. A later
+run leaves all of them alone, because by then a `LICENSE` may be the
+project's own.
+
 ### Fixed: false greens and false reds in the agent checks (2026-10-05)
 
 The slot pattern stops at a newline, so a slot that wraps onto a second line is

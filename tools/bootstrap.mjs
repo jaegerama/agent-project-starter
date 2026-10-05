@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Wahyu Rahmadani. https://github.com/jaegerama/agent-project-starter
 /**
  * Does the mechanical part of "duplicate the starter folder, make it a project".
  *
@@ -9,7 +11,8 @@
  * ## What it does
  *
  *   1. Replaces <PROJECT NAME> across the templates.
- *   2. Deletes _starter/ — documentation about the starter, not the project.
+ *   2. Deletes what belongs to the starter, not the project: _starter/,
+ *      LICENSE, .github/README.md and the self-test workflow.
  *   3. Runs git init if this is not a repo yet.
  *   4. Prints the slots a human still has to fill, grouped by file.
  *   5. With --private-agents, appends the .gitignore block that keeps agent
@@ -50,7 +53,8 @@ const fail = (msg) => {
   process.exit(1)
 }
 
-if (!name) {
+// `--name --apply` once named the project `--apply`, and applied.
+if (!name || name.startsWith('-')) {
   fail(
     'Usage: node tools/bootstrap.mjs --name "<Project Name>" [--private-agents] [--apply]\n' +
       'Without --apply it only reports what it would do.',
@@ -59,11 +63,11 @@ if (!name) {
 
 // Guard: never dismantle the starter itself. That folder gets reused; deleting
 // _starter/ inside it means losing every document explaining how to use it, and
-// nothing puts them back.
-if (basename(root).toLowerCase() === 'project-starter') {
+// nothing puts them back. A clone takes the repository's name, so both count.
+if (['project-starter', 'agent-project-starter'].includes(basename(root).toLowerCase())) {
   fail(
     'This is the starter folder itself, not a copy of it.\n' +
-      'Duplicate the folder, rename it, then run this from inside the copy.',
+      "Copy or clone it under the project's name, then run this from inside the copy.",
   )
 }
 
@@ -102,10 +106,13 @@ for (const file of files) {
   if (apply) writeFileSync(file, body.split(PLACEHOLDER).join(name))
 }
 
-// ── 2. Delete _starter/ ──────────────────────────────────────────────────────
-const starterDir = join(root, '_starter')
-const hasStarterDir = existsSync(starterDir)
-if (hasStarterDir && apply) rmSync(starterDir, { recursive: true, force: true })
+// ── 2. Delete what belongs to the starter ────────────────────────────────────
+// Only on the first run, while _starter/ is still there: by a later run a
+// LICENSE may be the project's own. The tool files keep their SPDX notice.
+const STARTER_ONLY = ['_starter', 'LICENSE', '.github/README.md', '.github/workflows/selftest.yml']
+const hasStarterDir = existsSync(join(root, '_starter'))
+const starterOnly = hasStarterDir ? STARTER_ONLY.filter((p) => existsSync(join(root, p))) : []
+if (apply) for (const p of starterOnly) rmSync(join(root, p), { recursive: true, force: true })
 
 // ── 3. A fresh git history ───────────────────────────────────────────────────
 // Duplicating the folder in Explorer copies the hidden .git as well, so a new
@@ -188,7 +195,7 @@ console.log(`\n${apply ? 'DONE' : 'DRY RUN — nothing was changed'}\n`)
 console.log(`  project name      ${name}`)
 console.log(`  ${PLACEHOLDER} replaced in${verb}  ${touched.length} files`)
 for (const f of touched) console.log(`      ${f}`)
-console.log(`  _starter/         ${hasStarterDir ? `deleted${verb}` : 'already gone'}`)
+console.log(`  starter files     ${hasStarterDir ? `${starterOnly.join(', ')} deleted${verb}` : 'already gone'}`)
 console.log(
   `  git               ${
     resetHistory
@@ -234,6 +241,7 @@ console.log(
     ? '\nNext:\n' +
         '  follow the Setup section at the top of AGENTS.md: brief in docs/BRIEF.md,\n' +
         '  slots filled from it, unanswered ones as questions in docs/QUESTIONS.md,\n' +
-        '  then node .claude/tools/agent-check.mjs until the slot check is green\n'
+        '  then node .claude/tools/agent-check.mjs until the slot check is green\n' +
+        (starterOnly.includes('LICENSE') ? "  the starter's LICENSE is gone: add this project's own, if it needs one\n" : '')
     : '\nRun again with --apply to actually do it.\n',
 )

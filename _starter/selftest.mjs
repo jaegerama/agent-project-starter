@@ -255,6 +255,18 @@ writeHome()
 // ── 4. bootstrap ─────────────────────────────────────────────────────────────
 section('bootstrap')
 check('refuses to run inside the starter itself', node(root, ['tools/bootstrap.mjs', '--name', 'X', '--apply']).status === 1)
+// A clone takes the repository's name, and CI checks out into a folder of that name.
+const clone = join(mkdtempSync(join(tmp, 'clone-')), 'agent-project-starter')
+cpSync(root, clone, { recursive: true })
+check(
+  'refuses to run in a clone named agent-project-starter',
+  node(clone, ['tools/bootstrap.mjs', '--name', 'X', '--apply']).status === 1 && existsSync(join(clone, '_starter')),
+)
+const noName = copyStarter('no-name')
+check(
+  'refuses a missing name ("--name --apply" once applied, named --apply)',
+  node(noName, ['tools/bootstrap.mjs', '--name', '--apply']).status === 1 && existsSync(join(noName, '_starter')),
+)
 
 const committed = copyStarter('demo-committed')
 const before = treeHash(committed)
@@ -264,6 +276,13 @@ check('dry run changes nothing', treeHash(committed) === before)
 out = node(committed, ['tools/bootstrap.mjs', '--name', 'Demo App', '--apply'])
 check('apply exits 0', out.status === 0, out.stderr)
 check('_starter/ deleted', !existsSync(join(committed, '_starter')))
+check(
+  'the other starter-only files are gone: LICENSE, .github/README.md, the self-test workflow',
+  ['LICENSE', '.github/README.md', '.github/workflows/selftest.yml'].every((p) => !existsSync(join(committed, p))),
+)
+const mjsUnder = (dir) => readdirSync(dir, { recursive: true }).map(String).filter((f) => f.endsWith('.mjs')).map((f) => join(dir, f))
+const unmarked = ['.claude', 'tools'].flatMap((d) => mjsUnder(join(committed, d))).filter((f) => !read(f).includes('SPDX-License-Identifier: MIT'))
+check('every tool file a project receives keeps the MIT notice', unmarked.length === 0, unmarked.join(' '))
 check(
   'no <PROJECT NAME> left in the templates',
   ['AGENTS.md', 'README.md', 'CLAUDE.md', 'HANDOFF.md', 'DESIGN.md'].every((f) => !(read(join(committed, f)) ?? '').includes('<PROJECT NAME>')),
@@ -298,6 +317,7 @@ check(
   'inherited history with _starter/ gone: warned and kept (it may hold real commits)',
   out.stdout.includes('WARNING') && Number(git(later, 'rev-list', '--all', '--count').stdout.trim()) > 0,
 )
+check("a later run leaves LICENSE alone (by then it may be the project's own)", existsSync(join(later, 'LICENSE')))
 
 // ── 5. The lifecycle of a new project ────────────────────────────────────────
 section('new project lifecycle (the false green of 2026-09-23)')

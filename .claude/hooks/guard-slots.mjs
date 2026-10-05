@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Wahyu Rahmadani. https://github.com/jaegerama/agent-project-starter
 /**
  * PreToolUse hook: refuses Write/Edit on application code while `AGENTS.md`
  * still holds unfilled slots.

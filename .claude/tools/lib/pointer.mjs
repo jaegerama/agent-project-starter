@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Wahyu Rahmadani. https://github.com/jaegerama/agent-project-starter
+
 /**
  * What makes CLAUDE.md and GEMINI.md pointers, shared by the gate
  * (.claude/tools/agent-check.mjs) and by tools/adopt.mjs, which decides from it

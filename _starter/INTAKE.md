@@ -32,8 +32,8 @@ everybody trusts and nobody built.**
 
 ## A. What has to be filled in `AGENTS.md`
 
-The mechanical part — `<PROJECT NAME>`, deleting `_starter/`, a fresh `git init`
-— is done by `node tools/bootstrap.mjs --name "<name>" --apply`. What follows
+The mechanical part (`<PROJECT NAME>`, deleting `_starter/` and the starter's
+other files, a fresh `git init`) is done by `node tools/bootstrap.mjs --name "<name>" --apply`. What follows
 holds decisions, and no script may guess them. An agent may **transcribe**
 them from the owner's brief (`docs/BRIEF.md`, see the Setup section of `AGENTS.md`);
 it may not invent the ones the brief leaves out. Those become questions.

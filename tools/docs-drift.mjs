@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Wahyu Rahmadani. https://github.com/jaegerama/agent-project-starter
 /**
  * Fail when a document and the code disagree about a number or a list.
  *

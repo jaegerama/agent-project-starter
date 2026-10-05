@@ -27,17 +27,19 @@ which every tool loads at session start:
 | # | Done by the agent | Why |
 |---|---|---|
 | 1 | Copy the brief into `docs/BRIEF.md` verbatim | A brief in chat is gone after the next `/clear` or tool switch |
-| 2 | `node tools/bootstrap.mjs --name "Project Name" --apply`, plus `--private-agents` for a team remote | The mechanical part: name, `_starter/` deleted, a fresh git history |
+| 2 | `node tools/bootstrap.mjs --name "Project Name" --apply`, plus `--private-agents` for a team remote | The mechanical part: name, starter files deleted, a fresh git history |
 | 3 | Fill every slot the brief answers, starting with `AGENTS.md` | Stack, commands and way of working come from this brief, never from another project |
 | 4 | Turn every slot the brief does not answer into a question in `docs/QUESTIONS.md` | A guessed stack or rule reads exactly like a decided one |
 | 5 | `node .claude/tools/agent-check.mjs` until the slot check is green, then report and ask | The machine that confirms setup is finished |
 
-Bootstrap replaces `<PROJECT NAME>`, deletes `_starter/`, and prints the slots
-still to fill. Duplicating in Explorer copies the hidden `.git` too, so on the
+Bootstrap replaces `<PROJECT NAME>`, deletes `_starter/` and the other files
+that belong to the starter (`LICENSE`, `.github/README.md`, the self-test
+workflow), and prints the slots still to fill. Duplicating in Explorer copies the hidden `.git` too, so on the
 first run it also removes the starter's inherited history and starts a fresh
 one: otherwise a private-agents project keeps `AGENTS.md` and `.claude/`
 tracked, and pushes them on the first push. Without `--apply` it is a dry run,
-and it refuses to run inside a folder called `project-starter`.
+and it refuses to run inside a folder called `project-starter` or
+`agent-project-starter`.
 
 In Claude Code, "no code before `AGENTS.md` is filled" is **machine-enforced
 for the file tools**: the hook `.claude/hooks/guard-slots.mjs` refuses Write,

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Wahyu Rahmadani. https://github.com/jaegerama/agent-project-starter
 /**
  * Fail when the agent configuration of this project, or of this machine, has
  * drifted from what the starter guarantees.

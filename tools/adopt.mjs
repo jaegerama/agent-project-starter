@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Wahyu Rahmadani. https://github.com/jaegerama/agent-project-starter
 /**
  * Installs the starter into a project that already exists, or brings one that
  * adopted it earlier up to the current version.

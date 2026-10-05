@@ -161,7 +161,40 @@ aspiration** until it is one.
 |---|---|
 | `README.md` | What you are reading |
 | `HANDOFF.md` | The starter's own state and next steps. The root `HANDOFF.md` is the template for projects |
-| `selftest.mjs` | The starter's tests. `node _starter/selftest.mjs` must be green before committing a change to the slot pattern, the hook, agent-check, bootstrap or adopt |
+| `selftest.mjs` | The starter's tests. `node _starter/selftest.mjs` must be green before committing a change to the slot pattern, the hook, agent-check, bootstrap, adopt or the docs-drift examples |
 | `INTAKE.md` | What has to be filled, and the order to build the enforcement in |
 | `operator-profile.md` | An example operator profile, for a machine that has none: installed once per machine, not per project |
 | `CHANGELOG.md` | The starter's own history, separate from the project's changelog |
+| `AUDIT-2026-10-05.md` | The audit before the first public release: each finding, its evidence, and the commit that fixed it |
+
+The other files that belong to the starter alone sit where GitHub and git
+expect them, and bootstrap removes them from a project with `_starter/`:
+`LICENSE`, `.github/README.md` (the repository's landing page) and
+`.github/workflows/selftest.yml`.
+
+---
+
+## Changing the starter
+
+The starter follows its own rules, so a change to it goes the way a change to a
+project does.
+
+1. **Changelog first.** The entry goes into `_starter/CHANGELOG.md` under
+   `[Unreleased]`, before the change. The root `CHANGELOG.md` is the template a
+   project starts with, and stays empty here.
+2. **Self-test green.** `node _starter/selftest.mjs` passes before every
+   commit. A fix gets a case that pins the defect, and the fix is broken once
+   on purpose to see that case go red, and nothing else.
+3. **Gate.** `node tools/docs-drift.mjs` passes here too.
+   `node .claude/tools/agent-check.mjs` is red in the starter by design: its
+   `AGENTS.md` is the template, full of slots.
+4. **Commit** with Conventional Commits, the body saying why. CI repeats steps
+   2 and 3 on Ubuntu, macOS and Windows.
+5. **Release** when the change reaches projects: one commit,
+   `chore(release): X.Y.Z`, that turns `[Unreleased]` into the version, and the
+   tag `vX.Y.Z`. Then bring existing projects up to date with adopt, dry run
+   first.
+
+The repository is public. Nothing in it describes one machine or another
+repository: no personal paths, no other projects' names, registries or
+measurements. Check the diff for them before every push.

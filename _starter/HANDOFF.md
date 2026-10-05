@@ -10,11 +10,25 @@ Status per 2026-10-05.
 
 ## Next Immediate Steps
 
-1. Audit the starter against its own rules before the first public release.
+1. **Read the first CI run** of `.github/workflows/selftest.yml`. Ubuntu and
+   macOS are the first time these tools run anywhere but Windows.
+2. **Confirm the Gemini CLI import once.** In a project made from the starter,
+   ask a Gemini CLI session which files it loaded; mark `AGENTS.md` §11
+   verified, or say what it read instead.
+3. **Confirm Antigravity the same way**, and update its §11 row.
+4. **Bring existing projects up to date** with `node tools/adopt.mjs --into
+   ../<project>`, dry run first. Each project's own session commits what adopt
+   changed there.
 
 ## Done
 
-- The starter's tools pass their self-test: `node _starter/selftest.mjs`.
+- 2026-10-05: the audit before the first public release,
+  `_starter/AUDIT-2026-10-05.md`. Every finding was reproduced before it was
+  reported and every fix mutation-checked (27 mutations, 27 caught). Windows
+  11, Node 24.13.1: `node _starter/selftest.mjs` 120 passed, 0 failed, 0
+  skipped; `node tools/docs-drift.mjs` 1 passed, 2 skipped;
+  `node .claude/tools/agent-check.mjs` red only on the template's 67 slots,
+  by design.
 
 ## Decisions taken
 
@@ -24,15 +38,19 @@ Status per 2026-10-05.
   project with a running session it would block real work.
 - The public history starts at the import of 2026-10-05. The private history
   before it describes other private repositories and is not published.
+- The owner installs skills; an agent never fetches one (`AGENTS.md` §2.1).
+- The starter's `LICENSE` stays out of projects; the tool files carry its
+  SPDX notice instead.
 
 ## Blocked and pending
 
-- Nothing.
+- Nothing waits on code.
 
 ## Daily commands
 
 ```bash
 node _starter/selftest.mjs                         # the starter's tests: green before any commit
+node tools/docs-drift.mjs                          # the starter's gate, with the self-test
 node .claude/tools/agent-check.mjs                 # agent config (red on template slots, by design)
 node tools/adopt.mjs --into ../some-project        # dry run first, always
 node tools/adopt.mjs --into ../some-project --apply

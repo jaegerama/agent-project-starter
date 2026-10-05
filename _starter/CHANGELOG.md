@@ -13,6 +13,15 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Added: a public landing page, a maintenance guide, and the audit (2026-10-05)
+
+GitHub shows `.github/README.md` before the root one, so the starter gets a
+landing page of its own while the root `README.md` stays the template a
+project fills; bootstrap removes the page from projects. `_starter/README.md`
+gains the steps for changing the starter by its own rules.
+`_starter/AUDIT-2026-10-05.md` records the audit this release came out of:
+each finding, the evidence for it, and the commit that fixed it.
+
 ### Added: CI runs the self-test on Ubuntu, macOS and Windows (2026-10-05)
 
 The tools had been run on one Windows machine only, while projects are worked

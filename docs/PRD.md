@@ -1,8 +1,8 @@
-# PRD — <PROJECT NAME>
+# PRD: <PROJECT NAME>
 
 ## Problem
 
-<What is broken or expensive today, and for whom. One paragraph.>
+<what is broken or expensive today, and for whom, in one paragraph>
 
 ## Users
 
@@ -10,37 +10,45 @@
 |---|---|---|
 | <> | <> | <> |
 
-## Core workflow — the one main job
+## Core workflow: the one main job
 
-<The single primary path this system exists to execute from input to completion.
-Airbnb: book a stay. Uber: get a ride. Keep it singular and focused.>
+The single path this system exists to execute, from input to completion. Keep
+it to one: a booking site books a stay, a ride app gets you a ride.
+
+<the one main job, from input to completion>
 
 ## Scope
 
-<A numbered list of what gets built. Each item concrete enough to be declared
-done or not done.>
+What gets built, each item concrete enough to be declared done or not done.
 
-1. <>
+1. <the first thing that gets built>
 
-## Anti-scope — what is deliberately NOT built
+## Anti-scope: what is deliberately NOT built
 
-<This section settles more arguments than the one above it. Write the reason
-too: an anti-scope item with no reason gets reopened.>
+This section settles more arguments than the one above it. Write the reason
+too: an anti-scope item with no reason gets reopened.
 
-1. <> — because <>
+1. <what is not built, and the reason>
 
 ## Definition of success
 
-<How we know this worked. Numbers if there are any. If there are none, write
-"not measured yet" — do not invent a metric.>
+How we know this worked. Numbers if there are any; if there are none, write
+"not measured yet". Never invent a metric.
+
+<how success is seen>
 
 ## Non-functional requirements
 
-- **Security:** Zero plaintext secrets in bundles/git; server-side auth enforcement; input sanitization.
-- **Performance & Budget:** Minimal RAM and storage footprint; strict zero-cost infrastructure adherence where mandated.
-- **Reliability:** Graceful handling of network, timeout, or missing resource failures (fail closed on risk).
+Only what the brief states. A requirement it leaves out is a question in
+`QUESTIONS.md`, not a default written here.
+
+- **Security**: <>
+- **Performance and budget**: <>
+- **Reliability**: <>
 
 ## Unverified assumptions
 
-<What is believed true but not checked. Move it to QUESTIONS.md when it needs a
-human answer.>
+What is believed true but not checked. Move it to `QUESTIONS.md` when it needs
+a human answer.
+
+- <an assumption, or "none yet">

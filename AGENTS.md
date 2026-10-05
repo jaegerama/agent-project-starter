@@ -170,9 +170,11 @@ Skills are loaded on demand to preserve context window capacity.
 
 ## 3. Directory map
 
+Only the directories that carry meaning, one line each on what belongs there
+and, where it is not obvious, what does not.
+
 ```
-<tree — only the directories that carry meaning, one line each on what belongs
-there and, where it is not obvious, what does NOT>
+<the directory tree>
 ```
 
 **Colocation principle:** Organize by domain feature or vertical slice, not horizontal
@@ -251,10 +253,10 @@ never be checked.
 
 ### Known traps
 
-<Empty at first. Fill it the first time something costs you an hour: a build
+_Empty at first._ Fill it the first time something costs you an hour: a build
 that fails only in a container, a watcher that does not watch, a test that
 passes or fails depending on whether a service happens to be running. Symptom
-first, then cause, then fix — people search by symptom.>
+first, then cause, then fix: people search by symptom.
 
 ---
 
@@ -339,8 +341,7 @@ CRITICAL violations in this repo:
 - Every mutating operation writes an audit row **in the same transaction** as
   the mutation.
   <If audit rows are chained or locked, state that lock's scope.>
-- <Signature verification over raw bytes, constant-time compare, replay window —
-  if this system receives signed callbacks.>
+- <signed callbacks: raw-byte signature check, constant-time compare, replay window, or "none">
 - Rate limit every unauthenticated endpoint.
 - An error must not distinguish "no such account" from "wrong password".
 
@@ -439,9 +440,9 @@ not apply teaches the reader this list can be skimmed.
 If a business rule, domain constraint, or credential is missing, **stop and
 ask.** Never invent a default for:
 
-<list the ones that apply — pricing, tax, proration, refunds, retention,
-compliance obligations, external API shapes. If it costs money or breaks a law,
-it goes here.>
+<the ones that apply: pricing, tax, proration, refunds, retention, compliance, external API shapes>
+
+If it costs money or breaks a law, it goes here.
 
 Framework and setup choices are settled in §0–§2 and are never a reason to ask.
 
@@ -495,7 +496,7 @@ is not inherited across tools automatically. Its master is
 | This file is in the agent's context | **Mechanism** (observed 2026-09-24) — the `@AGENTS.md` import | Codex, Antigravity: native. Gemini: **Intention** — the pointer asks in words |
 | No application code until `AGENTS.md` is filled | **Mechanism for the file tools**: the PreToolUse hook `.claude/hooks/guard-slots.mjs` blocks Write, Edit and NotebookEdit from any working directory. A file written through Bash is not seen | **Intention**: no hook, only `node .claude/tools/agent-check.mjs` |
 | Zero unfilled slots in `AGENTS.md` | **Mechanism** — gate goes red | **Mechanism** — same gate, run by hand |
-| Pointer files carry no rules | **Mechanism** — gate goes red | **Mechanism** |
+| Pointer files carry no rules, and `CLAUDE.md` keeps its import line | **Mechanism**: gate goes red | **Mechanism** |
 | Docs-first, scope containment, CHANGELOG first | **Intention** | **Intention** |
 | antislop applied to UI, copy and comments | **Intention** — loaded globally; transcripts show sessions writing UI copy without it | **Intention** |
 | Agent files match the current starter | **Mechanism only when** `node tools/adopt.mjs` is re-run from the starter; otherwise they drift silently | same |

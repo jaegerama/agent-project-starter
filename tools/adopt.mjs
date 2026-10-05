@@ -46,6 +46,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSy
 import { join, resolve, dirname, basename, relative, sep } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { slotsOf } from '../.claude/tools/lib/slot.mjs'
+import { lineCount, isPointer, importsAgents } from '../.claude/tools/lib/pointer.mjs'
 
 const starter = process.cwd()
 const args = process.argv.slice(2)
@@ -66,7 +67,12 @@ const target = resolve(into)
 if (!existsSync(target) || !statSync(target).isDirectory()) fail(`Not a directory: ${target}`)
 if (target === starter) fail('The target is the starter itself.')
 
-const OWNED = ['.claude/tools/agent-check.mjs', '.claude/tools/lib/slot.mjs', '.claude/hooks/guard-slots.mjs']
+const OWNED = [
+  '.claude/tools/agent-check.mjs',
+  '.claude/tools/lib/slot.mjs',
+  '.claude/tools/lib/pointer.mjs',
+  '.claude/hooks/guard-slots.mjs',
+]
 const SEEDED_PRIVATE = [
   '.claude/rules/review-severity.md',
   '.claude/commands/gate.md',
@@ -79,9 +85,6 @@ const SEEDED_PRIVATE = [
 const SEEDED_TRACKED = ['CHANGELOG.md', 'tools/docs-drift.mjs']
 
 const read = (base, p) => (existsSync(join(base, p)) ? readFileSync(join(base, p), 'utf8') : null)
-// Counted the way `wc -l` counts, so the report and the shell agree.
-const lineCount = (body) => body.split('\n').length - (body.endsWith('\n') ? 1 : 0)
-const isPointer = (body) => body !== null && lineCount(body) <= 60 && body.includes('AGENTS.md')
 const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15)
 const backupDir = join(target, `.claude.backup-adopt-${stamp}`)
 const actions = []
@@ -235,7 +238,7 @@ if (agents === null && claude !== null && !isPointer(claude)) {
   note('CLAUDE.md', `pointer added${tag}`)
 } else if (claude === pointer) {
   note('CLAUDE.md', 'current')
-} else if (/^@AGENTS\.md\s*$/m.test(claude)) {
+} else if (importsAgents(claude)) {
   // The import line is the only part of the pointer the starter owns. The
   // "Claude Code only" table below it lists this project's own commands and
   // agents: one project's session rewrote it to name its four commands and

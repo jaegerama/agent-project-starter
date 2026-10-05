@@ -19,7 +19,7 @@
  * An earlier version claimed `Map<string, Item>` was not caught. It was, and
  * so was every git identity, which would have kept the slot check of a filled
  * AGENTS.md red forever. Found by adopting two real projects; the cases are
- * pinned in the starter's CHANGELOG entry of 2026-09-23.
+ * pinned in `_starter/selftest.mjs`.
  */
 
 export const SLOT =
@@ -36,8 +36,15 @@ export const SLOT =
  * three shapes the template uses: a whole table cell, a whole unindented line,
  * or the end of a line after a colon. Each one is reported with its line
  * number, so the count is the number of empty places, not 1.
+ *
+ * A placeholder word in a slot's place is just as empty, and it is what an
+ * agent writes to turn the gate green: TBD, TBC, TODO, `?`, `...` or `<TBD>`
+ * count in the same three shapes.
  */
-const EMPTY_SLOT = [/\|\s*<>\s*(?=\|)/, /^<>\s*$/, /:\s*<>\s*$/]
+const EMPTY = String.raw`(<>|TBD|TBC|TODO|\?+|\.\.\.|…|<(?:TBD|TBC|TODO)>)`
+const EMPTY_SLOT = [String.raw`\|\s*${EMPTY}\s*(?=\|)`, String.raw`^${EMPTY}\s*$`, String.raw`:\s*${EMPTY}\s*$`].map(
+  (source) => new RegExp(source, 'i'),
+)
 
 /** Unfilled slots in a piece of text: named ones once each, empty ones per line. */
 export const slotsOf = (text) => {
@@ -45,7 +52,8 @@ export const slotsOf = (text) => {
   const empty = text
     .split('\n')
     .map((line, i) => [line.replace(/\r$/, ''), i + 1])
-    .filter(([line]) => EMPTY_SLOT.some((re) => re.test(line)))
-    .map(([, n]) => `<> at line ${n}`)
+    .map(([line, n]) => [EMPTY_SLOT.map((re) => re.exec(line)?.[1]).find(Boolean), n])
+    .filter(([value]) => value)
+    .map(([value, n]) => `${value} at line ${n}`)
   return [...named, ...empty]
 }

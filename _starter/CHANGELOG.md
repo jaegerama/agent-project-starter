@@ -13,6 +13,33 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Fixed: false greens and false reds in the agent checks (2026-10-05)
+
+The slot pattern stops at a newline, so a slot that wraps onto a second line is
+never counted. Four in `AGENTS.md` did, and the gate never saw them: the
+directory map, the signed-callback rule, the known-traps note, and the §9 list
+of business rules that may not be invented. Eight more in `docs/PRD.md` and
+`docs/ARCHITECTURE.md` did too, so bootstrap reported 3 slots for a PRD made of
+slots. Every template slot is single-line now, guidance that sat inside the
+brackets is plain text, and the self-test fails on any template slot that
+wraps. The PRD's non-functional requirements came pre-filled with decisions,
+zero-cost infrastructure among them; they are slots now. A slot holding `TBD`,
+`TBC`, `TODO`, `?`, `...` or `<TBD>` counted as filled; it counts as empty now,
+in the same three places `<>` does.
+
+The pointer check accepted a `CLAUDE.md` whose `@AGENTS.md` line sat in
+backticks or in a code block, where Claude Code does not import it. It now
+requires the import line outside code. The 60-line limit had two definitions,
+and a 60-line pointer was a pointer to adopt and a violation to the gate. Both
+read `.claude/tools/lib/pointer.mjs` now.
+
+On a machine without the owner's exact layout, the two profile checks went
+red: antislop installed in `~/.claude/CLAUDE.md` alone, or a `~/CLAUDE.md`
+with no copies. The profile check now takes `~/.claude/CLAUDE.md` as the
+master where there is no `~/CLAUDE.md`, compares the copies that exist, and
+skips when there are none. The antislop-block check skips without a
+`~/CLAUDE.md`.
+
 ### Fixed: the docs-first hook failed open after a `cd` (2026-10-05)
 
 Observed in a live session: a Write to `src/` was blocked from the project

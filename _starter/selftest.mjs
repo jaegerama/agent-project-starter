@@ -34,7 +34,8 @@ if (!existsSync(join(root, '_starter', 'selftest.mjs'))) {
   console.error('Run this from the starter root: node _starter/selftest.mjs')
   process.exit(1)
 }
-const { slotsOf } = await import(pathToFileURL(join(root, '.claude/tools/lib/slot.mjs')).href)
+const { slotsOf, SLOT: SLOT_PATTERN } = await import(pathToFileURL(join(root, '.claude/tools/lib/slot.mjs')).href)
+const { isPointer } = await import(pathToFileURL(join(root, '.claude/tools/lib/pointer.mjs')).href)
 
 let passed = 0
 let failed = 0
@@ -112,6 +113,14 @@ const slotCases = [
   ['return <></>', false],
   ['a fragment `<>` in prose', false],
   ['no unfilled <> slots remain', false],
+  // a placeholder word in a slot's place: what an agent writes to turn the gate green
+  ['| **Name** | TBD |', true],
+  ['| Tests | <TBD> |', true],
+  ['- Production: TODO', true],
+  ['| Runtime | ? |', true],
+  ['| `docs/TODO.md` | stories |', false],
+  ['Status: `TODO` · `WIP`', false],
+  ['| Deploy | - |', false],
 ]
 for (const [text, want] of slotCases) {
   check(`${want ? 'slot    ' : 'no slot '} ${JSON.stringify(text)}`, slotsOf(text).length > 0 === want)
@@ -124,6 +133,17 @@ check(
   templateSlots.some((s) => s.startsWith('<> at line')) && templateSlots.includes('<PROJECT NAME>'),
   `found: ${templateSlots.length}`,
 )
+// SLOT stops at a newline, so a slot that wraps is never counted. Twelve did,
+// among them the AGENTS.md §9 list of business rules that may not be invented.
+const templateFiles = ['AGENTS.md', 'README.md', 'CHANGELOG.md', 'CLAUDE.md', 'GEMINI.md', 'HANDOFF.md', 'DESIGN.md', ...readdirSync(join(root, 'docs')).filter((f) => f.endsWith('.md')).map((f) => `docs/${f}`)]
+const wrapped = templateFiles.flatMap((f) =>
+  read(join(root, f))
+    .split('\n')
+    .map((l, i) => [l.replace(SLOT_PATTERN, '').replace(/<>/g, ''), `${f}:${i + 1}`])
+    .filter(([rest]) => rest.lastIndexOf('<') !== -1 && !rest.slice(rest.lastIndexOf('<')).includes('>'))
+    .map(([, at]) => at),
+)
+check('no slot in any template wraps onto a second line', wrapped.length === 0, wrapped.join(' '))
 
 // ── 2. The docs-first hook ───────────────────────────────────────────────────
 section('docs-first hook (starter itself, AGENTS.md has slots)')
@@ -187,6 +207,14 @@ writeFileSync(join(ac, 'CLAUDE.md'), pointer + '\n'.repeat(70))
 check('pointer grown past 60 lines -> red', line(agentCheck(), 'still pointers').startsWith('FAIL'))
 writeFileSync(join(ac, 'CLAUDE.md'), '# CLAUDE.md\n\nsee the rules file\n')
 check('pointer that lost its AGENTS.md reference -> red', line(agentCheck(), 'still pointers').startsWith('FAIL'))
+// Claude Code skips an import inside code, so neither of these loads AGENTS.md.
+writeFileSync(join(ac, 'CLAUDE.md'), pointer.replace(/^@AGENTS\.md$/m, '`@AGENTS.md`'))
+check('pointer whose import sits in backticks -> red', line(agentCheck(), 'still pointers').startsWith('FAIL'))
+writeFileSync(join(ac, 'CLAUDE.md'), pointer.replace(/^@AGENTS\.md$/m, '```\n@AGENTS.md\n```'))
+check('pointer whose import sits in a code block -> red', line(agentCheck(), 'still pointers').startsWith('FAIL'))
+const sixty = ['# CLAUDE.md', '', '@AGENTS.md', ...Array.from({ length: 57 }, (_, i) => `line ${i}`)].join('\n') + '\n'
+writeFileSync(join(ac, 'CLAUDE.md'), sixty)
+check('pointer of exactly 60 lines -> still a pointer', line(agentCheck(), 'still pointers').startsWith('ok') && isPointer(sixty))
 writeFileSync(join(ac, 'CLAUDE.md'), pointer)
 
 appendFileSync(join(home, '.codex', 'AGENTS.md'), 'drift\n')
@@ -200,6 +228,28 @@ writeFileSync(join(home, 'CLAUDE.md'), '# profile\n')
 writeFileSync(join(home, '.codex', 'AGENTS.md'), '# profile\n')
 writeFileSync(join(home, '.gemini', 'GEMINI.md'), '# profile\n')
 check('no antislop block anywhere -> SKIP, not a pass', line(agentCheck(), 'antislop block').startsWith('SKIP'))
+// Other machines keep other layouts; none of them is drift.
+const homeWith = (files) => {
+  rmSync(home, { recursive: true, force: true })
+  mkdirSync(home, { recursive: true })
+  for (const [p, body] of Object.entries(files)) {
+    mkdirSync(join(home, p, '..'), { recursive: true })
+    writeFileSync(join(home, p), body)
+  }
+}
+homeWith({ '.claude/CLAUDE.md': `# global\n\n${block}` })
+out = agentCheck()
+check(
+  'antislop in ~/.claude/CLAUDE.md alone, no ~/CLAUDE.md -> SKIP, not red',
+  line(out, 'antislop block').startsWith('SKIP') && line(out, 'operator profile').startsWith('SKIP'),
+  `${line(out, 'antislop block')} / ${line(out, 'operator profile')}`,
+)
+homeWith({ 'CLAUDE.md': '# my notes\n' })
+check('a ~/CLAUDE.md with no Codex or Gemini copy -> SKIP, not red', line(agentCheck(), 'operator profile').startsWith('SKIP'))
+homeWith({ '.claude/CLAUDE.md': '# profile\n', '.codex/AGENTS.md': '# profile\n' })
+check('master in ~/.claude/CLAUDE.md, matching Codex copy -> green', line(agentCheck(), 'operator profile').startsWith('ok'))
+appendFileSync(join(home, '.codex', 'AGENTS.md'), 'drift\n')
+check('master in ~/.claude/CLAUDE.md, drifted Codex copy -> red', line(agentCheck(), 'operator profile').startsWith('FAIL'))
 writeHome()
 
 // ── 4. bootstrap ─────────────────────────────────────────────────────────────
@@ -363,6 +413,9 @@ check(
 const pNone = pointerCase('p-none', null)
 adopt(pNone, true)
 check('no pointer at all: the full pointer is written', read(join(pNone, 'CLAUDE.md')) === read(join(root, 'CLAUDE.md')))
+// The gate and adopt once counted the same 60-line file differently.
+const pSixty = makeRepo('p-sixty', { '.gitignore': 'x\n', 'CLAUDE.md': sixty })
+check('a 60-line CLAUDE.md is a pointer to adopt as well', /CLAUDE\.md +CONFLICT: a pointer/.test(adopt(pSixty, false).stdout))
 
 // ── Summary ──────────────────────────────────────────────────────────────────
 try {

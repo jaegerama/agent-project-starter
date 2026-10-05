@@ -23,6 +23,7 @@ import { readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { homedir } from 'node:os'
 import { slotsOf } from './lib/slot.mjs'
+import { isPointer, importsAgents } from './lib/pointer.mjs'
 
 const root = process.cwd()
 const read = (p) => (existsSync(join(root, p)) ? readFileSync(join(root, p), 'utf8') : null)
@@ -69,7 +70,7 @@ const CHECKS = [
   },
 
   {
-    name: 'CLAUDE.md and GEMINI.md are still pointers, not copies of the rules',
+    name: 'CLAUDE.md and GEMINI.md are still pointers, and CLAUDE.md imports AGENTS.md',
     run() {
       // The failure it prevents: somebody pastes one rule into CLAUDE.md "so
       // Claude definitely reads it". From that moment there are two sources of
@@ -80,9 +81,11 @@ const CHECKS = [
 
       const offenders = ['CLAUDE.md', 'GEMINI.md']
         .map((p) => [p, read(p)])
-        .filter(([, body]) => body !== null)
-        .filter(([, body]) => body.split('\n').length > 60 || !body.includes('AGENTS.md'))
+        .filter(([, body]) => body !== null && !isPointer(body))
         .map(([p]) => p)
+      // Without this line Claude Code never loads AGENTS.md, and nothing else says so.
+      const claude = read('CLAUDE.md')
+      if (claude !== null && !importsAgents(claude)) offenders.push('CLAUDE.md (no @AGENTS.md import line outside code)')
 
       return offenders.length === 0
         ? null
@@ -97,19 +100,20 @@ const CHECKS = [
       // tool while two others quietly run the old version. This has already
       // happened once — ~/.gemini/GEMINI.md carried a separate English profile
       // with port 3000 hardcoded, long after the master had stopped saying so.
+      //
+      // The master is ~/CLAUDE.md, or ~/.claude/CLAUDE.md on a machine without
+      // one. Only copies that exist are compared: a tool nobody uses here has none.
       const home = homedir()
-      const paths = [
-        join(home, 'CLAUDE.md'),
-        join(home, '.codex', 'AGENTS.md'),
-        join(home, '.gemini', 'GEMINI.md'),
-      ]
-      const bodies = paths.map(readAbs)
-      if (bodies[0] === null) return SKIP('no master operator profile in the home directory')
+      const master = [join(home, 'CLAUDE.md'), join(home, '.claude', 'CLAUDE.md')].find((p) => existsSync(p))
+      if (!master) return SKIP('no operator profile in the home directory')
+      const copies = [join(home, '.codex', 'AGENTS.md'), join(home, '.gemini', 'GEMINI.md')].filter((p) => existsSync(p))
+      if (copies.length === 0) return SKIP(`no Codex or Gemini copy of ${master} to compare`)
 
-      const stale = paths.filter((p, i) => i > 0 && bodies[i] !== bodies[0])
+      const body = readAbs(master)
+      const stale = copies.filter((p) => readAbs(p) !== body)
       return stale.length === 0
         ? null
-        : `operator profile copies have drifted from ${paths[0]}: ${stale.join(', ')} — copy the master over them again`
+        : `operator profile copies have drifted from ${master}: ${stale.join(', ')}. Copy the master over them again`
     },
   },
 
@@ -130,6 +134,8 @@ const CHECKS = [
         const end = body.indexOf('<!-- antislop:end -->')
         return start === -1 || end < start ? null : body.slice(start, end)
       }
+      // Without ~/CLAUDE.md there is no master to copy the block from.
+      if (!existsSync(master)) return SKIP('no ~/CLAUDE.md, so no master block to compare')
       const a = block(readAbs(master))
       const b = block(readAbs(global))
       if (a === null && b === null) return SKIP('no antislop block in either file')

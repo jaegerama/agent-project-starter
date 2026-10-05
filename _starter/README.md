@@ -97,7 +97,8 @@ the exact defect the drift checks were built to catch. A pointer cannot
 drift, because it holds no rules.
 
 The second check in `.claude/tools/agent-check.mjs` enforces this: a pointer file that grows
-past 60 lines or loses its reference to `AGENTS.md` turns the gate red.
+past 60 lines or loses its reference to `AGENTS.md` turns the gate red, and so
+does a `CLAUDE.md` whose `@AGENTS.md` import line is gone or sits inside code.
 
 ### The operator profile (persona, hard limits, verification)
 
@@ -109,7 +110,8 @@ Not inherited across tools automatically. The master is:
   → ~/.gemini/GEMINI.md
 ```
 
-Sync by copying the master over both. The third check in `.claude/tools/agent-check.mjs`
+Sync by copying the master over both. On a machine without `~/CLAUDE.md` the
+master is `~/.claude/CLAUDE.md`, and a check with no copy to compare skips. The third check in `.claude/tools/agent-check.mjs`
 compares all three and goes red when they diverge, which has already happened
 once: `~/.gemini/GEMINI.md` carried a separate English profile with port 3000
 hardcoded.

@@ -13,6 +13,22 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Fixed: `git push -f` and `git clean` were allowed, home credentials readable (2026-10-05)
+
+`git push --force` was denied and `git push -f` was not, and nothing denied
+`git clean`, which deletes untracked files that no commit can restore. Both
+are denied now, and so are the credential files tools keep in the home
+directory (`~/.ssh/id_*`, `~/.aws/credentials`, `~/.config/gh/hosts.yml`,
+`~/.git-credentials`, `~/.netrc`, `~/.npmrc`, `~/.docker/config.json`) and
+`*.p12` and `*.pfx` key stores.
+
+Tested in a session on Windows with dummy files, because the documentation
+answer disagreed with the result twice: the denies hold in `bypassPermissions`
+mode, `cat .env` in Bash is denied as well, `Read(./.env)` already covers a
+`.env` in any subdirectory, and a `~/` pattern matches on Windows. `node -e`
+reading `.env` printed the file: the denies stop the Read tool and the common
+shell readers, not an interpreter. `AGENTS.md` §11 says so.
+
 ### Changed: one copy of each rule, and claims that match the mechanisms (2026-10-05)
 
 Three changes made on 2026-10-05, before the import, put the review severity

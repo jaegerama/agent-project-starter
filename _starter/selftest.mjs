@@ -202,6 +202,8 @@ writeHome()
 let out = agentCheck()
 check('baseline: red only on template slots', out.status === 1 && line(out, 'unfilled <> slots').startsWith('FAIL'))
 check('baseline: pointers, profile and antislop block green', ['still pointers', 'operator profile', 'antislop block'].every((n) => line(out, n).startsWith('ok')))
+// Not required by the gate, whose adopted projects keep their own GEMINI.md; pinned for the template.
+check("the template's GEMINI.md imports AGENTS.md on a line of its own", /^@\.\/AGENTS\.md\s*$/m.test(read(join(root, 'GEMINI.md'))))
 
 writeFileSync(join(ac, 'CLAUDE.md'), pointer + '\n'.repeat(70))
 check('pointer grown past 60 lines -> red', line(agentCheck(), 'still pointers').startsWith('FAIL'))

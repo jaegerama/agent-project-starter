@@ -109,6 +109,9 @@ Gemini) already covers it:
 - That business rules may not be invented — `AGENTS.md` §9 lists **which** ones,
   and that is the project-specific part.
 
+A machine with no operator profile starts from `_starter/operator-profile.md`,
+installed once, before the first project.
+
 ---
 
 ## E. The honest caveat

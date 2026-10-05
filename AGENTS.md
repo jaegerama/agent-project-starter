@@ -482,19 +482,21 @@ itself says so.
 | Claude Code | `CLAUDE.md`, which imports this file with `@AGENTS.md`; plus `.claude/` (rules auto-load; commands, agents, settings) | **Verified 2026-09-24**: four sessions' transcripts list `AGENTS.md` among the files loaded through the import. The earlier pointer asked in words, and this file was never loaded |
 | Codex | `AGENTS.md` (this file) + `~/.codex/AGENTS.md` | Official Codex convention |
 | Cursor / Copilot | `AGENTS.md` (this file) | Official convention |
-| Gemini CLI | `GEMINI.md` → this file; plus `~/.gemini/GEMINI.md` | Official Gemini convention |
+| Gemini CLI | `GEMINI.md`, which imports this file with `@./AGENTS.md`; plus `~/.gemini/GEMINI.md` | **Documented, not yet observed**: Gemini CLI documents `@` imports in `GEMINI.md`. Confirm it once in a session (ask which files it loaded), then mark it verified |
 | Antigravity | assumed `AGENTS.md` | **UNVERIFIED** — test it once in this project (ask the agent: "which rules did you read?") then update this row |
 
-The global operator profile (persona, hard limits, working process, verification)
-is not inherited across tools automatically. Its master is
-`~/.claude/CLAUDE.md` (or platform equivalent), copied to `~/.codex/AGENTS.md` and
-`~/.gemini/GEMINI.md`. Change the master first, then copy — never edit a copy.
+The operator profile (working process, verification, reporting, git) is not
+inherited across tools automatically. Its master is `~/CLAUDE.md`, or
+`~/.claude/CLAUDE.md` on a machine without one, copied to `~/.codex/AGENTS.md`
+and `~/.gemini/GEMINI.md`. Change the master first, then copy; never edit a
+copy. A machine with no profile can start from `_starter/operator-profile.md`
+in the starter repository.
 
 ### Which of these is a mechanism, and which is still an intention
 
 | Rule | Claude Code | Codex / Antigravity / Gemini |
 |---|---|---|
-| This file is in the agent's context | **Mechanism** (observed 2026-09-24) — the `@AGENTS.md` import | Codex, Antigravity: native. Gemini: **Intention** — the pointer asks in words |
+| This file is in the agent's context | **Mechanism** (observed 2026-09-24): the `@AGENTS.md` import | Codex, Cursor: native. Gemini: the `@./AGENTS.md` import, documented, not yet observed. Antigravity: unverified |
 | No application code until `AGENTS.md` is filled | **Mechanism for the file tools**: the PreToolUse hook `.claude/hooks/guard-slots.mjs` blocks Write, Edit and NotebookEdit from any working directory. A file written through Bash is not seen | **Intention**: no hook, only `node .claude/tools/agent-check.mjs` |
 | Zero unfilled slots in `AGENTS.md` | **Mechanism** — gate goes red | **Mechanism** — same gate, run by hand |
 | Pointer files carry no rules, and `CLAUDE.md` keeps its import line | **Mechanism**: gate goes red | **Mechanism** |

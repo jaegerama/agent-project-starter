@@ -13,6 +13,18 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Added: an example operator profile, and an import in GEMINI.md (2026-10-05)
+
+`AGENTS.md` leaves the working process, verification, reporting and git rules
+to the operator profile, and a machine without one had nothing there.
+`_starter/operator-profile.md` is an example to install once per machine.
+`GEMINI.md` imports `AGENTS.md` with `@./AGENTS.md`, which Gemini CLI
+documents; it used to ask in words, the failure Claude Code had before its
+own import. Until a session shows the file loaded, `AGENTS.md` §11 says
+documented, not observed. `AGENTS.md`, `CLAUDE.md` and `GEMINI.md` now name
+the master profile the code reads, `~/CLAUDE.md`, where they said
+`~/.claude/CLAUDE.md`.
+
 ### Security: agents no longer install skills (2026-10-05)
 
 `AGENTS.md` §2.1 told agents to install three third-party skills. A skill is

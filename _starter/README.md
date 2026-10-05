@@ -163,4 +163,5 @@ aspiration** until it is one.
 | `HANDOFF.md` | The starter's own state and next steps. The root `HANDOFF.md` is the template for projects |
 | `selftest.mjs` | The starter's tests. `node _starter/selftest.mjs` must be green before committing a change to the slot pattern, the hook, agent-check, bootstrap or adopt |
 | `INTAKE.md` | What has to be filled, and the order to build the enforcement in |
+| `operator-profile.md` | An example operator profile, for a machine that has none: installed once per machine, not per project |
 | `CHANGELOG.md` | The starter's own history, separate from the project's changelog |

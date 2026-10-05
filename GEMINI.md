@@ -1,11 +1,15 @@
 # GEMINI.md
 
-This project's rules live in **[AGENTS.md](AGENTS.md)**. Read it in full at
-session start.
+@./AGENTS.md
 
-This file deliberately **carries no rules of its own**. One source of truth —
-two copies of a rule are two sources of truth, and they will drift.
+The line above imports `AGENTS.md`, where this project's rules live, so Gemini
+CLI loads it at session start, as its documentation describes. Keep it on its
+own line and outside backticks: an import inside code is skipped.
 
-The global operator profile (persona, hard limits, working process, verification
-rules) lives in `~/.gemini/GEMINI.md`. Its master is `~/.claude/CLAUDE.md` (or
-platform equivalent); that copy is never edited directly.
+This file deliberately **carries no rules of its own**. Two copies of a rule
+are two sources of truth, and they drift.
+
+The global operator profile (working process, verification, reporting) lives
+in `~/.gemini/GEMINI.md`, a copy of the master: `~/CLAUDE.md`, or
+`~/.claude/CLAUDE.md` on a machine without one. The copy is never edited
+directly.

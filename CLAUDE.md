@@ -20,7 +20,7 @@ truth, and they drift.
 | Agent | `silent-failure-hunter` |
 | Agent-configuration check | `node .claude/tools/agent-check.mjs` |
 | Permissions and hooks | `.claude/settings.json` |
-| Global operator profile | `~/.claude/CLAUDE.md` (or platform equivalent) |
+| Global operator profile | `~/CLAUDE.md`, or `~/.claude/CLAUDE.md` on a machine without one |
 
 **A hook blocks while `AGENTS.md` has slots**, when `.claude/settings.json`
 wires it: `.claude/hooks/guard-slots.mjs` refuses Write, Edit and NotebookEdit

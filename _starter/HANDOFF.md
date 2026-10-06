@@ -36,7 +36,11 @@ Status per 2026-10-05.
 - 2026-10-06: code comments cut to the constraint they state (only comment
   lines changed, checked line by line), and every em dash rewritten: 0 left
   in the repository. No person named but the copyright holder; no project
-  named. `node _starter/selftest.mjs` 120 passed, 0 failed, 0 skipped.
+  named.
+- 2026-10-06: `tools/docs-drift.mjs` checks `make <target>` in the gate against
+  the Makefile (5 cases, each mutation-checked). `review-severity.md` compared
+  with ECC: no verbatim text beyond a table header, so no MIT notice is owed.
+  `node _starter/selftest.mjs` 125 passed, 0 failed, 0 skipped.
 
 ## Decisions taken
 

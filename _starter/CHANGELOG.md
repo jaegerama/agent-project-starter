@@ -13,6 +13,16 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Fixed: the profile check missed Antigravity's global rules (2026-10-06)
+
+Antigravity does not read `~/.gemini/GEMINI.md`. In a live session its global
+rules came from `~/.gemini/config/AGENTS.md`, a separate and older profile that
+no check compared with the master. The profile check now compares that file
+too when it exists, so a machine where Antigravity runs on other rules goes
+red. The example profile, `AGENTS.md` §11 and the READMEs list it among the
+copies. A second home, such as a WSL distro, keeps its own copies, and the
+check sees only the home it runs in.
+
 ### Changed: Antigravity is verified to load AGENTS.md (2026-10-06)
 
 A fresh Antigravity session (Gemini 3.8 Flash, on Linux) in a clone of the

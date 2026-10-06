@@ -460,13 +460,13 @@ itself says so.
 | Codex | `AGENTS.md` (this file) + `~/.codex/AGENTS.md` | Official Codex convention |
 | Cursor / Copilot | `AGENTS.md` (this file) | Official convention |
 | Gemini CLI | `GEMINI.md`, which imports this file with `@./AGENTS.md`; plus `~/.gemini/GEMINI.md` | **Documented, not yet observed**: Gemini CLI documents `@` imports in `GEMINI.md`. Confirm it once in a session (ask which files it loaded), then mark it verified |
-| Antigravity | `AGENTS.md` and `GEMINI.md` as workspace rules, loaded at session start; global rules from its own settings | **Verified 2026-10-06**: a fresh session quoted the last sentence of this file before using any tool. Not yet separated: whether `AGENTS.md` loads natively or through the import in `GEMINI.md` |
+| Antigravity | `AGENTS.md` and `GEMINI.md` as workspace rules, loaded at session start; global rules from `~/.gemini/config/AGENTS.md` | **Verified 2026-10-06**: a fresh session quoted the last sentence of this file before using any tool. Not yet separated: whether `AGENTS.md` loads natively or through the import in `GEMINI.md` |
 
 The operator profile (working process, verification, reporting, git) is not
 inherited across tools automatically. Its master is `~/CLAUDE.md`, or
-`~/.claude/CLAUDE.md` on a machine without one, copied to `~/.codex/AGENTS.md`
-and `~/.gemini/GEMINI.md`. Change the master first, then copy; never edit a
-copy. A machine with no profile can start from `_starter/operator-profile.md`
+`~/.claude/CLAUDE.md` on a machine without one, copied to `~/.codex/AGENTS.md`,
+`~/.gemini/GEMINI.md` and `~/.gemini/config/AGENTS.md` (Antigravity). Change
+the master first, then copy; never edit a copy. A machine with no profile can start from `_starter/operator-profile.md`
 in the starter repository.
 
 ### Which of these is a mechanism, and which is still an intention

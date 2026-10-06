@@ -64,16 +64,21 @@ const CHECKS = [
   },
 
   {
-    name: 'the operator profile is identical across Claude, Codex and Gemini',
+    name: 'the operator profile is identical across Claude, Codex, Gemini and Antigravity',
     run() {
       // A profile updated in one tool while the others run the old one. The master
       // is ~/CLAUDE.md, or ~/.claude/CLAUDE.md where there is none; a tool nobody
       // uses here has no copy, so only the copies that exist are compared.
+      // Antigravity reads ~/.gemini/config/AGENTS.md, not ~/.gemini/GEMINI.md.
       const home = homedir()
       const master = [join(home, 'CLAUDE.md'), join(home, '.claude', 'CLAUDE.md')].find((p) => existsSync(p))
       if (!master) return SKIP('no operator profile in the home directory')
-      const copies = [join(home, '.codex', 'AGENTS.md'), join(home, '.gemini', 'GEMINI.md')].filter((p) => existsSync(p))
-      if (copies.length === 0) return SKIP(`no Codex or Gemini copy of ${master} to compare`)
+      const copies = [
+        join(home, '.codex', 'AGENTS.md'),
+        join(home, '.gemini', 'GEMINI.md'),
+        join(home, '.gemini', 'config', 'AGENTS.md'),
+      ].filter((p) => existsSync(p))
+      if (copies.length === 0) return SKIP(`no Codex, Gemini or Antigravity copy of ${master} to compare`)
 
       const body = readAbs(master)
       const stale = copies.filter((p) => readAbs(p) !== body)

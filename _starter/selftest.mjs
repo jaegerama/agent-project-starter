@@ -172,6 +172,7 @@ section('agent-check (fake home, real profile untouched)')
 const home = join(tmp, 'home')
 const block = '<!-- antislop:start -->\n# ANTISLOP\nthe block\n<!-- antislop:end -->\n'
 const writeHome = () => {
+  rmSync(home, { recursive: true, force: true })
   for (const d of ['.claude', '.codex', '.gemini']) mkdirSync(join(home, d), { recursive: true })
   const master = `# profile\n\nrules\n\n${block}`
   writeFileSync(join(home, 'CLAUDE.md'), master)
@@ -239,6 +240,11 @@ homeWith({ '.claude/CLAUDE.md': '# profile\n', '.codex/AGENTS.md': '# profile\n'
 check('master in ~/.claude/CLAUDE.md, matching Codex copy -> green', line(agentCheck(), 'operator profile').startsWith('ok'))
 appendFileSync(join(home, '.codex', 'AGENTS.md'), 'drift\n')
 check('master in ~/.claude/CLAUDE.md, drifted Codex copy -> red', line(agentCheck(), 'operator profile').startsWith('FAIL'))
+// Antigravity's global rules are ~/.gemini/config/AGENTS.md; they once held an older, separate profile.
+homeWith({ 'CLAUDE.md': '# profile\n', '.gemini/config/AGENTS.md': '# other rules\n' })
+check("Antigravity's rules differ from the master -> red", line(agentCheck(), 'operator profile').startsWith('FAIL'))
+homeWith({ 'CLAUDE.md': '# profile\n', '.gemini/config/AGENTS.md': '# profile\n' })
+check("Antigravity's rules identical to the master -> green", line(agentCheck(), 'operator profile').startsWith('ok'))
 writeHome()
 
 section('bootstrap')

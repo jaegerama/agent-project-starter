@@ -110,11 +110,12 @@ Not inherited across tools automatically. The master is:
 ~/CLAUDE.md              ← change it here
   → ~/.codex/AGENTS.md
   → ~/.gemini/GEMINI.md
+  → ~/.gemini/config/AGENTS.md   (Antigravity)
 ```
 
-Sync by copying the master over both. On a machine without `~/CLAUDE.md` the
+Sync by copying the master over every copy. On a machine without `~/CLAUDE.md` the
 master is `~/.claude/CLAUDE.md`, and a check with no copy to compare skips. The third check in `.claude/tools/agent-check.mjs`
-compares all three and goes red when they diverge, which has already happened
+compares them all and goes red when one diverges, which has already happened
 once: `~/.gemini/GEMINI.md` carried a separate English profile with port 3000
 hardcoded.
 

@@ -78,7 +78,8 @@ plus the project's own checks. Nothing runs it for you unless CI does.
 
 Rules that hold in every project on a machine (working process, verification,
 reporting, git) live outside the project, in an operator profile:
-`~/CLAUDE.md` copied to `~/.codex/AGENTS.md` and `~/.gemini/GEMINI.md`, or
+`~/CLAUDE.md` copied to `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md` and
+`~/.gemini/config/AGENTS.md` (Antigravity), or
 `~/.claude/CLAUDE.md` on a machine without `~/CLAUDE.md`. The gate goes red
 when a copy drifts from the master. [`_starter/operator-profile.md`](/_starter/operator-profile.md)
 is an example to start from.

@@ -12,6 +12,7 @@ starting point, and every line in it should be one you would defend.
 | Claude Code | `~/CLAUDE.md` for projects under your home directory, or `~/.claude/CLAUDE.md` in every session | The master: pick one of the two |
 | Codex | `~/.codex/AGENTS.md` | A copy of the master |
 | Gemini CLI | `~/.gemini/GEMINI.md` | A copy of the master |
+| Antigravity | `~/.gemini/config/AGENTS.md`, its global rules | A copy of the master |
 
 `node .claude/tools/agent-check.mjs` compares the copies with the master and
 goes red when one drifts. Edit the master, then copy it over the others.

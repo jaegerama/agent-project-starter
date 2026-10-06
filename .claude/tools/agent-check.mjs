@@ -2,23 +2,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Wahyu Rahmadani. https://github.com/jaegerama/agent-project-starter
 /**
- * Fail when the agent configuration of this project, or of this machine, has
+ * Fails when the agent configuration of this project, or of this machine, has
  * drifted from what the starter guarantees.
  *
  *     node .claude/tools/agent-check.mjs
  *
- * ## Why it is separate from tools/docs-drift.mjs
- *
- * Everything here is about agent configuration: `AGENTS.md`, the pointer
- * files, the operator profile, the antislop block. In a team repository those
- * files are private and `.claude/` is ignored, so a check about them cannot
- * live in `tools/`, which is committed. `tools/docs-drift.mjs` keeps the checks
- * about this project's own documents and code, and it belongs to the project.
- * This file belongs to the starter: `tools/adopt.mjs` overwrites it, so a fix
- * made here in a project is lost on the next adopt. Make it in the starter.
- *
- * Dependency-free on purpose: it needs Node and nothing else, so it works in
- * a PHP, Python or Go project as easily as a JavaScript one.
+ * It lives in .claude/, apart from tools/docs-drift.mjs, because a team
+ * repository ignores .claude/. The starter owns it and adopt overwrites it, so
+ * a fix belongs in the starter. Node only, no dependencies, any stack.
  */
 
 import { readFileSync, existsSync } from 'node:fs'
@@ -31,36 +22,16 @@ const root = process.cwd()
 const read = (p) => (existsSync(join(root, p)) ? readFileSync(join(root, p), 'utf8') : null)
 const readAbs = (p) => (existsSync(p) ? readFileSync(p, 'utf8') : null)
 
-/**
- * A check returns one of three things, and the third one is the point:
- *
- *   null              it passed
- *   'some sentence'   it failed, and this says what disagrees
- *   SKIP('reason')    it could not run — the file it reads does not exist yet
- *
- * SKIP exists because the first version of this file did not have it. On a
- * brand-new project every check returned null, the runner printed `ok` twice,
- * and it exited 0 — a green result from a suite that had examined nothing. That
- * is the same false pass as an assertion that cannot fail, and it is most
- * dangerous exactly here, on day one, when somebody is deciding how much to
- * trust the setup.
- *
- * A skipped check is not a failure. It is also not a pass, and the output says
- * which.
- */
+// A check returns null (passed), a sentence (failed: what disagrees), or
+// SKIP(reason) when it cannot run yet. A skip is not a pass, and the output says so.
 const SKIP = (reason) => ({ skipped: reason })
 
 const CHECKS = [
   {
     name: 'no unfilled <> slots remain in AGENTS.md',
     run() {
-      // The cheapest and highest-value check in this repo, and the only one
-      // that can go red on day one with no application code at all.
-      //
-      // The failure it prevents: a slot left as a placeholder reads like a rule
-      // that has been satisfied, and then gets quoted back in a review. The
-      // whole premise of this starter rests on that sentence, and before this
-      // check existed no machine enforced it.
+      // A slot left as a placeholder reads like a satisfied rule. This is the one
+      // check that can go red on day one, before any application code exists.
       const doc = read('AGENTS.md')
       if (!doc) return SKIP('no AGENTS.md yet')
 
@@ -74,11 +45,8 @@ const CHECKS = [
   {
     name: 'CLAUDE.md and GEMINI.md are still pointers, and CLAUDE.md imports AGENTS.md',
     run() {
-      // The failure it prevents: somebody pastes one rule into CLAUDE.md "so
-      // Claude definitely reads it". From that moment there are two sources of
-      // truth, and one will drift from the other with nobody noticing. The
-      // 60-line limit is a crude fence, and a crude fence that fails is worth
-      // more than tidy prose.
+      // One rule pasted into a pointer makes a second source of truth. The 60-line
+      // limit is a crude fence, and crude on purpose.
       if (!read('CLAUDE.md') && !read('GEMINI.md')) return SKIP('no pointer files yet')
 
       const offenders = ['CLAUDE.md', 'GEMINI.md']
@@ -98,13 +66,9 @@ const CHECKS = [
   {
     name: 'the operator profile is identical across Claude, Codex and Gemini',
     run() {
-      // The failure it prevents: the persona and hard limits get updated in one
-      // tool while two others quietly run the old version. This has already
-      // happened once — ~/.gemini/GEMINI.md carried a separate English profile
-      // with port 3000 hardcoded, long after the master had stopped saying so.
-      //
-      // The master is ~/CLAUDE.md, or ~/.claude/CLAUDE.md on a machine without
-      // one. Only copies that exist are compared: a tool nobody uses here has none.
+      // A profile updated in one tool while the others run the old one. The master
+      // is ~/CLAUDE.md, or ~/.claude/CLAUDE.md where there is none; a tool nobody
+      // uses here has no copy, so only the copies that exist are compared.
       const home = homedir()
       const master = [join(home, 'CLAUDE.md'), join(home, '.claude', 'CLAUDE.md')].find((p) => existsSync(p))
       if (!master) return SKIP('no operator profile in the home directory')
@@ -122,11 +86,8 @@ const CHECKS = [
   {
     name: 'the antislop block in ~/.claude/CLAUDE.md matches the master profile',
     run() {
-      // The failure it prevents: the block is edited in the master, copied to
-      // Codex and Gemini (the check above goes green), and left stale in the one
-      // file that reaches Claude sessions outside the home directory. The check
-      // above cannot see it: ~/.claude/CLAUDE.md is not a copy of the profile,
-      // only of this one block, so a whole-file compare would always fail.
+      // ~/.claude/CLAUDE.md carries only this block, not the profile, so the check
+      // above cannot see it go stale.
       const home = homedir()
       const master = join(home, 'CLAUDE.md')
       const global = join(home, '.claude', 'CLAUDE.md')
@@ -174,9 +135,7 @@ for (const check of CHECKS) {
   }
 }
 
-// The summary line exists so a green run cannot be read without its
-// denominator. "2 passed" and "0 ran, 2 skipped" are the same two words of
-// reassurance and mean opposite things.
+// The denominator is part of the result: "0 ran, 2 skipped" is not a pass.
 console.log(`\n${ran - failed} passed, ${failed} failed, ${skipped} skipped of ${CHECKS.length}`)
 
 if (CHECKS.length === 0) {

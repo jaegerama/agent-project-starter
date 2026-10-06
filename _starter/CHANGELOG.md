@@ -13,6 +13,16 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: code comments state the constraint, not its history (2026-10-06)
+
+The tool files carried long comments about how each rule came to be: dates,
+earlier versions, the project that found the defect. antislop-code asks a
+comment to state its constraint in one or two lines, and the history already
+lives in the self-test, where each case names the defect it pins. The comments
+now state the constraint, and the decorative section banners are gone. Only
+comment lines changed, checked line by line against the previous commit: 355
+comment lines out, 123 in, and the self-test still passes all 120 cases.
+
 ## [0.1.0] - 2026-10-05
 
 The first public release: the starter imported from its private repository,

@@ -2,37 +2,24 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Wahyu Rahmadani. https://github.com/jaegerama/agent-project-starter
 /**
- * PreToolUse hook: refuses Write/Edit on application code while `AGENTS.md`
- * still holds unfilled slots.
+ * PreToolUse hook: no Write, Edit or NotebookEdit on application code while
+ * AGENTS.md still has unfilled slots (docs-first).
  *
- * This turns "no application code until AGENTS.md is filled" from prose into a
- * mechanism. Before this hook existed the rule was written in three places and
- * nothing enforced it, and prose asking people to remember does not work.
- *
- * ## The limitations to know about
- *
- * Hooks are a Claude Code feature. Codex, Antigravity and Gemini do NOT run
- * this file. In those tools the same rule is still an intention, and
- * `node .claude/tools/agent-check.mjs` is its only enforcement.
- *
- * Even in Claude Code it sees the file tools only. A file written through Bash
- * never reaches it; the gate stays red for that project instead.
- *
- * ## Contract
+ * Claude Code only. Codex, Antigravity and Gemini never run it, and a file
+ * written through Bash never reaches it; there the gate is the only check.
  *
  *   stdin  JSON  { tool_name, tool_input: { file_path | notebook_path }, cwd }
  *   env          CLAUDE_PROJECT_DIR, the project root (falls back to cwd)
  *   exit 0       allow
- *   exit 2       block: stderr is read back to Claude
+ *   exit 2       block; stderr goes back to Claude
  */
 
 import { readFileSync, existsSync } from 'node:fs'
 import { join, relative, resolve, isAbsolute, sep } from 'node:path'
 import { slotsOf } from '../tools/lib/slot.mjs'
 
-// Files and directories that must stay editable DURING setup. Without this list
-// the hook would block filling AGENTS.md itself: a guard that locks the door
-// from the inside. tools/ is listed file by file, so code placed there is not.
+// Editable during setup, or the hook would block filling AGENTS.md itself.
+// tools/ is listed file by file, so application code placed there stays blocked.
 const SETUP_PATHS = [
   'AGENTS.md',
   'CLAUDE.md',
@@ -96,10 +83,8 @@ const main = () => {
 try {
   process.exit(main())
 } catch (error) {
-  // DELIBERATELY fail-open. This is a workflow guard, not a security check: a
-  // bug here must not leave a session unable to edit anything. The failure is
-  // printed so it is not silent, because a hook that fails quietly is a hook
-  // people believe is guarding something.
+  // Fail open on purpose: a workflow guard must never lock a session out. The
+  // error is printed, so a broken hook is not mistaken for a working one.
   process.stderr.write(`guard-slots: hook failed, allowing the request: ${error.message}\n`)
   process.exit(0)
 }

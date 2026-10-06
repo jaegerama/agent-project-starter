@@ -2,43 +2,18 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Wahyu Rahmadani. https://github.com/jaegerama/agent-project-starter
 /**
- * Fail when a document and the code disagree about a number or a list.
- *
- * Dependency-free and stack-agnostic on purpose: it needs Node and nothing
- * else, so it works in a PHP, Python or Go project as easily as a JavaScript
- * one. Wire it into whatever test runner you have, or run it as its own gate
- * step:
+ * Fails when a document and the code disagree about a number or a list.
  *
  *     node tools/docs-drift.mjs
  *
- * ## Why this exists
+ * Node only, no dependencies, any stack: run it as a step of the gate. It checks
+ * claims, not wording, because a test on wording fails on a typo fix and
+ * teaches everybody to ignore it.
  *
- * A document that restates a number from the code goes stale the first time
- * that number changes, and nothing about editing the code reminds anybody that
- * a document repeats it. Prose asking people to remember does not work: in one
- * day on one production project, three documents were found stating things the code
- * had stopped doing, and two of them carried a note from a previous correction
- * of the exact same kind.
- *
- * The fix is not a better note. It is that the document is checked rather than
- * proofread.
- *
- * ## The one rule worth copying
- *
- * Check **claims**, not wording. A test that compares prose fails on a typo fix
- * and teaches everybody to ignore it. A test that compares one number to the
- * number it came from fails only when somebody is about to mislead a reader.
- *
- * The checks about agent configuration (slots, pointers, operator profile,
- * antislop block) live in `.claude/tools/agent-check.mjs`, which belongs to the
- * starter. This file belongs to the project: `tools/adopt.mjs` never
- * overwrites it once it exists.
- *
- * ## Adding a check
- *
- * Add an entry to CHECKS. Each one names what it reads, computes the truth from
- * the source, and asserts the document says it. Keep each under ten lines: a
- * check nobody can read is a check nobody will update.
+ * This file belongs to the project, and adopt never overwrites it; the agent
+ * configuration checks live in .claude/tools/agent-check.mjs. A new check is an
+ * entry in CHECKS that computes the truth from the source and asserts the
+ * document says it, in under ten lines.
  */
 
 import { readFileSync, existsSync } from 'node:fs'
@@ -47,28 +22,12 @@ import { join } from 'node:path'
 const root = process.cwd()
 const read = (p) => (existsSync(join(root, p)) ? readFileSync(join(root, p), 'utf8') : null)
 
-/**
- * A check returns one of three things, and the third one is the point:
- *
- *   null              it passed
- *   'some sentence'   it failed, and this says what disagrees
- *   SKIP('reason')    it could not run — the file it reads does not exist yet
- *
- * SKIP exists because the first version of this file did not have it. On a
- * brand-new project every check returned null, the runner printed `ok` twice,
- * and it exited 0 — a green result from a suite that had examined nothing. That
- * is the same false pass as an assertion that cannot fail, and it is most
- * dangerous exactly here, on day one, when somebody is deciding how much to
- * trust the setup.
- *
- * A skipped check is not a failure. It is also not a pass, and the output says
- * which.
- */
+// A check returns null (passed), a sentence (failed: what disagrees), or
+// SKIP(reason) when it cannot run yet. A skip is not a pass, and the output says so.
 const SKIP = (reason) => ({ skipped: reason })
 
-// A package manager's own subcommands, which are not scripts: `pnpm lint` runs
-// the lint script, `pnpm install` is pnpm itself. npm runs a script only
-// through `run`, or as `npm test`.
+// A package manager's own subcommands are not scripts: `pnpm lint` runs one,
+// `pnpm install` is pnpm itself. npm runs a script only through `run`, or as `npm test`.
 const BUILTIN = {
   pnpm: 'add audit bin config create dedupe deploy dlx doctor env exec fetch i import init install link list ls outdated pack patch prune publish rebuild remove rm root setup store unlink up update upgrade why',
   yarn: 'add audit bin cache config constraints create dlx exec explain info init install link npm pack patch plugin rebuild remove set unlink up upgrade version why workspace workspaces',
@@ -89,12 +48,8 @@ const CHECKS = [
   {
     name: 'the gate in AGENTS.md and CONTRIBUTING.md runs commands that actually exist',
     run() {
-      // The failure it prevents: a script is renamed, the gate block in
-      // AGENTS.md still names the old one, and the step silently stops running.
-      // One project shipped for days with a format check that CI ran and the
-      // documented gate did not.
-      // In a private-agents repo AGENTS.md is not committed, so the gate a human
-      // can see is in CONTRIBUTING.md. Read both; either one may be absent.
+      // A renamed script leaves the documented gate calling one that is gone. A
+      // private-agents repository shows its gate in CONTRIBUTING.md, so both are read.
       const doc = [read('AGENTS.md'), read('CONTRIBUTING.md')].filter(Boolean).join('\n')
       if (!doc) return SKIP('no AGENTS.md or CONTRIBUTING.md yet')
 
@@ -117,8 +72,7 @@ const CHECKS = [
   {
     name: 'docs/TODO.md has one story in WIP at most, and nothing past Epic 0 started before it is DONE',
     run() {
-      // The failure it prevents: AGENTS.md §0.1 says both, and until this check
-      // only prose said so. A story is a heading like `### [WIP] S1.2 title`.
+      // AGENTS.md §0.1, checked. A story is a heading like `### [WIP] S1.2 title`.
       const todo = read('docs/TODO.md')
       if (!todo) return SKIP('no docs/TODO.md yet')
       const stories = [...todo.matchAll(/^#{2,4}\s*\[(TODO|WIP|REVIEW|DONE|BLOCKED)\]\s*S(\d+)\.\d+/gm)].map(([, status, epic]) => ({
@@ -141,11 +95,8 @@ const CHECKS = [
   {
     name: 'every documented environment variable is read, and every variable read is documented',
     run() {
-      // EXAMPLE — adapt the second path to wherever your code reads config.
-      //
-      // Drift in EITHER direction is a defect: a variable in the example file
-      // that nothing reads is a lie to whoever fills it in, and a variable the
-      // code reads that the example omits is a deploy that fails at boot.
+      // Example, half-written: extend it to your config module. Drift either way is a
+      // defect: an unread variable misleads, and a missing one fails the deploy at boot.
       const example = read('.env.example')
       if (!example) return SKIP('no .env.example yet')
 
@@ -182,9 +133,7 @@ for (const check of CHECKS) {
   }
 }
 
-// The summary line exists so a green run cannot be read without its
-// denominator. "2 passed" and "0 ran, 2 skipped" are the same two words of
-// reassurance and mean opposite things.
+// The denominator is part of the result: "0 ran, 2 skipped" is not a pass.
 console.log(`\n${ran - failed} passed, ${failed} failed, ${skipped} skipped of ${CHECKS.length}`)
 
 if (CHECKS.length === 0) {

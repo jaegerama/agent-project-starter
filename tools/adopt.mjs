@@ -2,46 +2,26 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Wahyu Rahmadani. https://github.com/jaegerama/agent-project-starter
 /**
- * Installs the starter into a project that already exists, or brings one that
- * adopted it earlier up to the current version.
+ * Installs the starter into a project that exists already, or brings one that
+ * adopted it up to date. Run it from the starter, dry run first:
  *
  *     node tools/adopt.mjs --into ../some-project            # dry run
  *     node tools/adopt.mjs --into ../some-project --apply    # do it
  *
- * Run it from the starter. Re-running it after the starter changes is how
- * every project stays on the same version of the process, while each keeps
- * its own stack, commands and rules.
+ *   OWNED    starter files: copied, and overwritten with a backup when they
+ *            differ. Fix them in the starter, or the next adopt undoes it.
+ *   SEEDED   files a project customises: copied only when missing.
+ *   project  everything else, AGENTS.md's content included: never touched.
  *
- * ## What it touches, and what it never touches
+ * A CLAUDE.md that holds rules, with no AGENTS.md yet, moves into AGENTS.md
+ * verbatim and the pointer takes its place: a paraphrased migration loses rules.
  *
- *   OWNED    files the starter owns. Copied, and overwritten when they differ,
- *            with a backup. A fix made to one of these inside a project is
- *            lost on the next adopt: make it in the starter.
- *   SEEDED   files a project is expected to customise. Copied only when
- *            missing; an existing one is never overwritten.
- *   project  everything else: the content of AGENTS.md, tools/docs-drift.mjs,
- *            the stack, other rules. Never touched.
+ * The docs-first hook is wired only where AGENTS.md has no slots: in a project
+ * with code it would block the running work. An existing hook is never removed,
+ * because a new project carries it through setup.
  *
- * A CLAUDE.md that holds rules (no AGENTS.md yet) is moved into AGENTS.md
- * verbatim and replaced by the pointer. Moved, not rewritten: the rules are
- * the project's, and a migration that paraphrases them is a migration that
- * loses some.
- *
- * ## Why it will not wire the docs-first hook into every project
- *
- * The hook blocks Write/Edit while AGENTS.md has slots. That guards day one of
- * a new project. In a project that already has code and a running session, it
- * would block the session's real work instead. So adopt adds the hook only when
- * the target's AGENTS.md has no slots. It never removes one that is already
- * there: a new project copied from the starter carries the hook through its
- * setup on purpose, and adopt cannot tell that project from an old one.
- *
- * ## Private-agents repositories
- *
- * When git ignores AGENTS.md in the target, the repository goes to a shared
- * team remote and agent files are private. adopt then writes only into the
- * private files, and does not seed tracked files (HANDOFF.md, CHANGELOG.md,
- * tools/): adding files to a team repository is the project's decision.
+ * Where git ignores AGENTS.md, agent files are private (a team remote): adopt
+ * writes only ignored files and seeds no tracked ones.
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, copyFileSync } from 'node:fs'
@@ -101,9 +81,7 @@ const gitOk = (gitArgs) => {
     return false
   }
 }
-// The target must be the top of its own repository. A folder inside another
-// repository (or a workspace whose parent happens to be one) would otherwise
-// be judged by someone else's .gitignore.
+// Only the target's own repository counts: a parent's .gitignore must not judge it.
 const isGitRepo = existsSync(join(target, '.git')) && gitOk(['rev-parse', '--is-inside-work-tree'])
 const ignored = (p) => isGitRepo && gitOk(['check-ignore', '-q', p])
 const privateMode = ignored('AGENTS.md')
@@ -114,11 +92,8 @@ const backup = (p) => {
   mkdirSync(dirname(to), { recursive: true })
   copyFileSync(join(target, p), to)
 }
-// In a private-agents repository every file adopt may write must be one git
-// ignores. A path that is not would be picked up by the next `git add -A` of
-// whatever session is working there and pushed to the team remote. Checked
-// for every candidate BEFORE anything is written, so a refusal leaves the
-// project exactly as it was instead of half-adopted.
+// Private agents: every path adopt may write must be ignored, or the next
+// `git add -A` sends it to the team remote. Checked before any write.
 if (privateMode) {
   const candidates = [
     ...OWNED,
@@ -146,7 +121,7 @@ const write = (p, body) => {
 }
 const same = (p) => read(starter, p) === read(target, p)
 
-// ── Owned: copy, overwrite when different ────────────────────────────────────
+// Owned files: copied, and overwritten when different.
 for (const p of OWNED) {
   if (!existsSync(join(target, p))) {
     write(p, read(starter, p))
@@ -160,7 +135,7 @@ for (const p of OWNED) {
   }
 }
 
-// ── Seeded: copy only when missing ───────────────────────────────────────────
+// Seeded files: copied only when missing.
 for (const p of SEEDED_PRIVATE) {
   if (!existsSync(join(target, p))) {
     write(p, read(starter, p))
@@ -199,25 +174,21 @@ else {
   note('HANDOFF.md', `seeded${tag}`)
 }
 
-// ── CLAUDE.md and AGENTS.md ──────────────────────────────────────────────────
 const claude = read(target, 'CLAUDE.md')
 let agents = read(target, 'AGENTS.md')
 const pointer = read(starter, 'CLAUDE.md')
 
 if (agents === null && claude !== null && !isPointer(claude)) {
   backup('CLAUDE.md')
-  // Only the title changes. The optional BOM is kept: one adopted file starts
-  // with one, and a title regex without it silently renamed nothing.
+  // Only the title changes, and a leading BOM must not stop the rename.
   const moved = claude.replace(/^(\uFEFF?)# CLAUDE\.md\b/, '$1# AGENTS.md')
   write('AGENTS.md', moved)
   write('CLAUDE.md', pointer)
   agents = moved
   note('AGENTS.md', `created${tag} from CLAUDE.md, verbatim (${lineCount(claude)} lines)`)
   note('CLAUDE.md', `replaced${tag} by the pointer, original backed up`)
-  // A verbatim move also moves sentences about the file itself: one project's
-  // directory map said "CLAUDE.md # this file" inside AGENTS.md. Which of these
-  // lines are now wrong is a reading of the project's rules, so they are
-  // listed for review, never rewritten.
+  // A verbatim move keeps sentences about CLAUDE.md itself. Which are now wrong
+  // is the project's call, so they are listed for review, never rewritten.
   const mentions = moved
     .split('\n')
     .map((line, i) => [i + 1, line.trim()])
@@ -241,14 +212,11 @@ if (agents === null && claude !== null && !isPointer(claude)) {
 } else if (claude === pointer) {
   note('CLAUDE.md', 'current')
 } else if (importsAgents(claude)) {
-  // The import line is the only part of the pointer the starter owns. The
-  // "Claude Code only" table below it lists this project's own commands and
-  // agents: one project's session rewrote it to name its four commands and
-  // three agents, and overwriting that would erase accurate project facts.
+  // The starter owns only the import line. The rest lists the project's own
+  // commands and agents, and overwriting it would erase them.
   note('CLAUDE.md', 'customised pointer, kept: it imports AGENTS.md')
 } else {
-  // An older pointer that asks in words. Add the one line that makes Claude
-  // Code load AGENTS.md, right after the title, and keep everything else.
+  // An older pointer that asks in words: add the import after the title, keep the rest.
   backup('CLAUDE.md')
   const withImport = /^\uFEFF?#[^\n]*\n/.test(claude)
     ? claude.replace(/^(\uFEFF?#[^\n]*\n)/, '$1\n@AGENTS.md\n')
@@ -257,7 +225,6 @@ if (agents === null && claude !== null && !isPointer(claude)) {
   note('CLAUDE.md', `import line added${tag}, rest kept, old copy backed up`)
 }
 
-// ── Hook wiring in .claude/settings.json ─────────────────────────────────────
 const slots = agents === null ? [] : slotsOf(agents)
 // Started from CLAUDE_PROJECT_DIR: a relative command is not found after a `cd`.
 const HOOK = 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/guard-slots.mjs"'
@@ -271,11 +238,9 @@ try {
   note(settingsPath, `not valid JSON, left alone: ${error.message}`)
 }
 if (settings !== undefined) {
-  // The starter's hook used to live at tools/hooks/, and later ran from a
-  // relative path; any entry calling guard-slots is the same hook.
+  // Any entry that calls guard-slots is this hook, whatever its path or command.
   const isGuard = (m) => (m.hooks ?? []).some((h) => String(h.command ?? '').includes('guard-slots.mjs'))
-  // A settings file created here starts from the starter's, minus the hook:
-  // whether this project gets the hook is decided below, not inherited.
+  // A new settings file starts from the starter's, minus the hook decided below.
   const base = settings ?? JSON.parse(read(starter, settingsPath))
   base.hooks ??= {}
   if (settings === null) base.hooks.PreToolUse = (base.hooks.PreToolUse ?? []).filter((m) => !isGuard(m))
@@ -283,10 +248,8 @@ if (settings !== undefined) {
   const existing = pre.filter(isGuard)
   const current = existing.length === 1 && existing[0].hooks.some((h) => h.command === HOOK)
   let changed = settings === null
-  // adopt never removes the hook. It once removed it whenever slots remained,
-  // which cannot tell an existing project with code (where the hook would
-  // block real work) from a new one copied from the starter and mid-setup
-  // (where blocking code is the hook's whole job). A new project was the second case.
+  // Never remove the hook: a project with slots may be a new one in setup, where
+  // blocking code is the point.
   if (existing.length && !current) {
     base.hooks.PreToolUse = [
       ...pre.filter((m) => !isGuard(m)),
@@ -317,9 +280,7 @@ if (settings !== undefined) {
   }
 }
 
-// ── .gitignore ───────────────────────────────────────────────────────────────
-// Only the backup pattern matters to adopt: it writes backups, and one
-// `git add -A` must not commit them.
+// adopt writes backups, so the target ignores them before a `git add -A` commits one.
 if (!isGitRepo) {
   note('.gitignore', 'not a git repository: initialise one and ignore .claude.backup-*/ before the first commit')
 } else if (!ignored(`.claude.backup-adopt-${stamp}/probe`)) {
@@ -329,7 +290,6 @@ if (!isGitRepo) {
   note('.gitignore', `.claude.backup-*/ added${tag}`)
 }
 
-// ── Report ───────────────────────────────────────────────────────────────────
 console.log(`\n${apply ? 'DONE' : 'DRY RUN, nothing was changed'}  ${target}`)
 console.log(
   `  mode: ${privateMode ? 'private agents (git ignores AGENTS.md)' : 'committed agents'}${isGitRepo ? '' : ', not a git repository'}\n`,

@@ -1,25 +1,13 @@
 #!/usr/bin/env node
 /**
- * The starter's own test suite: slot pattern, hook, agent-check, bootstrap,
- * adopt, and the example checks in docs-drift. Run it from the starter's root before committing a change to any of
- * them:
+ * The starter's own tests: slot pattern, hook, agent-check, bootstrap, adopt
+ * and the docs-drift examples. Green before every commit, from the starter's root:
  *
  *     node _starter/selftest.mjs
  *
- * ## Why it exists
- *
- * Every defect below was found once by hand and fixed, and nothing kept it
- * fixed: the checks lived in a scratch directory and vanished with the
- * session. A starter that teaches "a rule is a mechanism or it is an
- * intention" had no mechanism guarding its own tools. Each case here names the
- * defect it pins.
- *
- * ## What it touches
- *
- * Only a temporary directory. Agent-check runs against a fake home directory
- * (USERPROFILE and HOME point at it), so the real operator profile is never
- * read or written. It lives in _starter/, so bootstrap deletes it from every
- * copy: it tests the starter, not a project.
+ * Each case pins a defect that was found and fixed once. It writes only to a
+ * temporary directory and runs agent-check against a fake home, so the real
+ * operator profile is never touched. bootstrap deletes it from projects.
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, mkdtempSync, rmSync, cpSync, readdirSync, statSync, appendFileSync } from 'node:fs'
@@ -90,7 +78,6 @@ const HOOK_CMD = 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/guard-slots.mjs"'
 const hookCommands = (body) =>
   (JSON.parse(body).hooks?.PreToolUse ?? []).flatMap((m) => (m.hooks ?? []).map((h) => h.command)).filter((c) => c.includes('guard-slots'))
 
-// ── 1. The slot pattern ──────────────────────────────────────────────────────
 section('slot pattern')
 const slotCases = [
   ['<PROJECT NAME>', true],
@@ -101,11 +88,11 @@ const slotCases = [
   ['| Tests | <> | |', true],
   ['<>', true],
   ['- Dictionary languages: <>', true],
-  // generics and tags: the docblock once promised Map<string, Item> was not caught, and it was
+  // generic types and tags
   ['Map<string, Item>', false],
   ['<div>', false],
   ['<slot>', false],
-  // git identities: every AGENTS.md section 7 has one, and they kept a filled file red
+  // git identities: every filled AGENTS.md has one in §7
   ['jaegerama <hello@example.com>', false],
   ['see <https://keepachangelog.com/en/1.1.0/>', false],
   // <> that is not an empty slot
@@ -113,7 +100,7 @@ const slotCases = [
   ['return <></>', false],
   ['a fragment `<>` in prose', false],
   ['no unfilled <> slots remain', false],
-  // a placeholder word in a slot's place: what an agent writes to turn the gate green
+  // placeholder words: what an agent writes to turn the gate green
   ['| **Name** | TBD |', true],
   ['| Tests | <TBD> |', true],
   ['- Production: TODO', true],
@@ -133,8 +120,7 @@ check(
   templateSlots.some((s) => s.startsWith('<> at line')) && templateSlots.includes('<PROJECT NAME>'),
   `found: ${templateSlots.length}`,
 )
-// SLOT stops at a newline, so a slot that wraps is never counted. Twelve did,
-// among them the AGENTS.md §9 list of business rules that may not be invented.
+// SLOT stops at a newline, so a template slot that wraps would never be counted.
 const templateFiles = ['AGENTS.md', 'README.md', 'CHANGELOG.md', 'CLAUDE.md', 'GEMINI.md', 'HANDOFF.md', 'DESIGN.md', ...readdirSync(join(root, 'docs')).filter((f) => f.endsWith('.md')).map((f) => `docs/${f}`)]
 const wrapped = templateFiles.flatMap((f) =>
   read(join(root, f))
@@ -145,7 +131,6 @@ const wrapped = templateFiles.flatMap((f) =>
 )
 check('no slot in any template wraps onto a second line', wrapped.length === 0, wrapped.join(' '))
 
-// ── 2. The docs-first hook ───────────────────────────────────────────────────
 section('docs-first hook (starter itself, AGENTS.md has slots)')
 check('application code is blocked (exit 2)', hook(root, 'src/app.ts') === 2)
 for (const f of ['AGENTS.md', 'CLAUDE.md', 'HANDOFF.md', 'DESIGN.md', 'LICENSE', '.gitattributes', 'docs/BRIEF.md', 'tools/adopt.mjs', 'tools/docs-drift.mjs', '.claude/settings.json']) {
@@ -183,7 +168,6 @@ if (process.platform !== 'win32' || process.env.MSYSTEM) {
   skip('the settings.json command blocks from a subdirectory, run through bash', 'not inside Git Bash (MSYSTEM unset), so no bash to run it with')
 }
 
-// ── 3. agent-check, against a fake home ──────────────────────────────────────
 section('agent-check (fake home, real profile untouched)')
 const home = join(tmp, 'home')
 const block = '<!-- antislop:start -->\n# ANTISLOP\nthe block\n<!-- antislop:end -->\n'
@@ -257,7 +241,6 @@ appendFileSync(join(home, '.codex', 'AGENTS.md'), 'drift\n')
 check('master in ~/.claude/CLAUDE.md, drifted Codex copy -> red', line(agentCheck(), 'operator profile').startsWith('FAIL'))
 writeHome()
 
-// ── 4. bootstrap ─────────────────────────────────────────────────────────────
 section('bootstrap')
 check('refuses to run inside the starter itself', node(root, ['tools/bootstrap.mjs', '--name', 'X', '--apply']).status === 1)
 // A clone takes the repository's name, and CI checks out into a folder of that name.
@@ -324,7 +307,6 @@ check(
 )
 check("a later run leaves LICENSE alone (by then it may be the project's own)", existsSync(join(later, 'LICENSE')))
 
-// ── 5. The lifecycle of a new project ────────────────────────────────────────
 section('new project lifecycle (the false green of 2026-09-23)')
 const agentsPath = join(committed, 'AGENTS.md')
 const agentsBody = read(agentsPath)
@@ -339,7 +321,6 @@ out = node(committed, ['.claude/tools/agent-check.mjs'], { env })
 check('every slot filled: gate green', out.status === 0, out.stdout + out.stderr)
 check('every slot filled: code allowed', hook(committed, 'src/pos.ts') === 0)
 
-// ── 6. adopt ─────────────────────────────────────────────────────────────────
 section('adopt')
 const adopt = (target, apply) => node(root, ['tools/adopt.mjs', '--into', target, ...(apply ? ['--apply'] : [])])
 const IGNORE_PRIVATE = 'AGENTS.md\nCLAUDE.md\nGEMINI.md\n.github/copilot-instructions.md\n.claude/\n.claude.backup-*/\n'
@@ -394,8 +375,7 @@ check('no agent files: AGENTS.md seeded from the template', (read(join(fresh, 'A
 check('slots remain: the hook is NOT wired (it would block running work)', !(read(join(fresh, '.claude/settings.json')) ?? '').includes('guard-slots.mjs'))
 check('HANDOFF.md seeded where there is none', existsSync(join(fresh, 'HANDOFF.md')))
 
-// 2026-09-24: a new project mid-setup, hook wired by its copy of the
-// starter. adopt used to remove the hook because slots remained.
+// A new project mid-setup keeps the hook its copy of the starter wired.
 const hookEntry = (command) => JSON.stringify({ hooks: { PreToolUse: [{ matcher: 'Write|Edit|NotebookEdit', hooks: [{ type: 'command', command }] }] } }, null, 2)
 const midSetup = makeRepo('mid-setup', {
   '.gitignore': 'node_modules/\n',
@@ -423,8 +403,7 @@ const custom = read(join(root, 'CLAUDE.md')).replace('| Agent | `silent-failure-
 const oldPointer = '# CLAUDE.md\n\nThis project\'s rules live in **[AGENTS.md](AGENTS.md)**. Read it in full at\nsession start.\n'
 
 const pIdentical = pointerCase('p-identical', read(join(root, 'CLAUDE.md')))
-// Matched on the CLAUDE.md line itself: "current" appears on many other lines,
-// and a check that searched the whole output could not fail.
+// Matched on the CLAUDE.md line itself: "current" appears on other lines too.
 check('pointer identical to the starter: "current"', /^ {2}CLAUDE\.md +current$/m.test(adopt(pIdentical, false).stdout))
 const pCustom = pointerCase('p-custom', custom)
 adopt(pCustom, true)
@@ -438,11 +417,10 @@ check(
 const pNone = pointerCase('p-none', null)
 adopt(pNone, true)
 check('no pointer at all: the full pointer is written', read(join(pNone, 'CLAUDE.md')) === read(join(root, 'CLAUDE.md')))
-// The gate and adopt once counted the same 60-line file differently.
+// The gate and adopt must count a 60-line file the same way.
 const pSixty = makeRepo('p-sixty', { '.gitignore': 'x\n', 'CLAUDE.md': sixty })
 check('a 60-line CLAUDE.md is a pointer to adopt as well', /CLAUDE\.md +CONFLICT: a pointer/.test(adopt(pSixty, false).stdout))
 
-// ── 7. docs-drift ────────────────────────────────────────────────────────────
 section('docs-drift (the checks a new project starts with)')
 const driftIn = (name, files) => {
   const dir = join(tmp, name)
@@ -461,7 +439,7 @@ const todoIs = (files, name) => lineWith(driftIn(name, files), 'docs/TODO.md has
 const fence = (...cmds) => '```bash\n' + cmds.join('\n') + '\n```\n'
 const scripts = (...names) => JSON.stringify({ scripts: Object.fromEntries(names.map((n) => [n, 'x'])) })
 
-// pnpm install, yarn run and composer install were once read as scripts named install and run.
+// pnpm install, yarn run and composer install are not scripts named install or run.
 check(
   'package-manager subcommands are not scripts',
   gateIs({ 'package.json': scripts('build', 'lint', 'test'), 'AGENTS.md': fence('pnpm install', 'pnpm run build', 'yarn run lint', 'pnpm test', 'npm ci', 'composer install') }, 'd-builtins').startsWith('ok'),
@@ -478,7 +456,6 @@ check('Epic 0 DONE and one story in WIP -> green', todoIs({ 'docs/TODO.md': stor
 check("the template's own docs/TODO.md -> green", todoIs({ 'docs/TODO.md': read(join(root, 'docs', 'TODO.md')) }, 't-template').startsWith('ok'))
 check('no story headings -> SKIP, not a pass', todoIs({ 'docs/TODO.md': '# TODO\n' }, 't-none').startsWith('SKIP'))
 
-// ── Summary ──────────────────────────────────────────────────────────────────
 try {
   rmSync(tmp, { recursive: true, force: true })
 } catch {

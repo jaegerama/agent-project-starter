@@ -153,7 +153,7 @@ const remaining = files
   .filter(([, slots]) => slots.length > 0)
 
 const verb = apply ? '' : ' (would be)'
-console.log(`\n${apply ? 'DONE' : 'DRY RUN — nothing was changed'}\n`)
+console.log(`\n${apply ? 'DONE' : 'DRY RUN, nothing was changed'}\n`)
 console.log(`  project name      ${name}`)
 console.log(`  ${PLACEHOLDER} replaced in${verb}  ${touched.length} files`)
 for (const f of touched) console.log(`      ${f}`)
@@ -186,13 +186,13 @@ const show = (file, slots) => {
 }
 
 if (blocking.length) {
-  console.log(`\n  BLOCKS THE GATE — ${blocking.length} slots in AGENTS.md:\n`)
+  console.log(`\n  BLOCKS THE GATE, ${blocking.length} slots in AGENTS.md:\n`)
   show('AGENTS.md', blocking)
 }
 
 if (remaining.length) {
   const total = remaining.reduce((n, [, s]) => n + s.length, 0)
-  console.log(`\n  Fill before application code — ${total} slots:\n`)
+  console.log(`\n  Fill before application code, ${total} slots:\n`)
   for (const [file, slots] of remaining) show(file, slots)
 }
 

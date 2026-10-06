@@ -13,6 +13,13 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: command output without em dashes (2026-10-06)
+
+Eight messages printed by agent-check, bootstrap and docs-drift used an em
+dash, which antislop's R-02 bans from any text a person reads. They use a colon
+or a comma now, and none changed its meaning. bootstrap's dry run says
+"DRY RUN, nothing was changed", as adopt's already did.
+
 ### Changed: code comments state the constraint, not its history (2026-10-06)
 
 The tool files carried long comments about how each rule came to be: dates,

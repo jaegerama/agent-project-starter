@@ -101,9 +101,9 @@ const CHECKS = [
       if (!example) return SKIP('no .env.example yet')
 
       const documented = new Set([...example.matchAll(/^([A-Z][A-Z0-9_]*)=/gm)].map((m) => m[1]))
-      if (documented.size === 0) return '.env.example parsed to zero variables — check the format'
+      if (documented.size === 0) return '.env.example parsed to zero variables: check the format'
 
-      return SKIP('half-written — extend it to scan your config module and compare both ways')
+      return SKIP('half-written: extend it to scan your config module and compare both ways')
     },
   },
 ]
@@ -137,7 +137,7 @@ for (const check of CHECKS) {
 console.log(`\n${ran - failed} passed, ${failed} failed, ${skipped} skipped of ${CHECKS.length}`)
 
 if (CHECKS.length === 0) {
-  console.error('FAIL  no checks are defined — an empty suite is not a green suite')
+  console.error('FAIL  no checks are defined, and an empty suite is not a green suite')
   process.exit(1)
 }
 

@@ -38,7 +38,7 @@ const CHECKS = [
       const slots = slotsOf(doc)
       if (slots.length === 0) return null
 
-      return `AGENTS.md still has ${slots.length} unfilled slots — fill them before the first line of application code. For example: ${slots.slice(0, 4).join('  ')}`
+      return `AGENTS.md still has ${slots.length} unfilled slots: fill them before the first line of application code. For example: ${slots.slice(0, 4).join('  ')}`
     },
   },
 
@@ -139,7 +139,7 @@ for (const check of CHECKS) {
 console.log(`\n${ran - failed} passed, ${failed} failed, ${skipped} skipped of ${CHECKS.length}`)
 
 if (CHECKS.length === 0) {
-  console.error('FAIL  no checks are defined — an empty suite is not a green suite')
+  console.error('FAIL  no checks are defined, and an empty suite is not a green suite')
   process.exit(1)
 }
 

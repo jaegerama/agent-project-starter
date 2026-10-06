@@ -44,6 +44,19 @@ const scriptsInvoked = (md) =>
     return builtin[tool].has(name) ? [] : [name]
   })
 
+// `make <target>` past flags and VAR=value; -C and -f point at another makefile, so those are skipped.
+const makeInvoked = (md) =>
+  [...codeIn(md).matchAll(/\bmake((?:[ \t]+(?:-\S+|\S+=\S*))*)[ \t]+([A-Za-z0-9][\w.-]*)/g)]
+    .filter(([, flags]) => !/[ \t]-[Cf]/.test(flags))
+    .map(([, , target]) => target)
+// Rule targets start a line; `VAR := x` and `VAR ::= x` assign, and .PHONY and patterns are not targets.
+const makeTargets = (makefile) =>
+  new Set(
+    [...makefile.matchAll(/^([^\s#:=][^:#=]*?)\s*::?(?![=:])/gm)]
+      .flatMap(([, names]) => names.trim().split(/\s+/))
+      .filter((t) => !t.startsWith('.') && !/[%$]/.test(t)),
+  )
+
 const CHECKS = [
   {
     name: 'the gate in AGENTS.md and CONTRIBUTING.md runs commands that actually exist',
@@ -55,17 +68,24 @@ const CHECKS = [
 
       const npm = read('package.json')
       const composer = read('composer.json')
-      if (!npm && !composer) return SKIP('no package.json/composer.json: adapt this check to your manifest')
+      const makefile = ['GNUmakefile', 'makefile', 'Makefile'].map((p) => read(p)).find(Boolean) ?? null
+      if (!npm && !composer && !makefile) {
+        return SKIP('no package.json, composer.json or Makefile: adapt this check to your manifest')
+      }
 
       const declared = new Set([
         ...(npm ? Object.keys(JSON.parse(npm).scripts ?? {}) : []),
         ...(composer ? Object.keys(JSON.parse(composer).scripts ?? {}) : []),
       ])
       const missing = [...new Set(scriptsInvoked(doc))].filter((s) => !declared.has(s))
+      const targets = makefile ? makeTargets(makefile) : new Set()
+      const missingTargets = [...new Set(makeInvoked(doc))].filter((t) => !targets.has(t))
+      const problems = [
+        missing.length && `scripts the manifest does not define: ${missing.join(', ')}`,
+        missingTargets.length && `make targets the Makefile does not define: ${missingTargets.join(', ')}`,
+      ].filter(Boolean)
 
-      return missing.length === 0
-        ? null
-        : `the gate runs scripts the manifest does not define: ${missing.join(', ')}`
+      return problems.length === 0 ? null : `the gate runs ${problems.join(', and ')}`
     },
   },
 

@@ -448,6 +448,19 @@ check('a gate script the manifest lacks -> red', gateIs({ 'package.json': script
 check('npm test with no test script -> red (it once passed)', gateIs({ 'package.json': scripts('lint'), 'AGENTS.md': fence('npm test') }, 'd-npmtest').startsWith('FAIL'))
 check('a composer custom script is checked', gateIs({ 'composer.json': scripts('analyse'), 'AGENTS.md': fence('composer analyse', 'composer stan') }, 'd-composer').startsWith('FAIL'))
 check('prose is not a command ("pnpm or yarn")', gateIs({ 'package.json': scripts('lint'), 'AGENTS.md': 'We use pnpm or yarn workspaces.\n' }, 'd-prose').startsWith('ok'))
+// A Makefile alone is a manifest: Go, Python, Rust and C gates often run through make.
+const makefile = 'VAR := 1\nCFLAGS ::= -O2\n.PHONY: test lint\ntest:\n\tgo test ./...\nlint: vet\n\tgolangci-lint run\nvet:\n\tgo vet ./...\n'
+check(
+  'make targets the Makefile defines -> green, past flags and VAR=value',
+  gateIs({ Makefile: makefile, 'AGENTS.md': fence('make test', 'make -j4 lint', 'make GOFLAGS=-v vet') }, 'm-ok').startsWith('ok'),
+)
+check('a make target the Makefile lacks -> red', gateIs({ Makefile: makefile, 'AGENTS.md': fence('make build') }, 'm-missing').startsWith('FAIL'))
+check('a make variable is not a target', gateIs({ Makefile: makefile, 'AGENTS.md': fence('make VAR', 'make CFLAGS') }, 'm-var').startsWith('FAIL'))
+check(
+  'make -C and -f point at another makefile, so they are not judged',
+  gateIs({ Makefile: makefile, 'AGENTS.md': fence('make -C sub build', 'make -f other.mk deploy') }, 'm-elsewhere').startsWith('ok'),
+)
+check('"make" alone on a line does not take the next line as its target', gateIs({ Makefile: makefile, 'AGENTS.md': fence('make', 'make test') }, 'm-bare').startsWith('ok'))
 
 const story = (status, id) => `### [${status}] ${id} title\n`
 check('two stories in WIP -> red', todoIs({ 'docs/TODO.md': story('DONE', 'S0.1') + story('WIP', 'S1.1') + story('WIP', 'S1.2') }, 't-two').startsWith('FAIL'))

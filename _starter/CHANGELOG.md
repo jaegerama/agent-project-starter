@@ -13,6 +13,17 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Added: the gate-command check reads Makefile targets (2026-10-06)
+
+The check that a gate's commands exist knew npm, pnpm, yarn and composer, and
+skipped every project without a `package.json` or `composer.json`. It now also
+checks each `make <target>` in the gate against the targets the project's
+Makefile defines, so a Go, Python, Rust or C project that drives its gate
+through make is checked too. A variable assignment is not a target, and an
+invocation with `-C` or `-f` points at another makefile, so it is left alone.
+`tools/docs-drift.mjs` belongs to the project: new projects get the check, and
+adopt leaves an existing project's copy alone.
+
 ### Changed: the self-test's fixtures name no one (2026-10-06)
 
 Two fixtures used the owner's GitHub handle as the sample git identity, and a

@@ -1,7 +1,7 @@
-# QUESTIONS — <PROJECT NAME>
+# QUESTIONS: <PROJECT NAME>
 
 One row per question, a stable id (`TAX-1`, `AUTH-3`), and the answer written
-beside it once it arrives — **above** what it replaced, so the history survives.
+beside it once it arrives, **above** what it replaced, so the history survives.
 
 > **There is no "how many are still open" summary in this file, deliberately.**
 > That kind of summary is the most-read and least-maintained thing in the
@@ -14,6 +14,6 @@ beside it once it arrives — **above** what it replaced, so the history survive
 
 | Id | Question | Status | Answer / who to ask |
 |---|---|---|---|
-| <AREA-1> | <> | OPEN | — |
+| <AREA-1> | <> | OPEN | - |
 
 Status: `OPEN` · `ANSWERED` · `DROPPED` (with the reason it stopped mattering)

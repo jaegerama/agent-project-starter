@@ -1,6 +1,6 @@
 ---
 description: Detect drift between the docs, the CHANGELOG, and what the code actually does.
-argument-hint: '[doc] — check a single document'
+argument-hint: '[doc]: check a single document'
 ---
 
 # Docs Drift
@@ -12,7 +12,7 @@ Find every place a document and the code disagree, and name which side is wrong.
 > wrong is a judgement, and it is the reader's to make with the reason in front
 > of them.
 
-**Input**: $ARGUMENTS — optional single document.
+**Input**: $ARGUMENTS, an optional single document.
 
 ---
 

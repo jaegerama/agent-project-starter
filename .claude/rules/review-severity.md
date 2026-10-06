@@ -4,7 +4,7 @@
 > project this starter was extracted from, which took it from
 > [ECC](https://github.com/affaan-m/ecc) (MIT).
 >
-> Generic quality thresholds are deliberately **not** here — function length,
+> Generic quality thresholds are deliberately **not** here: function length,
 > file length, nesting depth, stray debug logging. A linter enforces those, and
 > restating them as prose creates a second source of truth that will drift from
 > the first. Coverage minimums are absent for the same reason: inventing one is
@@ -38,7 +38,7 @@ users, data, or money:
 
 - Authorization decided anywhere but the layer that owns it, or an entry point
   with no check of its own. Middleware alone is never sufficient.
-- Authorization that exists only on the client — the button is hidden and the
+- Authorization that exists only on the client: the button is hidden and the
   endpoint is open.
 - A mutation whose audit row is outside the mutation's transaction, or absent.
 - A floating-point type used for an amount, rate, or total. That includes
@@ -49,7 +49,7 @@ users, data, or money:
 - An error that distinguishes "no such account" from "wrong password".
 - A destructive operation without confirmation, or with no way to undo it.
 - A schema change with no migration.
-- A permission check that fails OPEN when its dependency is down — the cache
+- A permission check that fails OPEN when its dependency is down: the cache
   goes away and the check turns into a pass.
 - User input reaching SQL or a shell without parameterisation.
 
@@ -57,7 +57,7 @@ Three areas have no "we will fix it next story" tier: **payments,
 authorization, and the audit trail.** A finding there is CRITICAL or it is not a
 finding.
 
-Add this project's own concrete shapes below that list — that specificity is the
+Add this project's own concrete shapes below that list: that specificity is the
 whole value of the file. Keep additions as specific as the ones above: name the
 file, the layer, or the type, not the abstract category.
 
@@ -67,11 +67,11 @@ file, the layer, or the type, not the abstract category.
 
 Three things, in this order:
 
-1. **Where** — `file:line`.
-2. **What breaks** — concrete inputs and the wrong outcome. Not "missing
+1. **Where**: `file:line`.
+2. **What breaks**: concrete inputs and the wrong outcome. Not "missing
    validation" but "a read-only user can POST to this endpoint and change a
    price".
-3. **The fix** — one sentence.
+3. **The fix**: one sentence.
 
 Then:
 
@@ -79,7 +79,7 @@ Then:
   than a missed one. If you cannot construct the failing case, say it is
   unverified and rank it lower.
 - **No padding.** Finding nothing is a valid result. Manufacturing a MEDIUM to
-  look thorough trains the reader to skim — and a reader who skims misses the
+  look thorough trains the reader to skim, and a reader who skims misses the
   CRITICAL next time.
 - **One quoted error, trimmed.** Never paraphrase a compiler or a stack trace.
 - **Treat a comment asserting a guarantee as unverified** until you find the code

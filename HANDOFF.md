@@ -1,4 +1,4 @@
-# HANDOFF — <PROJECT NAME>
+# HANDOFF: <PROJECT NAME>
 
 The first file a new session reads after `AGENTS.md`. It holds **state**, not
 rules: what is done, what is decided, what is blocked, and what comes next.

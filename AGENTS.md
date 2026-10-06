@@ -1,25 +1,25 @@
-# AGENTS.md — <PROJECT NAME>
+# AGENTS.md: <PROJECT NAME>
 
 > **This is the only place project rules live.** `CLAUDE.md` and `GEMINI.md` are
-> pointers to this file and deliberately carry no rules of their own — two
+> pointers to this file and deliberately carry no rules of their own: two
 > copies of a rule are two sources of truth, and that is exactly the defect the
 > tooling in this repo exists to catch.
 >
 > Read automatically by: Codex, Antigravity, Cursor, Copilot. Claude Code loads
-> it through the `@AGENTS.md` import in `CLAUDE.md`. Gemini arrives here through
-> its pointer file.
+> it through the `@AGENTS.md` import in `CLAUDE.md`, Gemini CLI through the
+> `@./AGENTS.md` import in `GEMINI.md`.
 >
 > Read it in full at session start. Do not re-scan the repo to rediscover facts
 > recorded here.
 >
 > **Every `<slot>` must be filled before the first line of application code.** A
-> slot left as a placeholder is a rule that reads as satisfied and is not —
-> worse than no rule, because it gets quoted back in reviews.
+> slot left as a placeholder is a rule that reads as satisfied and is not,
+> which is worse than no rule, because it gets quoted back in reviews.
 > `node .claude/tools/agent-check.mjs` fails while any slot remains.
 
 ---
 
-## Setup — while this file still has slots
+## Setup, while this file still has slots
 
 The first job of any session in this folder until no slot is left. The owner's
 only job is the brief; everything else below is the agent's.
@@ -54,7 +54,7 @@ only job is the brief; everything else below is the agent's.
 9. **Delete this Setup section** once the slot check is green. It has done its
    job, and an inert section still costs every future session its context.
 
-## 0. Project context — fill this first
+## 0. Project context (fill this first)
 
 This section replaces "explain the project in the first chat message". Context
 that lives in a chat message is gone on a new session, a `/clear`, or a switch
@@ -64,8 +64,8 @@ to another tool. Context that lives in this file is not.
 |---|---|
 | **Name** | <> |
 | **One sentence** | <what it is, who uses it> |
-| **What it is NOT** | <what is deliberately not built — see the note below> |
-| **Prose language** | <Indonesian / English> — technical terms stay English either way |
+| **What it is NOT** | <what is deliberately not built: see the note below> |
+| **Prose language** | <the language prose is written in>; technical terms stay in English either way |
 | **UI language** | <i18n dictionaries / single language / no UI> |
 | **First deliverable** | <docs first / a walking skeleton / a specific feature> |
 
@@ -80,8 +80,8 @@ decision being reopened by whoever reads this next, including the next session
 of an agent. A decision with no reason gets reopened; a decision with a reason
 gets reopened only when the reason stops being true, which is correct.
 
-1. <e.g. single repository, no monorepo tooling — because ...>
-2. <e.g. who owns the source of truth for X — because ...>
+1. <e.g. single repository, no monorepo tooling, because ...>
+2. <e.g. who owns the source of truth for X, because ...>
 
 ## 0.1 From PRD to Done
 
@@ -111,14 +111,14 @@ real; a gate re-run by CI, not by the agent that wrote the proof, can.
 |---|---|
 | **Never touch** | <.env on the server? production? migrations by hand?> |
 | **Deploy is done by** | <manually by the owner / a script / CI, and who may run it> |
-| **CI** | <runs what, or "nothing — the local gate is the only check"> |
+| **CI** | <runs what, or "nothing: the local gate is the only check"> |
 | **Never committed** | <secrets, dumps, private tooling> |
 
 ---
 
 ## 2. Stack (locked)
 
-Locked means settled. Framework and setup choices are **never a reason to ask** —
+Locked means settled. Framework and setup choices are **never a reason to ask**,
 so a session does not spend its first ten minutes proposing alternatives that
 were already rejected.
 
@@ -217,14 +217,14 @@ Write them exactly as the owner would type them. Not an approximation.
 <>
 ```
 
-### The gate — all green, no exceptions
+### The gate: all green, no exceptions
 
 ```bash
 <the commands above, in the order they must run, as one block>
 ```
 
-**Write down why each step is in that list, as you learn it.** Not what it does
-— that is obvious from the command — but what went wrong when it was missing.
+**Write down why each step is in that list, as you learn it.** Not what it does,
+which the command shows, but what went wrong when it was missing.
 
 > *The shape of such a note: "format check is in that line because CI used to
 > run it and this file did not. Three stories were pushed and the pipeline
@@ -248,7 +248,7 @@ restates something the code defines, and what drifts between them.
 | <doc and section> | <file> | <the specific claims> |
 | `CHANGELOG.md` | `git log --oneline` | Commits with no entry. The rule is the entry comes **first**. Checked by reading (`/docs-drift`), not by the script |
 | `AGENTS.md` §4 | the project manifest | Gate commands that no longer exist, or were renamed |
-| <config example> | <the module that reads it> | A variable in one and not the other — **either** direction is a defect |
+| <config example> | <the module that reads it> | A variable in one and not the other: **either** direction is a defect |
 
 This table is here rather than in `.claude/commands/docs-drift.md` because its
 contents are a project decision, and a project rule lives in exactly one place.
@@ -309,10 +309,10 @@ Every review and self-check uses the ladder in `.claude/rules/review-severity.md
 Claude Code loads it at session start; other tools read it before a review.
 This project's own CRITICAL shapes are added there, under its list, not here.
 
-### Security — non-negotiable
+### Security (non-negotiable)
 
 - **All authorization is server-side.** Client-side checks are cosmetic.
-  Middleware alone is never sufficient — every entry point checks independently.
+  Middleware alone is never sufficient: every entry point checks independently.
 - Never log secrets, tokens, password hashes, or full account identifiers.
 - Every mutating operation writes an audit row **in the same transaction** as
   the mutation.
@@ -326,7 +326,7 @@ This project's own CRITICAL shapes are added there, under its list, not here.
 - **Never a floating-point type for money.** <name the decimal type used here>
 - Currency and tax rate come from configuration, never a literal.
 - Rounding: <rule>, at <which level>, **once**.
-- <Decimal places — and if the currency has no minor unit, say so here.>
+- <Decimal places; if the currency has no minor unit, say so here.>
 
 ### Data
 
@@ -334,7 +334,7 @@ This project's own CRITICAL shapes are added there, under its list, not here.
 - <Which entities soft-delete, and which may never be hard-deleted.>
 - <Which tables are append-only, and what enforces it.>
 - Every foreign key gets an index. Every list query gets an index that covers
-  its **sort**, not only its filter — a screen that paginates by keyset needs
+  its **sort**, not only its filter: a screen that paginates by keyset needs
   the index to lead with the same columns the cursor uses.
 
 ### Interface <delete if this project is an API / CLI / library / job>
@@ -396,13 +396,13 @@ Conventional Commits defines them.
 1. Acceptance criteria in `docs/TODO.md` all satisfied.
 2. Story executed atomically (strictly ONE story in `[WIP]` at any time).
 3. Phase 0 walking skeleton verified before feature stories began.
-4. The gate is green — every command in §4.
+4. The gate is green: every command in §4.
 5. Authorization enforced server-side, with a negative test (wrong role ⇒ denied).
 6. Mutating paths emit an audit row.
 7. Empty, loading, and error states visually and logically handled.
 8. Zero unapproved dependencies added.
 9. Real terminal execution evidence recorded in `HANDOFF.md` (HTTP status, exit code, test count). Synthetic claims without command output are rejected.
-10. <i18n complete — every key in every dictionary.>
+10. <i18n complete: every key in every dictionary.>
 11. <Responsive at the breakpoints in §6.>
 12. Data verified **persisted**, not just rendered optimistically.
 13. `CHANGELOG.md` entry present.
@@ -436,7 +436,7 @@ belongs in §2, and is never read off this table.
 | **Machine** | <> |
 | **Shell and its limitations** | <> |
 | **Runtime versions** | <> |
-| **Ports in use** | <— and this is the only place port numbers are recorded> |
+| **Ports in use** | <the ports: this is the only place port numbers are recorded> |
 | **Services that do not auto-start** | <> |
 | **PATH / filesystem gotchas** | <> |
 | **Docker memory budget** | <the sum of the compose services' memory limits, and the machine budget it stays under> |

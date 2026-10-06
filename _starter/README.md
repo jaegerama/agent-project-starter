@@ -1,7 +1,7 @@
 # About this starter
 
 Everything in `_starter/` is documentation about the **starter**, not about the
-project. **Delete this whole directory** once the new project is running —
+project. **Delete this whole directory** once the new project is running:
 `tools/bootstrap.mjs` does it for you.
 
 It is separated here because the starter's `README.md` used to become the new
@@ -90,11 +90,11 @@ the rule is unenforceable on day one.
 | File | Read by | Contents |
 |---|---|---|
 | `AGENTS.md` | Codex, Antigravity, Cursor, Copilot | **All the rules** |
-| `CLAUDE.md` | Claude Code | pointer + Claude-Code-only notes |
-| `GEMINI.md` | Gemini CLI | pointer |
+| `CLAUDE.md` | Claude Code | pointer with the `@AGENTS.md` import, plus Claude-Code-only notes |
+| `GEMINI.md` | Gemini CLI | pointer with the `@./AGENTS.md` import |
 | `.github/copilot-instructions.md` | Copilot (some versions) | pointer |
 
-Four files holding the same rules are four sources of truth that will drift —
+Four files holding the same rules are four sources of truth that will drift:
 the exact defect the drift checks were built to catch. A pointer cannot
 drift, because it holds no rules.
 
@@ -124,8 +124,8 @@ session whatever the working directory. The fourth check in `.claude/tools/agent
 between its HTML comment markers, with the same block in the master.
 
 **An honest note:** Antigravity's behaviour towards `AGENTS.md` has not been
-verified empirically. Until it is tested, it is an assumption — see `AGENTS.md`
-§11.
+verified empirically. Until it is tested, it is an assumption (see `AGENTS.md`
+§11).
 
 ---
 
@@ -134,9 +134,9 @@ verified empirically. Until it is tested, it is an assumption — see `AGENTS.md
 It carries the **process**. It cannot carry the part of a mature project's
 quality that is accumulated rather than configured:
 
-- a gate that mechanically blocks — there is nothing to test on day one;
+- a gate that mechanically blocks: there is nothing to test on day one;
 - dozens of tests that read the source and the docs and fail when they
-  disagree — there is no code yet to lock;
+  disagree: there is no code yet to lock;
 - notes explaining why each rule exists, every one written after something went
   wrong.
 
@@ -146,7 +146,7 @@ each one cheaper than the last.
 **The failure mode this is meant to prevent** is a new project that quotes all
 these rules, has none of the enforcement, and lets everybody relax against a net
 nobody built. In one day on the source project, three documents were found stating
-things the code had stopped doing — and two of them already carried a note from
+things the code had stopped doing, and two of them already carried a note from
 a previous correction of exactly the same kind.
 
 Prose asking people to remember does not work. A check that fails does. So when

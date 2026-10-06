@@ -1,4 +1,4 @@
-# DESIGN — <PROJECT NAME>
+# DESIGN: <PROJECT NAME>
 
 > **Delete this file if the project has no user interface.** An API, CLI,
 > library or job has nothing here to decide.

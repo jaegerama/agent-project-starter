@@ -13,6 +13,19 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: documents without em dashes, and two statements brought up to date (2026-10-06)
+
+The documents carried 77 em dashes, which antislop's R-02 bans from any text.
+Each became a colon, a comma, parentheses or a new sentence, whichever the
+sentence meant; story headings in `docs/TODO.md` now read
+`### [TODO] S0.1: title`, which the story check reads the same way. The prose
+language slot in `AGENTS.md` §0 no longer suggests one particular language.
+
+Two statements had fallen behind this release: the header of `AGENTS.md` said
+Gemini CLI reaches it through a pointer that asks in words, and
+`_starter/INTAKE.md` counted two example checks in `tools/docs-drift.mjs`.
+Gemini CLI imports it, and there are three.
+
 ### Changed: command output without em dashes (2026-10-06)
 
 Eight messages printed by agent-check, bootstrap and docs-drift used an em

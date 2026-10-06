@@ -1,4 +1,4 @@
-# Intake — what to tell a new project so the result is the same
+# Intake: what to tell a new project so the result is the same
 
 > This used to be a block you pasted into the first chat message. It is not any
 > more: **context that lives in a chat message is gone** on a new session, a
@@ -12,7 +12,7 @@
 
 ## Why a list at all
 
-An agent with no constraints does not produce careful work — it produces
+An agent with no constraints does not produce careful work. It produces
 **plausible** work, which is worse, because plausible work passes a glance.
 
 Detailed output comes from four things, and **three of them do not exist on day
@@ -20,10 +20,10 @@ one of a new project**:
 
 | What makes the work careful | Available immediately? |
 | --- | --- |
-| A stated process — docs-first, CHANGELOG first, a Definition of Done | **Yes** — that is what this starter carries |
-| A gate that mechanically blocks | Partly — the docs-first hook blocks from day one **in Claude Code only**; the §4 command gate has nothing to test yet |
-| Tests that lock documents to code | Partly — the slot check and the profile-sync check run on day one; the rest do not |
-| Written-down *why* from things that went wrong | No — it accumulates |
+| A stated process: docs-first, CHANGELOG first, a Definition of Done | **Yes**: that is what this starter carries |
+| A gate that mechanically blocks | Partly: the docs-first hook blocks from day one **in Claude Code only**; the §4 command gate has nothing to test yet |
+| Tests that lock documents to code | Partly: the slot check and the profile-sync check run on day one; the rest do not |
+| Written-down *why* from things that went wrong | No: it accumulates |
 
 **Claiming all four on day one is how a project ends up with a safety net
 everybody trusts and nobody built.**
@@ -45,7 +45,7 @@ it may not invent the ones the brief leaves out. Those become questions.
 | §1 | Never-touch, who deploys, what CI runs | Something in production gets touched |
 | §2 | Locked stack | The first ten minutes of every session go to proposing alternatives |
 | §4 | **Commands, exactly as you would type them** | **There is no gate at all** |
-| §9 | Business rules that may not be invented — pricing, tax, refunds, retention | A number gets invented and it looks plausible |
+| §9 | Business rules that may not be invented: pricing, tax, refunds, retention | A number gets invented and it looks plausible |
 | §10 | Machine, ports, services that do not auto-start | An environment bug gets diagnosed as a code bug |
 
 **§4 is the expensive one to skip.** Everything else can be corrected later at
@@ -68,11 +68,11 @@ Not optional, and the order matters:
 
 1. **`AGENTS.md` filled.** A slot left as a placeholder is a rule that reads as
    satisfied and is not.
-2. **`CHANGELOG.md`** — empty but present, with an `## [Unreleased]` heading.
+2. **`CHANGELOG.md`**, empty but present, with an `## [Unreleased]` heading.
    The rule is that the entry is written **before** the code, so the file has to
    be there first or the rule is unenforceable on day one.
 3. **`docs/PRD.md` and `docs/TODO.md`** filled. The skeletons already exist.
-4. **A first Definition of Done** — `AGENTS.md` §8, with the items that do not
+4. **A first Definition of Done**: `AGENTS.md` §8, with the items that do not
    apply deleted. It will be wrong; what matters is that it exists to be
    corrected.
 
@@ -82,15 +82,15 @@ These are the rows the table above says you cannot have yet. Build them in this
 order because each one makes the next cheaper:
 
 1. **The gate.** Take the §4 command block, put it in one command, make it fail
-   loudly. Write down *why* each step is there as you add it — by the time you
+   loudly. Write down *why* each step is there as you add it: by the time you
    need that note you will not remember.
 2. **One project-specific drift test.** `.claude/tools/agent-check.mjs` has four
-   checks that run from day one; `tools/docs-drift.mjs` holds two examples,
+   checks that run from day one; `tools/docs-drift.mjs` holds three examples,
    and it is the file that belongs to this project. One
    check that is genuinely about this project is enough to establish the
    pattern.
 3. **The "why" notes.** Every time something costs you an hour, write the cause
-   where the next person will trip over it — not in a commit message, in the
+   where the next person will trip over it: not in a commit message but in the
    file itself (`AGENTS.md` §4, "Known traps").
 
 ---
@@ -106,7 +106,7 @@ Gemini) already covers it:
 - The verification rules: mutation-check every new assertion, read the exit code
   of the thing you ran, a count is half the check, mark mechanism versus
   intention.
-- That business rules may not be invented — `AGENTS.md` §9 lists **which** ones,
+- That business rules may not be invented. `AGENTS.md` §9 lists **which** ones,
   and that is the project-specific part.
 
 A machine with no operator profile starts from `_starter/operator-profile.md`,
@@ -117,13 +117,13 @@ installed once, before the first project.
 ## E. The honest caveat
 
 A context file cannot make a new project behave like a mature one. It can make
-the **process** identical from day one — docs-first, CHANGELOG first, a stated
+the **process** identical from day one: docs-first, CHANGELOG first, a stated
 Definition of Done, and the habit of writing down why.
 
 What it cannot do is give you the accumulated part: the gate that actually
 blocks, the tests that catch a stale document, and the notes that stop a mistake
 from being made twice. Those take real weeks, and a project that pretends
-otherwise is more dangerous than one that admits it — because everybody relaxes
+otherwise is more dangerous than one that admits it, because everybody relaxes
 against a net nobody built.
 
 **So when something here is aspiration rather than mechanism, mark it.** That is

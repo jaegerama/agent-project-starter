@@ -1,6 +1,6 @@
-# docs/ — what each file is for
+# docs/: what each file is for
 
-`/docs` is the specification. The code implements it, not the other way round —
+`/docs` is the specification. The code implements it, not the other way round,
 which is why a stale document here is a defect rather than untidiness: it sends
 work in the wrong direction, and the work looks correct while it does.
 
@@ -23,11 +23,11 @@ what was asked for at the start.
 | `PRD.md` | What is being built, for whom, and what is deliberately out of scope | Before any code |
 | `TODO.md` | Epics → stories → **acceptance criteria** | Before each story |
 | `ARCHITECTURE.md` | How the parts fit, and which decisions are settled | When the second component appears |
-| `QUESTIONS.md` | Everything that still needs a human answer, with stable ids | From day one — it fills faster than you expect |
+| `QUESTIONS.md` | Everything that still needs a human answer, with stable ids | From day one: it fills faster than you expect |
 
 ### `PRD.md`
 
-State the scope, and state the **anti-scope** — what this system is not. That
+State the scope, and state the **anti-scope**: what this system is not. That
 second half settles more arguments than the first. One project's "no public
 signup, every user is internal personnel" ended a dozen design discussions on
 its own.
@@ -51,7 +51,7 @@ reason gets reopened only when the reason stops being true, which is correct.
 ### `QUESTIONS.md`
 
 One row per question, a stable id (`TAX-1`, `AUTH-3`), and the answer written
-beside it once it arrives — above what it replaced, so the history survives.
+beside it once it arrives, above what it replaced, so the history survives.
 
 **If you also keep a summary of what is still open, put a check on it.** That
 summary is the most-read and least-maintained thing in the folder. One

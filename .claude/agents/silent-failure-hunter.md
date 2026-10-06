@@ -20,20 +20,20 @@ and every language that returns error values instead.
    value.** Rank by what the default feeds: a money figure, an authorization
    decision, or an audit row is CRITICAL. A dashboard label is not.
 
-   Distinguish carefully — a zero that is the genuine sum of zero rows is
+   Distinguish carefully: a zero that is the genuine sum of zero rows is
    correct, and flagging it teaches the reader to skim.
 
 3. **An error mapped to a generic response** in a way that loses the detail the
    caller needs in order to act.
 
-4. **An unawaited promise, an ignored return value, a discarded error** —
+4. **An unawaited promise, an ignored return value, a discarded error**,
    especially inside a transaction, where it means the transaction commits
    anyway.
 
 5. **A background job whose failure nobody observes.** A job that fails silently
    is a job nobody retries.
 
-6. **A check that fails OPEN when its dependency is down** — a cache outage that
+6. **A check that fails OPEN when its dependency is down**: a cache outage that
    turns a permission check into a pass. Some checks *should* fail open and some
    *must* fail closed; the defect is when nobody decided which.
 
@@ -50,6 +50,6 @@ Report against the severity ladder in `.claude/rules/review-severity.md`. For
 each: `file:line`, the concrete failing case with inputs, one-sentence fix.
 
 **Verify before reporting**, and say so where you could not. **Finding nothing is
-a valid result** — say so plainly rather than padding.
+a valid result**: say so plainly rather than padding.
 
 Do not edit files. Report only.

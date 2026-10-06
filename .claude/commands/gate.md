@@ -11,7 +11,7 @@ Run every check in `AGENTS.md` §4, in order, and report the result of each.
 1. **Run them all, even after one fails.** A report saying "typecheck failed" and
    nothing else hides three more problems and costs another round trip. The
    exception is a step that cannot run because an earlier one did not produce its
-   input — say that explicitly rather than reporting a false pass.
+   input: say that explicitly rather than reporting a false pass.
 
 2. **Read the exit code of the thing you ran, not of the wrapper around it.** A
    command inside a container, a pipe, or a background job reports the wrapper's
@@ -28,7 +28,7 @@ Run every check in `AGENTS.md` §4, in order, and report the result of each.
    A gate that edits what it measures is not a measurement.
 
 5. **State the environment.** Which services were up, which were stopped. If a
-   suite's result depends on that, it is not the environment's fault — it is a
+   suite's result depends on that, it is not the environment's fault: it is a
    defect in the test, and worth reporting as one.
 
 6. **`node .claude/tools/agent-check.mjs` and `node tools/docs-drift.mjs` are

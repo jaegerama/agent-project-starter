@@ -1,4 +1,4 @@
-# TODO — <PROJECT NAME>
+# TODO: <PROJECT NAME>
 
 A story gets **one** status marker and never two. One project once carried the
 same story under two headings 941 lines apart (one open, one closed, both true
@@ -11,13 +11,13 @@ Status: `TODO` · `WIP` · `REVIEW` · `DONE` · `BLOCKED`
 
 They live in `AGENTS.md` §0.1: one story in WIP at a time, and Epic 0 first.
 `node tools/docs-drift.mjs` checks both against the headings below, so keep
-their shape: `### [STATUS] S<epic>.<n> title`.
+their shape: `### [STATUS] S<epic>.<n>: title`.
 
 ---
 
-## Epic 0 — Walking Skeleton (Harness & Verification)
+## Epic 0: Walking Skeleton (Harness & Verification)
 
-### [TODO] S0.1 — Scaffold minimal project & prove verification gate
+### [TODO] S0.1: Scaffold minimal project & prove verification gate
 
 **Acceptance criteria**
 
@@ -25,13 +25,13 @@ their shape: `### [STATUS] S<epic>.<n> title`.
 - [ ] At least one automated assertion/test runs and passes
 - [ ] Full gate command exits 0 with all checks green
 
-**Out of scope for this story** — Business logic, database entities, UI styling.
+**Out of scope for this story:** business logic, database entities, UI styling.
 
 ---
 
-## Epic 1 — <name>
+## Epic 1: <name>
 
-### [TODO] S1.1 — <story title>
+### [TODO] S1.1: <story title>
 
 A story is not a title, it is **acceptance criteria**. A criterion that cannot
 be checked by looking at something is a wish, not a criterion.
@@ -41,9 +41,9 @@ be checked by looking at something is a wish, not a criterion.
 - [ ] <what can be seen / run / queried to prove it>
 - [ ] <>
 
-**Out of scope for this story** — <what is deliberately untouched, so the blast radius is explicit>
+**Out of scope for this story:** <what is deliberately untouched, so the blast radius is explicit>
 
-**Notes** — <decisions or traps found while doing it>
+**Notes:** <decisions or traps found while doing it>
 
 ---
 

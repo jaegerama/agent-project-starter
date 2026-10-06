@@ -13,6 +13,13 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: the self-test's fixtures name no one (2026-10-06)
+
+Two fixtures used the owner's GitHub handle as the sample git identity, and a
+fixture heading used the repository's last em dash. They use
+`Jane Doe <jane@example.com>` and a colon now, and each case still tests what
+it tested.
+
 ### Changed: documents without em dashes, and two statements brought up to date (2026-10-06)
 
 The documents carried 77 em dashes, which antislop's R-02 bans from any text.

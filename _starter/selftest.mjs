@@ -93,7 +93,7 @@ const slotCases = [
   ['<div>', false],
   ['<slot>', false],
   // git identities: every filled AGENTS.md has one in §7
-  ['jaegerama <hello@example.com>', false],
+  ['Jane Doe <jane@example.com>', false],
   ['see <https://keepachangelog.com/en/1.1.0/>', false],
   // <> that is not an empty slot
   ['  <>', false],
@@ -336,9 +336,9 @@ const makeRepo = (name, files) => {
   return dir
 }
 const rules =
-  '\uFEFF# CLAUDE.md — Fixture\n\n' +
+  '\uFEFF# CLAUDE.md: Fixture\n\n' +
   '├── CLAUDE.md                 # this file\n' +
-  Array.from({ length: 80 }, (_, i) => `- rule ${i + 1}, identity jaegerama <hello@example.com>`).join('\n') +
+  Array.from({ length: 80 }, (_, i) => `- rule ${i + 1}, identity Jane Doe <jane@example.com>`).join('\n') +
   '\n'
 
 check('refuses when the target is the starter', adopt(root, false).status === 1)

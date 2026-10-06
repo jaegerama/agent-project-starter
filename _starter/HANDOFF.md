@@ -33,6 +33,10 @@ Status per 2026-10-05.
   `node .claude/tools/agent-check.mjs` red only on the template's 67 slots,
   by design.
 - 2026-10-05: the first public release, 0.1.0, tagged `v0.1.0`.
+- 2026-10-06: code comments cut to the constraint they state (only comment
+  lines changed, checked line by line), and every em dash rewritten: 0 left
+  in the repository. No person named but the copyright holder; no project
+  named. `node _starter/selftest.mjs` 120 passed, 0 failed, 0 skipped.
 
 ## Decisions taken
 

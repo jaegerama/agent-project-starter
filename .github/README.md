@@ -64,7 +64,7 @@ missing, and never rewrites the project's own rules.
 
 | Rule | Claude Code | Codex, Cursor, Gemini CLI, Antigravity |
 |---|---|---|
-| `AGENTS.md` is in the agent's context | Import in `CLAUDE.md`, observed | Native in Codex and Cursor; import in `GEMINI.md`, documented but not yet observed; Antigravity unverified |
+| `AGENTS.md` is in the agent's context | Import in `CLAUDE.md`, observed | Native in Codex and Cursor; loaded at session start in Antigravity, observed; import in `GEMINI.md` for Gemini CLI, documented but not yet observed |
 | No application code while slots remain | Hook, for the file tools only. A file written through Bash is not seen | Gate only |
 | No empty slot; pointers stay pointers | Gate | Gate |
 | One story in WIP, and Epic 0 first | Gate | Gate |

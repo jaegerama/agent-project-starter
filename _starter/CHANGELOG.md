@@ -13,6 +13,17 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: Antigravity is verified to load AGENTS.md (2026-10-06)
+
+A fresh Antigravity session (Gemini 3.8 Flash, on Linux) in a clone of the
+starter loaded both `AGENTS.md` and `GEMINI.md` as workspace rules at session
+start. Before using any tool it quoted the last sentence of `AGENTS.md`, which
+then matched the file exactly. From its terminal the gate behaved as
+expected: agent-check red only on the template's slots, docs-drift green.
+`AGENTS.md` §11 and the README now say verified. Still open: whether it loads
+`AGENTS.md` natively or through the `@./AGENTS.md` line in `GEMINI.md`, which
+it showed resolved to an absolute path.
+
 ### Added: the gate-command check reads Makefile targets (2026-10-06)
 
 The check that a gate's commands exist knew npm, pnpm, yarn and composer, and

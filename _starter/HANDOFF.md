@@ -18,7 +18,11 @@ Status per 2026-10-05.
 2. **Confirm the Gemini CLI import once.** In a project made from the starter,
    ask a Gemini CLI session which files it loaded; mark `AGENTS.md` §11
    verified, or say what it read instead.
-3. **Confirm Antigravity the same way**, and update its §11 row.
+3. ~~**Confirm Antigravity the same way.**~~ **Done 2026-10-06**: a fresh session in
+   a clone loaded `AGENTS.md` and `GEMINI.md` as workspace rules and quoted the
+   last sentence of `AGENTS.md` before using any tool. From its terminal,
+   agent-check exited 1 (`1 passed, 1 failed, 2 skipped of 4`, the slots, by
+   design) and docs-drift exited 0. Open: native load, or the `GEMINI.md` import.
 4. **Bring existing projects up to date** with `node tools/adopt.mjs --into
    ../<project>`, dry run first. Each project's own session commits what adopt
    changed there.

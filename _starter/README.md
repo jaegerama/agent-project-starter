@@ -123,9 +123,9 @@ the antislop block, because it is the one file Claude Code loads in every
 session whatever the working directory. The fourth check in `.claude/tools/agent-check.mjs` compares that block,
 between its HTML comment markers, with the same block in the master.
 
-**An honest note:** Antigravity's behaviour towards `AGENTS.md` has not been
-verified empirically. Until it is tested, it is an assumption (see `AGENTS.md`
-§11).
+**Verified for Antigravity, not yet for Gemini CLI:** on 2026-10-06 a fresh
+Antigravity session loaded `AGENTS.md` and `GEMINI.md` at session start
+(`AGENTS.md` §11). The Gemini CLI import is documented, not yet observed.
 
 ---
 

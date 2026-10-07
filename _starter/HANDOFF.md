@@ -215,6 +215,7 @@ Status per 2026-10-07.
 
 ```bash
 node _starter/selftest.mjs                         # the starter's tests: green before any commit
+node _starter/mutate.mjs mutations.json            # break a fix on purpose, in copies: the right case goes red
 node tools/docs-drift.mjs                          # the starter's gate, with the self-test
 node .claude/tools/agent-check.mjs                 # agent config (red on template slots, by design)
 node tools/adopt.mjs --into ../some-project --allow-unreleased   # verify a release candidate (dry run)

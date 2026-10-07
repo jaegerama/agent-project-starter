@@ -194,6 +194,7 @@ aspiration** until it is one.
 | `README.md` | What you are reading |
 | `HANDOFF.md` | The starter's own state and next steps. The root `HANDOFF.md` is the template for projects |
 | `selftest.mjs` | The starter's tests. `node _starter/selftest.mjs` must be green before committing a change to the slot pattern, the hook, agent-check, bootstrap, adopt or the docs-drift examples |
+| `mutate.mjs` | Breaks a fix on purpose in throwaway copies and reports which cases went red: `node _starter/mutate.mjs mutations.json` |
 | `INTAKE.md` | What has to be filled, and the order to build the enforcement in |
 | `operator-profile.md` | An example operator profile, for a machine that has none: installed once per machine, not per project |
 | `CHANGELOG.md` | The starter's own history, separate from the project's changelog |
@@ -299,7 +300,8 @@ local until a release is ready, and a project only ever receives a release.
    `node tools/docs-drift.mjs` pass; `node .claude/tools/agent-check.mjs` is
    red here by design, because this `AGENTS.md` is the template. A fix gets a
    case that pins the defect, and the fix is broken once on purpose, in a copy,
-   to see that case go red and nothing else.
+   to see that case go red and nothing else: `node _starter/mutate.mjs` does
+   both, and reports nothing while the unbroken suite is red.
 4. **Release a coherent set of changes when the owner asks**, never one check
    at a time. Verify the candidate first: the self-test, the gate, and
    `node tools/adopt.mjs --into ../<project> --allow-unreleased` as a dry run

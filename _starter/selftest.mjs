@@ -282,6 +282,7 @@ check(
   'the other starter-only files are gone: LICENSE, .github/README.md, the self-test workflow',
   ['LICENSE', '.github/README.md', '.github/workflows/selftest.yml'].every((p) => !existsSync(join(committed, p))),
 )
+check('tools/adopt.mjs is gone: it refuses to run outside the starter', !existsSync(join(committed, 'tools', 'adopt.mjs')))
 const mjsUnder = (dir) => readdirSync(dir, { recursive: true }).map(String).filter((f) => f.endsWith('.mjs')).map((f) => join(dir, f))
 const unmarked = ['.claude', 'tools'].flatMap((d) => mjsUnder(join(committed, d))).filter((f) => !read(f).includes('SPDX-License-Identifier: MIT'))
 check('every tool file a project receives keeps the MIT notice', unmarked.length === 0, unmarked.join(' '))

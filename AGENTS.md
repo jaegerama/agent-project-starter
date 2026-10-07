@@ -51,8 +51,9 @@ only job is the brief; everything else below is the agent's.
 8. **Report** how many slots were filled, how many became questions, which
    sections were deleted, and the output of `node .claude/tools/agent-check.mjs`.
    Then ask the questions.
-9. **Delete this Setup section** once the slot check is green. It has done its
-   job, and an inert section still costs every future session its context.
+9. **Delete this Setup section, and `tools/bootstrap.mjs` where it exists,**
+   once the slot check is green. Both have done their job, and an inert section
+   still costs every future session its context.
 
 ## 0. Project context (fill this first)
 

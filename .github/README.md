@@ -43,9 +43,9 @@ runs `node tools/bootstrap.mjs --name "My App" --apply`, fills the slots the
 brief answers, and turns the others into questions in `docs/QUESTIONS.md`.
 
 bootstrap starts a fresh git history and removes the files that belong to the
-starter: `_starter/`, this page, the self-test workflow and the `LICENSE`. It
-refuses to run in a folder still named `agent-project-starter`, so clone under
-the project's name.
+starter: `_starter/`, this page, the self-test workflow, `tools/adopt.mjs` and
+the `LICENSE`. It refuses to run in a folder still named
+`agent-project-starter`, so clone under the project's name.
 
 ## Bring in an existing project
 

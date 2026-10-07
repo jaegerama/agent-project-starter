@@ -13,6 +13,15 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Removed: adopt from new projects, and bootstrap once setup is done (2026-10-07)
+
+`tools/adopt.mjs` runs only from the starter and refuses to run anywhere else,
+yet every bootstrapped project kept a copy. bootstrap now removes it on its
+first run, with the other files that belong to the starter alone.
+`tools/bootstrap.mjs` still has work during setup, where a second run lists
+the slots left, so the last step of the Setup section in `AGENTS.md` deletes it
+together with that section once the slot check is green.
+
 ### Fixed: silent-failure-hunter could edit files through Bash (2026-10-07)
 
 The agent's instructions say it reports and never edits, but its tools

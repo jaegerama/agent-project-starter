@@ -34,7 +34,7 @@ which every tool loads at session start:
 
 Bootstrap replaces `<PROJECT NAME>`, deletes `_starter/` and the other files
 that belong to the starter (`LICENSE`, `.github/README.md`, the self-test
-workflow), and prints the slots still to fill. Duplicating in Explorer copies the hidden `.git` too, so on the
+workflow, `tools/adopt.mjs`), and prints the slots still to fill. Duplicating in Explorer copies the hidden `.git` too, so on the
 first run it also removes the starter's inherited history and starts a fresh
 one: otherwise a private-agents project keeps `AGENTS.md` and `.claude/`
 tracked, and pushes them on the first push. Without `--apply` it is a dry run,
@@ -169,10 +169,11 @@ aspiration** until it is one.
 | `CHANGELOG.md` | The starter's own history, separate from the project's changelog |
 | `AUDIT-2026-10-05.md` | The audit before the first public release: each finding, its evidence, and the commit that fixed it |
 
-The other files that belong to the starter alone sit where GitHub and git
-expect them, and bootstrap removes them from a project with `_starter/`:
-`LICENSE`, `.github/README.md` (the repository's landing page) and
-`.github/workflows/selftest.yml`.
+The other files that belong to the starter alone live outside this directory,
+and bootstrap removes them from a project with `_starter/`: `LICENSE`,
+`.github/README.md` (the repository's landing page),
+`.github/workflows/selftest.yml` and `tools/adopt.mjs`, which runs only from
+the starter.
 
 ---
 

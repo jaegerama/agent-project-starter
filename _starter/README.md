@@ -198,6 +198,11 @@ project does.
    tag `vX.Y.Z`. Then bring existing projects up to date with adopt, dry run
    first.
 
+adopt copies from this folder as it is on disk, not from a tag or a commit.
+Another session can run it at any time, so a saved edit reaches projects
+before it is committed: keep the working tree green, and break things on
+purpose only in a copy.
+
 The repository is public. Nothing in it describes one machine or another
 repository: no personal paths, no other projects' names, registries or
 measurements. Check the diff for them before every push.

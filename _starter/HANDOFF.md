@@ -54,6 +54,11 @@ Status per 2026-10-07.
   skipped; `node .claude/tools/agent-check.mjs` red only on the template's 67
   slots, by design.
 - 2026-10-07: release 0.2.0, tagged `v0.2.0`.
+- 2026-10-07: adopt brought three of the four existing projects to 0.2.0,
+  dry run first. Another session adopted one of them from this folder before
+  the release commit, with the same code. In each, agent-check passed 4 of 4
+  and a second dry run found nothing left to change. The fourth waits on the
+  owner (Next Immediate Steps, 1).
 
 ## Decisions taken
 

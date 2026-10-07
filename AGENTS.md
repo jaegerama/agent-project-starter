@@ -44,8 +44,9 @@ only job is the brief; everything else below is the agent's.
 5. **Decompose the PRD into `docs/TODO.md`**, step 1 of §0.1: Epic 0, the
    walking skeleton, then the core flows as atomic stories with testable
    criteria.
-6. **Delete what does not apply**: the Money section with no money; the
-   Interface section and `DESIGN.md` with no interface.
+6. **Delete what does not apply**: the Money section with no money; the Data
+   section with no database; the Interface section and `DESIGN.md` with no
+   interface.
 7. **Adapt the example checks in `tools/docs-drift.mjs`** to this stack's
    manifest so that at least one runs: once this Setup section is gone,
    docs-drift fails when none does. Leave the rest SKIP and say why in §4.1.
@@ -307,17 +308,18 @@ Every review and self-check uses the ladder in `.claude/rules/review-severity.md
 Claude Code loads it at session start; other tools read it before a review.
 This project's own CRITICAL shapes are added there, under its list, not here.
 
-### Security (non-negotiable)
+### Security (non-negotiable where it applies)
 
-- **All authorization is server-side.** Client-side checks are cosmetic.
-  Middleware alone is never sufficient: every entry point checks independently.
 - Never log secrets, tokens, password hashes, or full account identifiers.
-- Every mutating operation writes an audit row **in the same transaction** as
-  the mutation.
-  <If audit rows are chained or locked, state that lock's scope.>
+- **Where there is a server, authorization is decided there.** Client-side
+  checks are cosmetic. Middleware alone is never sufficient: every entry point
+  checks independently.
+- Where the system has accounts, an error never distinguishes "no such account"
+  from "wrong password".
+- Where it has endpoints anyone can reach without logging in, each one is rate
+  limited.
+- <audit trail: which mutations write an audit row in the same transaction, and any lock on it; or "none">
 - <signed callbacks: raw-byte signature check, constant-time compare, replay window, or "none">
-- Rate limit every unauthenticated endpoint.
-- An error must not distinguish "no such account" from "wrong password".
 
 ### Money <delete this whole section if the system holds none>
 
@@ -326,7 +328,7 @@ This project's own CRITICAL shapes are added there, under its list, not here.
 - Rounding: <rule>, at <which level>, **once**.
 - <Decimal places; if the currency has no minor unit, say so here.>
 
-### Data
+### Data <delete this whole section if the system keeps no database>
 
 - Schema changes only via a migration. Never an ad-hoc alteration.
 - <Which entities soft-delete, and which may never be hard-deleted.>
@@ -391,7 +393,7 @@ Conventional Commits defines them.
 3. Phase 0 walking skeleton verified before feature stories began.
 4. The gate is green: every command in §4.
 5. Authorization enforced server-side, with a negative test (wrong role ⇒ denied).
-6. Mutating paths emit an audit row.
+6. Mutating paths emit an audit row, where §6 names an audit trail.
 7. Empty, loading, and error states visually and logically handled.
 8. Zero unapproved dependencies added.
 9. Real terminal execution evidence recorded in `HANDOFF.md` (HTTP status, exit code, test count). Synthetic claims without command output are rejected.
@@ -432,11 +434,8 @@ belongs in §2, and is never read off this table.
 | **Ports in use** | <the ports: this is the only place port numbers are recorded> |
 | **Services that do not auto-start** | <> |
 | **PATH / filesystem gotchas** | <> |
-| **Docker memory budget** | <the sum of the compose services' memory limits, and the machine budget it stays under> |
-| **Named volumes that hold data** | <list them: they are never pruned, and a cleanup must be able to tell data from cache> |
-| **Images built locally** | <their fixed tags, such as name:local, so a rebuild replaces an image instead of adding one> |
+| **Containers run locally** | <memory limits, the volumes that hold data, the image tags; or "none"> |
 
-Delete the three Docker rows if this project does not run Docker locally.
 Machine-wide limits, where this machine has any, are in the operator profile.
 
 Record **which machine** a number was measured on. A timeout chosen on a 12-core

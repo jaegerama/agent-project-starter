@@ -40,7 +40,8 @@ users, data, or money:
   with no check of its own. Middleware alone is never sufficient.
 - Authorization that exists only on the client: the button is hidden and the
   endpoint is open.
-- A mutation whose audit row is outside the mutation's transaction, or absent.
+- A mutation whose audit row, where `AGENTS.md` §6 names an audit trail, is
+  outside the mutation's transaction, or absent.
 - A floating-point type used for an amount, rate, or total. That includes
   `float`, `double`, and JavaScript `number`.
 - A signature verified over a re-serialised body rather than the raw bytes, or

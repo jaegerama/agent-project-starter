@@ -13,6 +13,17 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: security, data and container rules apply where the system has them (2026-10-07)
+
+The security section, marked non-negotiable, assumed accounts, endpoints and a
+transactional database, so a CLI, a library or a static site could not follow
+it. The data section assumed a relational database and could not be removed,
+and three environment rows assumed containers run locally. Each security rule
+now names the condition it applies under, and the audit trail is a slot the
+brief answers, as the review ladder now says too. The data section can be
+deleted like the money section, and step 6 of the Setup section says so. The
+container rows are one optional row.
+
 ### Changed: the template holds no preference of its owner (2026-10-07)
 
 The template carried its owner's own choices as every project's rules: commit

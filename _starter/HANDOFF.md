@@ -10,12 +10,22 @@ Status per 2026-10-07.
 
 ## Next Immediate Steps
 
-1. **When the owner asks for a release, cut it from `[Unreleased]`, then bring
-   every project that uses the starter to it** with
-   `node tools/adopt.mjs --into ../<project>`, dry run first. agent-check and
-   the slot pattern changed after 0.3.0, so every project's copy is behind
-   until then. Whether a project commits what adopt changed is that project's
-   call.
+1. **G1: adopt updates a seeded file that is still one of the starter's own
+   earlier copies**, with a backup, and leaves a customised one alone. A fix
+   to a seeded file never reached a project before: one still runs the first
+   silent-failure-hunter, with Bash, reported as "customised, kept".
+2. **Release 0.4.0 once G1 is in** (the owner asked for it on 2026-10-07),
+   then bring every project that uses the starter to it with
+   `node tools/adopt.mjs --into ../<project>`, dry run first. Whether a
+   project commits what adopt changed is that project's call.
+3. **G2: a fresh project from a clean clone goes through the whole Setup
+   section** with a sample brief and reaches a green gate; whatever trips on
+   the way is fixed.
+4. **G3: write down the starter's public API** in `_starter/README.md`, for
+   the owner to approve: the commands and flags, what the checks decide, the
+   files adopt owns and where, and what adopt promises.
+5. **G4: one release used through a full cycle** in every project without a
+   breaking fix or a HIGH finding.
 
 ## Done
 
@@ -99,8 +109,8 @@ Status per 2026-10-07.
 - The owner installs skills; an agent never fetches one (`AGENTS.md` §2.1).
 - The starter's `LICENSE` stays out of projects; the tool files carry its
   SPDX notice instead.
-- 1.0.0 comes when all four of these hold; until then the starter stays at
-  0.x, released by the rules of `AGENTS.md` §7 (the owner, 2026-10-07):
+- 1.0.0 comes when all of these hold; until then the starter stays at 0.x,
+  released by the rules of `AGENTS.md` §7 (the owner, 2026-10-07):
   1. every project the owner uses the starter in runs the current release:
      adopt's dry run finds nothing to change, `.claude/starter-version` names
      the release, and the report has no line saying no gate runs agent-check;
@@ -110,6 +120,9 @@ Status per 2026-10-07.
   4. the starter is agnostic: it names no project it is used in, assumes no
      language or stack, and holds no preference of its owner as a rule. The
      license and copyright notices are the owner's, and stay.
+
+  The owner added four more on 2026-10-07, after the implementer judged the
+  starter not yet stable enough for 1.0.0: G1 to G4 in Next Immediate Steps.
 - Releases and tags happen only when the owner asks; until then changes
   collect under `[Unreleased]`, and a pushed tag is never moved (the owner,
   2026-10-07).

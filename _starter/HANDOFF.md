@@ -10,7 +10,7 @@ Status per 2026-10-07.
 
 ## Next Immediate Steps
 
-1. **Bring every project that uses the starter to 0.4.0** with
+1. **Bring every project that uses the starter to 0.4.1** with
    `node tools/adopt.mjs --into ../<project>`, dry run first. Whether a
    project commits what adopt changed is that project's call.
 2. **G2: a fresh project from a clean clone goes through the whole Setup
@@ -99,6 +99,10 @@ Status per 2026-10-07.
   `node tools/docs-drift.mjs` 1 passed, 2 skipped.
 - 2026-10-07: release 0.4.0, tagged `v0.4.0`: MINOR, because the commits since
   0.3.0 include a breaking fix and a feat while the starter is 0.x.
+- 2026-10-07: the dry run before 0.4.0 reached any project showed adopt
+  rewriting a current seeded file over its CRLF line endings. Fixed (1
+  mutation, caught), and released as 0.4.1, tagged `v0.4.1`: PATCH, one fix.
+  `node _starter/selftest.mjs` 166 passed, 0 failed, 0 skipped.
 
 ## Decisions taken
 

@@ -13,6 +13,11 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-10-07
+
+One fix: adopt no longer rewrites a seeded file whose only difference from
+the starter's current copy is CRLF line endings.
+
 ### Fixed: adopt rewrote a current seeded file over its line endings (2026-10-07)
 
 0.4.0's adopt took a seeded file that matches the starter's current copy
@@ -464,7 +469,8 @@ scripts, which stay on the machine they were written for. The one code change
 the import needs is in bootstrap, which recognises a copied starter by its
 root commit: it now accepts the public root commit as well as the private one.
 
-[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/jaegerama/agent-project-starter/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.1.0...v0.2.0

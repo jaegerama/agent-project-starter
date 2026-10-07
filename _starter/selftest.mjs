@@ -674,6 +674,19 @@ check(
 )
 check('"make" alone on a line does not take the next line as its target', gateIs({ Makefile: makefile, 'AGENTS.md': fence('make', 'make test') }, 'm-bare').startsWith('ok'))
 
+// Private agents: people run the CONTRIBUTING.md gate, agents the AGENTS.md one.
+const gates = (people, agents) => ({ 'CONTRIBUTING.md': '## The gate\n\n' + fence(people), 'AGENTS.md': '### The gate: all green\n\n' + fence(agents) })
+const peopleGate = (files, name) => lineWith(driftIn(name, files), 'CONTRIBUTING.md gate is also in')
+check("the people's gate inside the agents' gate -> green", peopleGate(gates('npm test', 'npm test && node .claude/tools/agent-check.mjs'), 'c-ok').startsWith('ok'))
+const lacking = driftIn('c-lacks', gates('npm run lint && npm test', 'npm test'))
+check("a people's gate command the agents' gate lacks -> red, and named", lineWith(lacking, 'CONTRIBUTING.md gate is also in').startsWith('FAIL') && lacking.includes('lacks npm run lint'))
+check('no CONTRIBUTING.md -> SKIP', peopleGate({ 'AGENTS.md': '### The gate\n\n' + fence('npm test') }, 'c-none').startsWith('SKIP'))
+check(
+  "the templates' own gates -> SKIP while they are slots, not red during setup",
+  peopleGate({ 'CONTRIBUTING.md': read(join(root, '_starter', 'templates', 'CONTRIBUTING.md')), 'AGENTS.md': read(join(root, 'AGENTS.md')) }, 'c-templates').startsWith('SKIP'),
+)
+check('setup done and only the two gates compared -> red: no document met code', driftRun('c-guard', gates('npm test', 'npm test')).status === 1)
+
 const story = (status, id) => `### [${status}] ${id} title\n`
 check('two stories in WIP -> red', todoIs({ 'docs/TODO.md': story('DONE', 'S0.1') + story('WIP', 'S1.1') + story('WIP', 'S1.2') }, 't-two').startsWith('FAIL'))
 check('a story past Epic 0 started before it is DONE -> red', todoIs({ 'docs/TODO.md': story('TODO', 'S0.1') + story('WIP', 'S1.1') }, 't-early').startsWith('FAIL'))

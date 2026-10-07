@@ -218,6 +218,8 @@ keep their names.
   with STATUS one of TODO, WIP, REVIEW, DONE, BLOCKED. One story in WIP;
   nothing past Epic 0 started before Epic 0 is DONE.
 - **Setup is done** when `AGENTS.md` has no heading that starts `## Setup`.
+- **The gates**: every command of the `CONTRIBUTING.md` gate is also in the
+  `AGENTS.md` gate, where both have one.
 - **The operator profile** opts in with a master that carries
   `<!-- operator-profile -->`; a shared block is marked
   `<!-- name:start -->` … `<!-- name:end -->`.

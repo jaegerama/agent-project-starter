@@ -10,8 +10,15 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ## [Unreleased]
 
+### Added
+
+- docs-drift fails when the `CONTRIBUTING.md` gate has a command the
+  `AGENTS.md` gate lacks, so an agent never runs less than people must.
+
 ### Changed
 
+- docs-drift's failure after setup also says that creating the file a check
+  reads is enough.
 - `docs/BRIEF.md` is a seven-part form the owner fills, with conventions that
   hold unless changed; a brief in free text still works.
 - Setup asks every question in one message, what decides the build first, each

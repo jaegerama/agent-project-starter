@@ -57,6 +57,18 @@ const makeTargets = (makefile) =>
       .filter((t) => !t.startsWith('.') && !/[%$]/.test(t)),
   )
 
+// The first fenced block under the first heading that names the gate, one command per entry.
+const gateCommands = (md) => {
+  const at = md ? md.search(/^#{2,4} .*\bgate\b/im) : -1
+  if (at < 0) return null
+  const block = md.slice(at).match(/```[^\n]*\n([\s\S]*?)```/)?.[1]
+  if (!block) return null
+  return block
+    .split(/&&|;|\n/)
+    .map((c) => c.trim().replace(/\s+/g, ' '))
+    .filter((c) => c && !c.startsWith('#'))
+}
+
 const CHECKS = [
   {
     name: 'the gate in AGENTS.md and CONTRIBUTING.md runs commands that actually exist',
@@ -86,6 +98,20 @@ const CHECKS = [
       ].filter(Boolean)
 
       return problems.length === 0 ? null : `the gate runs ${problems.join(', and ')}`
+    },
+  },
+
+  {
+    name: 'every command of the CONTRIBUTING.md gate is also in the AGENTS.md gate',
+    // Two documents, no code. An agent that runs less than people must reports done while CI fails.
+    docsOnly: true,
+    run() {
+      const people = gateCommands(read('CONTRIBUTING.md'))
+      const agents = gateCommands(read('AGENTS.md'))
+      if (!people || !agents) return SKIP('needs a gate block in both CONTRIBUTING.md and AGENTS.md')
+      if ([...people, ...agents].some((c) => c.startsWith('<') && c.endsWith('>'))) return SKIP('a gate is still a slot')
+      const missing = people.filter((c) => !agents.includes(c))
+      return missing.length === 0 ? null : `the AGENTS.md gate lacks ${missing.join(', ')}`
     },
   },
 
@@ -171,7 +197,8 @@ const agents = read('AGENTS.md')
 if (ranOnCode === 0 && agents !== null && !/^## Setup\b/m.test(agents)) {
   console.error(
     '\nFAIL  setup is done (AGENTS.md has no Setup section), yet no check compared a document' +
-      '\n      with code: adapt one of the examples above to a file this project really has.',
+      '\n      with code: adapt one of the examples above to a file this project really has,' +
+      '\n      or create the file one of them reads.',
   )
   process.exit(1)
 }

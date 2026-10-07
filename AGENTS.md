@@ -253,7 +253,8 @@ Two steps belong in every gate whatever the stack: `node tools/docs-drift.mjs`
 (this project's documents against its code) and, where `.claude/` exists,
 `node .claude/tools/agent-check.mjs` (agent configuration). In a
 private-agents repository the second one is not in the `CONTRIBUTING.md` gate,
-because the people who read that file do not have `.claude/`.
+because the people who read that file do not have `.claude/`; every other
+command of that gate is in this one, and docs-drift fails when one is missing.
 
 ### 4.1 Document ↔ code pairs checked for drift
 

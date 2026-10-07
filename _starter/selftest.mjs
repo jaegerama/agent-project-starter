@@ -75,8 +75,9 @@ const runHook = ({ project, cwd = project, input, env = { CLAUDE_PROJECT_DIR: pr
 const write = (file_path, cwd) => ({ tool_name: 'Write', tool_input: { file_path }, cwd })
 const hook = (cwd, file, input) => runHook({ project: cwd, input: input ?? write(join(cwd, file), cwd) })
 const HOOK_CMD = 'node "$CLAUDE_PROJECT_DIR/.claude/hooks/guard-slots.mjs"'
+// A missing file reads as no hooks, so a refused adopt fails its cases instead of stopping the suite.
 const hookCommands = (body) =>
-  (JSON.parse(body).hooks?.PreToolUse ?? []).flatMap((m) => (m.hooks ?? []).map((h) => h.command)).filter((c) => c.includes('guard-slots'))
+  (JSON.parse(body ?? '{}').hooks?.PreToolUse ?? []).flatMap((m) => (m.hooks ?? []).map((h) => h.command)).filter((c) => c.includes('guard-slots'))
 
 section('slot pattern')
 const slotCases = [
@@ -382,12 +383,12 @@ out = adopt(team, true)
 check('private mode detected', out.stdout.includes('private agents'))
 const moved = read(join(team, 'AGENTS.md'))
 check('rules moved verbatim: only the title differs', moved === rules.replace('# CLAUDE.md', '# AGENTS.md'))
-check('the BOM is kept (a title rename was once lost to one)', moved.startsWith('\uFEFF# AGENTS.md'))
+check('the BOM is kept (a title rename was once lost to one)', (moved ?? '').startsWith('\uFEFF# AGENTS.md'))
 check('CLAUDE.md is the starter pointer, with the import', read(join(team, 'CLAUDE.md')) === read(join(root, 'CLAUDE.md')))
 const backups = readdirSync(team).filter((e) => e.startsWith('.claude.backup-adopt-'))
 check('the original CLAUDE.md is backed up byte for byte', backups.length === 1 && read(join(team, backups[0], 'CLAUDE.md')) === rules)
 check('self-references carried over by the move are listed for review', out.stdout.includes('review AGENTS.md:3'))
-check('a filled AGENTS.md (git identities included) gets the hook wired', read(join(team, '.claude/settings.json')).includes('guard-slots.mjs'))
+check('a filled AGENTS.md (git identities included) gets the hook wired', (read(join(team, '.claude/settings.json')) ?? '').includes('guard-slots.mjs'))
 check('nothing tracked changed in the team repository', git(team, 'status', '--porcelain').stdout.trim() === '')
 const teamAfter = treeHash(team)
 adopt(team, true)

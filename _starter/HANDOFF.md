@@ -10,9 +10,13 @@ Status per 2026-10-07.
 
 ## Next Immediate Steps
 
-1. **Bring the remaining projects up to date** with `node tools/adopt.mjs
-   --into ../<project>`, dry run first, once the owner names them. Each
-   project's own session commits what adopt changed there.
+1. **Bring every project that uses the starter to 0.3.0** with
+   `node tools/adopt.mjs --into ../<project>`, dry run first. It adds
+   `.claude/starter-version`, and its report names a project where no gate
+   runs agent-check. Whether a project commits what adopt changed is that
+   project's call.
+2. **Review the starter against the agnostic criterion for 1.0.0** (Decisions
+   taken): list each finding first, and change only what the owner approves.
 
 ## Done
 
@@ -54,11 +58,20 @@ Status per 2026-10-07.
   skipped; `node .claude/tools/agent-check.mjs` red only on the template's 67
   slots, by design.
 - 2026-10-07: release 0.2.0, tagged `v0.2.0`.
-- 2026-10-07: adopt brought three of the four existing projects to 0.2.0,
-  dry run first. Another session adopted one of them from this folder before
-  the release commit, with the same code. In each, agent-check passed 4 of 4
-  and a second dry run found nothing left to change. The fourth waits on the
-  owner (Next Immediate Steps, 1).
+- 2026-10-07: adopt brought the projects that use the starter to 0.2.0, dry
+  run first. Another session adopted one of them from this folder before the
+  release commit, with the same code. In each, agent-check passed 4 of 4 and a
+  second dry run found nothing left to change.
+- 2026-10-07: the byte order mark in adopt's import helper is an escape again,
+  and a self-test invariant fails on the character (red on that file before
+  the fix). adopt refuses an uncommitted source and records
+  `.claude/starter-version` (7 mutations); its report names a project where no
+  gate runs agent-check (4 mutations); docs-drift fails once setup is done and
+  no check ran (3 mutations). Each mutation was caught by exactly the cases
+  written for it. Windows 11, Node 24.13.1: `node _starter/selftest.mjs` 153
+  passed, 0 failed, 0 skipped; `node tools/docs-drift.mjs` 1 passed, 2
+  skipped; `node .claude/tools/agent-check.mjs` red only on the template's 67
+  slots, by design.
 
 ## Decisions taken
 
@@ -71,9 +84,17 @@ Status per 2026-10-07.
 - The owner installs skills; an agent never fetches one (`AGENTS.md` §2.1).
 - The starter's `LICENSE` stays out of projects; the tool files carry its
   SPDX notice instead.
-- 1.0.0 is the first version that every project runs and that someone else
-  can pick up comfortably (the owner, 2026-10-07). Until then the starter
-  stays at 0.x.
+- 1.0.0 comes when all four of these hold; until then the starter stays at
+  0.x, released by the rules of `AGENTS.md` §7 (the owner, 2026-10-07):
+  1. every project the owner uses the starter in runs the current release:
+     adopt's dry run finds nothing to change, `.claude/starter-version` names
+     the release, and the report has no line saying no gate runs agent-check;
+  2. no audit finding is open, and CI is green on Ubuntu, macOS and Windows
+     for the release commit;
+  3. every tool row in `AGENTS.md` §11 says observed, or says plainly why not;
+  4. the starter is agnostic: it names no project it is used in, assumes no
+     language or stack, and holds no preference of its owner as a rule. The
+     license and copyright notices are the owner's, and stay.
 - Whether Antigravity loads `AGENTS.md` natively or through the `GEMINI.md`
   import needs no further test: adopt gives every old pointer the import, so
   it loads either way, and the tested session loaded it once with both present.

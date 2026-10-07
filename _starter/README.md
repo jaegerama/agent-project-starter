@@ -208,4 +208,7 @@ adopt itself. Break things on purpose only in a copy.
 
 The repository is public. Nothing in it describes one machine or another
 repository: no personal paths, no other projects' names, registries or
-measurements. Check the diff for them before every push.
+measurements. Check the diff for them before every push. The starter is also
+agnostic: it assumes no language or stack, and holds no preference of its
+owner as a rule; what is specific to one project lives in that project's own
+folder. The license and copyright notices are the only exception.

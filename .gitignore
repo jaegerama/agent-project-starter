@@ -5,13 +5,7 @@
 *.pem
 *.key
 
-# Dependencies and build output: trim to this project's stack
-node_modules/
-vendor/
-dist/
-build/
-.next/
-__pycache__/
+# Dependencies and build output: add this stack's during setup.
 *.log
 
 # Per-machine preferences; the rest of .claude/ is committed so the tooling travels.

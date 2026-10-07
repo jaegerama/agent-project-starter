@@ -7,9 +7,7 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 indent_style = space
 indent_size = 2
-
-[*.{py,php}]
-indent_size = 4
+# Each language's own settings go in a section of their own, added during setup.
 
 [*.md]
 # Two trailing spaces are a deliberate line break in Markdown.

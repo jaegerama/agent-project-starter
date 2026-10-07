@@ -13,6 +13,14 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: .gitignore and .editorconfig carry no stack (2026-10-07)
+
+The template's `.gitignore` listed the dependency and build directories of a
+few stacks, and `.editorconfig` set the indent of two languages. Both keep
+only what holds for any project, and step 3 of the Setup section adds the
+stack's own entries from the brief. The Makefile tab stays, because make
+requires it.
+
 ### Changed: the operator profile is stated as an option (2026-10-07)
 
 Several project files stated one machine's arrangement as fact: a master

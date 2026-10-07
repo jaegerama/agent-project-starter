@@ -10,13 +10,10 @@ Status per 2026-10-07.
 
 ## Next Immediate Steps
 
-1. **G2: a fresh project from a clean clone goes through the whole Setup
-   section** with a sample brief and reaches a green gate; whatever trips on
-   the way is fixed.
-2. **G3: write down the starter's public API** in `_starter/README.md`, for
+1. **G3: write down the starter's public API** in `_starter/README.md`, for
    the owner to approve: the commands and flags, what the checks decide, the
    files adopt owns and where, and what adopt promises.
-3. **G4: one release used through a full cycle** in every project without a
+2. **G4: one release used through a full cycle** in every project without a
    breaking fix or a HIGH finding.
 
 ## Done
@@ -105,6 +102,20 @@ Status per 2026-10-07.
   passed 4 of 4, no report line says a gate skips agent-check, and a second
   dry run found nothing left to change. Two projects got the read-only
   silent-failure-hunter through G1; the third keeps its own customised one.
+- 2026-10-07: G2. A sample project, a command-line tool in Python with
+  committed agent files, went from a fresh clone through every Setup step to
+  its walking skeleton with the gate green, its 16 questions answered for the
+  test. What it tripped on is fixed: docs-drift's post-setup guard never
+  fired, because the story check runs from day one (4 mutations); one-word
+  placeholders such as `<model>` passed agent-check unfilled, and bootstrap
+  left the Name row to the agent (5 mutations); the Setup steps, the README
+  gate and the Definition of Done now say what the run needed. Each mutation
+  was caught by exactly the cases written for it. The docs-first hook blocked
+  a Write given as an MSYS path in a real session, so that path needs no fix.
+  Windows 11, Node 24.13.1: `node _starter/selftest.mjs` 172 passed, 0
+  failed, 0 skipped; `node tools/docs-drift.mjs` 1 passed, 2 skipped;
+  `node .claude/tools/agent-check.mjs` red only on the template's 70 slots,
+  by design.
 
 ## Decisions taken
 

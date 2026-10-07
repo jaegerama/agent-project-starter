@@ -17,6 +17,11 @@ empty `CHANGELOG.md` at the root. History before the public import of
   testing, and `--allow-dirty` implies it.
 - `AGENTS.md` says how to write a placeholder meant to stay, such as a
   command's argument, so that the slot check does not count it.
+- Setup says which slots are measured or planned rather than asked, when
+  "none" may be written, and what to delete when nothing is deployed.
+- The README points at the gate instead of copying it.
+- The Definition of Done says Epic 0, as §0.1 does, and asks for a loading
+  state only where there is an interface.
 
 ### Fixed
 

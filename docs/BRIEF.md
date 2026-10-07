@@ -11,7 +11,8 @@ the next session, a `/clear`, or a switch to another tool.
 ## Rules for the agent filling the templates from this brief
 
 - Fill a slot only with what this file actually says. Paraphrase is fine;
-  addition is not.
+  addition is not, apart from the slots Setup step 3 says are measured or
+  planned.
 - A slot the brief does not answer becomes a question in `docs/QUESTIONS.md`
   and stays a slot. A guessed stack, command, or business rule reads exactly
   like a decided one, and it is the most expensive thing setup can produce.

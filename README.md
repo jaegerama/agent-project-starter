@@ -11,9 +11,8 @@
 
 ## Gate
 
-```bash
-<the gate block from AGENTS.md §4>
-```
+Every change passes the gate before it is committed:
+<AGENTS.md §4, or CONTRIBUTING.md where agent files are private>.
 
 ## Documents
 

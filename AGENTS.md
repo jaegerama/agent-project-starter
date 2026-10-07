@@ -42,15 +42,22 @@ only job is the brief; everything else below is the agent's.
    and its language settings to `.editorconfig`. Stack, commands and way of
    working are this project's own, taken from the brief. Nothing is carried
    over from another project, and a stack an operator profile mentions is
-   background, not a default.
+   background, not a default. Two kinds of slot are not asked: what this
+   machine runs (§10) is measured, with the date, and what follows from the
+   stack once it is set (the directory map, the commands, the drift pairs)
+   is written as the plan the walking skeleton makes true.
 4. **Every slot the brief does not answer** becomes a numbered question in
-   `docs/QUESTIONS.md` and stays a slot. Never fill one with a guess.
+   `docs/QUESTIONS.md` and stays a slot. Never fill one with a guess: a
+   question may carry what the brief suggests, for the owner to confirm,
+   and "none" is written only where the brief or the owner says so. A list
+   item with nothing to hold is deleted.
 5. **Decompose the PRD into `docs/TODO.md`**, step 1 of §0.1: Epic 0, the
    walking skeleton, then the core flows as atomic stories with testable
    criteria.
 6. **Delete what does not apply**: the Money section with no money; the Data
    section with no database; the Interface section and `DESIGN.md` with no
-   interface.
+   interface; the server rows of §2 and the paragraph about servers when
+   nothing is deployed.
 7. **Adapt the example checks in `tools/docs-drift.mjs`** to this stack's
    manifest, so that at least one compares a document with code: once this
    Setup section is gone, docs-drift fails until one does, and the
@@ -276,8 +283,8 @@ machine without one installs the example from the starter repository,
 `_starter/operator-profile.md`, before its first project. Only the project's
 own rules belong in this section.
 
-1. **Never scan:** <dependency dir>, <build output>, `.git/`, migrations,
-   lockfiles, any volume mount.
+1. **Never scan:** <dependency and build directories>, `.git/`, and the
+   lockfiles, migrations and volume mounts this project has.
 2. <any other rule that only applies here>
 
 ### Defaults this project starts with
@@ -396,11 +403,12 @@ Conventional Commits defines them.
 
 1. Acceptance criteria in `docs/TODO.md` all satisfied.
 2. Story executed atomically (strictly ONE story in `[WIP]` at any time).
-3. Phase 0 walking skeleton verified before feature stories began.
+3. Epic 0, the walking skeleton, verified before feature stories began.
 4. The gate is green: every command in §4.
 5. Authorization enforced server-side, with a negative test (wrong role ⇒ denied).
 6. Mutating paths emit an audit row, where §6 names an audit trail.
-7. Empty, loading, and error states visually and logically handled.
+7. Empty and error states handled; with an interface, a loading state too,
+   and each one visible.
 8. Zero unapproved dependencies added.
 9. Real terminal execution evidence recorded in `HANDOFF.md` (HTTP status, exit code, test count). Synthetic claims without command output are rejected.
 10. <i18n complete: every key in every dictionary.>

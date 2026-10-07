@@ -67,7 +67,7 @@ to another tool. Context that lives in this file is not.
 | **Name** | <> |
 | **One sentence** | <what it is, who uses it> |
 | **What it is NOT** | <what is deliberately not built: see the note below> |
-| **Prose language** | <the language prose is written in>; technical terms stay in English either way |
+| **Prose language** | <the language prose is written in> |
 | **UI language** | <i18n dictionaries / single language / no UI> |
 | **First deliverable** | <docs first / a walking skeleton / a specific feature> |
 
@@ -161,13 +161,9 @@ cannot run.
 A skill is a prompt the agent obeys, so **an agent never installs, updates or
 fetches one**, and never downloads a `SKILL.md` over the network. The owner
 installs skills. The agent uses only what is already on disk, and when a skill
-below is missing it says so and works without it.
+listed here is missing it says so and works without it.
 
-| Skill | Origin | Use it for | Not for |
-|---|---|---|---|
-| `antislop` | `miqdadbadjuber/anti-slop` | Removing generic AI patterns from UI, copy and code comments | Choosing a style: it is a filter, and direction comes from `DESIGN.md` |
-| `superpowers` | `obra/superpowers` | Planning, systematic debugging, test design | Replacing the process in this file |
-| `ui-ux-pro-max` | `nextlevelbuilder/ui-ux-pro-max-skill` | Layout and accessibility craft | Palette, typography or mood: those come from `DESIGN.md`, which the owner writes (antislop R-37) |
+Skills this project uses: <each with its origin, what it is for and what it is not for; or "none">
 
 Skills load on demand, to keep the context small. Where a skill and this file
 disagree, this file wins: it holds the project's rules.
@@ -282,7 +278,7 @@ project's own rules belong in this section.
 Every project created from the starter begins with the two rules below. They are
 this project's own now: keep them, change them, or delete them.
 
-**Code minimalism (the Ponytail ladder).** The best code is the code never
+**The minimal-code ladder.** The best code is the code never
 written. Before writing application code, go down the ladder and stop at the
 first rung that holds:
 
@@ -294,7 +290,7 @@ first rung that holds:
 5. **One-liner:** can it be one clear line?
 6. **Minimum code:** no unrequested abstraction: no factory for one product, no
    interface for one implementation, no config for a constant.
-7. **Intentional simplification:** mark it with a `ponytail:` comment, in the
+7. **Intentional simplification:** mark it with a `simplification:` comment, in the
    language's own comment syntax, naming the boundary and the upgrade path.
 
 **No new dependency without approval.** Never add a package (npm, pip, go get,
@@ -341,34 +337,29 @@ This project's own CRITICAL shapes are added there, under its list, not here.
 
 ### Interface <delete if this project is an API / CLI / library / job>
 
-UI mandates that hold on every project of this machine, where the operator
-profile has any, apply here too. What this project adds:
-
 - Breakpoints verified before a story closes: <>
 - Dictionary languages: <>
 - <design system / component library>
-- Direction comes from `DESIGN.md`. UI, copy and code-comment work goes through
-  antislop where it is installed; without `DESIGN.md` any UI is a draft, not a
-  deliverable (antislop R-37).
+- Direction comes from `DESIGN.md`, which the owner writes. Without it, any UI
+  is a draft, not a deliverable.
 
-**Where antislop is not installed**, its hard gates still apply, and they are
-about function and access, not style: no em dash in UI text (R-02); 44×44 px
-touch targets and no horizontal overflow on mobile (R-03); WCAG AA contrast
-(R-25); every control reachable by keyboard, with a visible focus (R-32); an
-empty, a loading and an error state for every view that shows data (R-27).
-Palette, type, spacing, borders and backgrounds come from `DESIGN.md`, never
-from a default.
+Whatever the design, two things hold, because they are about function and
+access rather than style: WCAG 2.2 at level AA, which covers contrast, keyboard
+access with a visible focus, reflow without horizontal scrolling and a minimum
+target size; and an empty, a loading and an error state for every view that
+shows data.
 
 ---
 
 ## 7. Git & Semantic Versioning
 
-- **Conventional Commits v1.0.0**, in English: `type(scope)!: summary`,
-  imperative mood, lowercase summary, no trailing period. The body explains why.
-  Breaking changes use `!` before the colon and/or a `BREAKING CHANGE:` footer.
+- **Conventional Commits v1.0.0**: `type(scope)!: summary`, imperative mood,
+  lowercase summary, no trailing period. The body explains why. Breaking
+  changes use `!` before the colon and/or a `BREAKING CHANGE:` footer.
   Scopes: <list them: a closed list is what makes them searchable>.
-- **Commit with the machine's own git config.** Never override the identity, and
-  never add a `Co-Authored-By` or any AI/tool trailer.
+  Language of commit messages: <the language commit messages are written in>.
+- **Commit with the machine's own git config.** Never override the identity.
+  Co-author and tool trailers (`Co-Authored-By` and the like): <allowed, required, or never>.
 - Branches: <model>.
 - **`CHANGELOG.md` is updated BEFORE the code change**, not after.
 
@@ -483,7 +474,7 @@ in the starter repository.
 | Secret files are not read | **Partial**: the Read tool and common shell readers are denied, even in `bypassPermissions` mode; an interpreter one-liner is not. The sandbox closes that, on macOS, Linux and WSL2 only | **Intention** |
 | No new dependency without approval | **Partial**: in the default permission mode, a command that is not allowlisted asks first. `bypassPermissions` and a direct edit of the manifest are not guarded | **Intention** |
 | Docs-first, scope containment, CHANGELOG first | **Intention** | **Intention** |
-| antislop applied to UI, copy and comments | **Intention**: loaded globally, and transcripts show sessions writing UI copy without it | **Intention** |
+| The interface rules in §6 | **Intention**: no check runs them | **Intention** |
 | Agent files match the current starter | **Mechanism only when** `node tools/adopt.mjs` is re-run from the starter; otherwise they drift silently | same |
 
 Hooks are a Claude Code feature. Working in Codex or Antigravity, the hook row

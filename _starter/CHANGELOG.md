@@ -13,6 +13,21 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: the template holds no preference of its owner (2026-10-07)
+
+The template carried its owner's own choices as every project's rules: commit
+messages in English with no co-author or tool trailer, three named third-party
+skills, technical terms kept in English whatever the prose language, and an
+interface section built on one style skill, with its rule numbers, its dials
+and a ban on the em dash in UI text. Commit language and trailers are slots
+now, and the skills are this project's own list. The interface section states
+what holds for any interface in its own terms: WCAG 2.2 at level AA, and an
+empty, a loading and an error state for every view that shows data.
+`DESIGN.md` keeps its direction fields without one skill's vocabulary, and the
+minimal-code ladder is named for what it does. The example profile leaves the
+trailer decision to whoever installs it. A project made earlier keeps these
+rules in its own `AGENTS.md`, where they are that project's.
+
 ### Changed: the profile checks run only for a profile marked as one (2026-10-07)
 
 agent-check required every tool's global instructions to equal one master, so

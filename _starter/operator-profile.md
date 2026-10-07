@@ -73,5 +73,6 @@ Everything below the line is the profile.
 - Commit with the identity configured on the machine. Never override it.
 - Conventional Commits 1.0.0: `type(scope)!: summary`, imperative, lowercase,
   no trailing period. The body says why.
-- No `Co-Authored-By` or other tool trailer in commits or pull requests.
+- Co-author and tool trailers in commits and pull requests: decide once, write
+  the decision here, and keep to it.
 - The changelog entry is written before the change it describes.

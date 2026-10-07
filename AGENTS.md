@@ -451,9 +451,9 @@ itself says so.
 | Tool | Reads | Status |
 |---|---|---|
 | Claude Code | `CLAUDE.md`, which imports this file with `@AGENTS.md`; plus `.claude/` (rules auto-load; commands, agents, settings) | **Verified 2026-09-24**: four sessions' transcripts list `AGENTS.md` among the files loaded through the import. The earlier pointer asked in words, and this file was never loaded |
-| Codex | `AGENTS.md` (this file) + `~/.codex/AGENTS.md` | Official Codex convention |
-| Cursor / Copilot | `AGENTS.md` (this file) | Official convention |
-| Gemini CLI | `GEMINI.md`, which imports this file with `@./AGENTS.md`; plus `~/.gemini/GEMINI.md` | **Documented, not yet observed**: Gemini CLI documents `@` imports in `GEMINI.md`. Confirm it once in a session (ask which files it loaded), then mark it verified |
+| Codex | `AGENTS.md` (this file) + `~/.codex/AGENTS.md` | **Documented, not yet observed**: Codex's own convention, not yet checked in a Codex session. Confirm it once (ask which files it loaded), then mark it verified |
+| Cursor / Copilot | `AGENTS.md` (this file) | **Documented, not yet observed**: their own convention, not yet checked in a session. Confirm it once, then mark it verified |
+| Gemini CLI | `GEMINI.md`, which imports this file with `@./AGENTS.md`; plus `~/.gemini/GEMINI.md` | **Documented, not yet observed**: Gemini CLI documents `@` imports in `GEMINI.md`, but no Gemini CLI session has been checked for it yet. Confirm it once (ask which files it loaded), then mark it verified |
 | Antigravity | `AGENTS.md` and `GEMINI.md` as workspace rules, loaded at session start; global rules from `~/.gemini/config/AGENTS.md` | **Verified 2026-10-06**: a fresh session quoted the last sentence of this file before using any tool. Not yet separated: whether `AGENTS.md` loads natively or through the import in `GEMINI.md` |
 
 The operator profile (working process, verification, reporting, git) is not
@@ -468,7 +468,7 @@ copies with it.
 
 | Rule | Claude Code | Codex / Antigravity / Gemini |
 |---|---|---|
-| This file is in the agent's context | **Mechanism** (observed 2026-09-24): the `@AGENTS.md` import | Codex, Cursor: native. Gemini: the `@./AGENTS.md` import, documented, not yet observed. Antigravity: loaded at session start (observed 2026-10-06) |
+| This file is in the agent's context | **Mechanism** (observed 2026-09-24): the `@AGENTS.md` import | Codex, Cursor: native, documented, not yet observed. Gemini: the `@./AGENTS.md` import, documented, not yet observed. Antigravity: loaded at session start (observed 2026-10-06) |
 | No application code until `AGENTS.md` is filled | **Mechanism for the file tools**: the PreToolUse hook `.claude/hooks/guard-slots.mjs` blocks Write, Edit and NotebookEdit from any working directory. A file written through Bash is not seen | **Intention**: no hook, only `node .claude/tools/agent-check.mjs` |
 | Zero unfilled slots in `AGENTS.md` | **Mechanism**: gate goes red | **Mechanism**: same gate, run by hand |
 | Pointer files carry no rules, and `CLAUDE.md` keeps its import line | **Mechanism**: gate goes red | **Mechanism** |

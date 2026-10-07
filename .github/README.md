@@ -72,7 +72,7 @@ starter version it installed to the project's `.claude/starter-version`.
 
 | Rule | Claude Code | Codex, Cursor, Gemini CLI, Antigravity |
 |---|---|---|
-| `AGENTS.md` is in the agent's context | Import in `CLAUDE.md`, observed | Native in Codex and Cursor; loaded at session start in Antigravity, observed; import in `GEMINI.md` for Gemini CLI, documented but not yet observed |
+| `AGENTS.md` is in the agent's context | Import in `CLAUDE.md`, observed | Loaded at session start in Antigravity, observed; native in Codex and Cursor, and imported by `GEMINI.md` in Gemini CLI, documented but not yet observed |
 | No application code while slots remain | Hook, for the file tools only. A file written through Bash is not seen | Gate only |
 | No empty slot; pointers stay pointers | Gate | Gate |
 | One story in WIP, and Epic 0 first | Gate | Gate |

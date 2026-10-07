@@ -128,9 +128,11 @@ whatever the working directory, stops carrying a block of the master marked
 `<!-- name:start -->` … `<!-- name:end -->` word for word. Without the line
 both checks skip: a machine that keeps different notes per tool is left alone.
 
-**Verified for Antigravity, not yet for Gemini CLI:** on 2026-10-06 a fresh
-Antigravity session loaded `AGENTS.md` and `GEMINI.md` at session start
-(`AGENTS.md` §11). The Gemini CLI import is documented, not yet observed.
+**Observed in Claude Code and Antigravity, documented for the rest:** Claude
+Code loads `AGENTS.md` through the import in `CLAUDE.md`, and on 2026-10-06 a
+fresh Antigravity session loaded `AGENTS.md` and `GEMINI.md` at session start.
+Codex, Cursor, Copilot and the Gemini CLI import are documented, not yet
+observed (`AGENTS.md` §11).
 
 ---
 

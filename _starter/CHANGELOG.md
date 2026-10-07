@@ -13,6 +13,22 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: AGENTS.md §11 says which tool loads are observed (2026-10-07)
+
+The table gave Codex, Cursor and Copilot their documented convention as their
+status, which read as confirmed. They, and Gemini CLI, now say plainly that
+the load is documented and not yet observed in a session, and how to confirm
+it, beside the Claude Code and Antigravity rows that say what was observed.
+
+### Changed: the audit's last two findings are accepted limits (2026-10-07)
+
+The audit before 0.1.0 left B5 and H7 partly fixed, and the owner accepted
+both as limits. B5: an interpreter one-liner can still read a secret file the
+deny rules keep from the Read tool and the shell readers, and only the
+sandbox, which does not run on native Windows, stops it. H7: no check ties
+each commit to a changelog entry, because entries are not keyed to commits.
+The audit records both, and no finding in it is open.
+
 ### Added: the agnostic review (2026-10-07)
 
 `_starter/AUDIT-2026-10-07-agnostic.md` records the review against the fourth

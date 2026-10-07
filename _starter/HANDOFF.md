@@ -84,6 +84,9 @@ Status per 2026-10-07.
   `node tools/docs-drift.mjs` 1 passed, 2 skipped;
   `node .claude/tools/agent-check.mjs` red only on the template's 69 slots,
   by design.
+- 2026-10-07: B5 and H7 recorded as accepted limits, so no audit finding is
+  open, and `AGENTS.md` §11 says plainly which tool loads are observed and
+  which are only documented.
 
 ## Decisions taken
 
@@ -110,17 +113,14 @@ Status per 2026-10-07.
 - Releases and tags happen only when the owner asks; until then changes
   collect under `[Unreleased]`, and a pushed tag is never moved (the owner,
   2026-10-07).
+- B5 and H7 of the audit before 0.1.0 are accepted limits, not open work (the
+  owner, 2026-10-07); §7 of that audit gives the reasons.
 - Whether Antigravity loads `AGENTS.md` natively or through the `GEMINI.md`
   import needs no further test: adopt gives every old pointer the import, so
   it loads either way, and the tested session loaded it once with both present.
 
 ## Blocked and pending
 
-- Criterion 2 of 1.0.0 waits on the owner: whether the audit's two partly
-  fixed findings count as accepted limits or as open work. B5: an interpreter
-  one-liner can still read a secret file, which only the sandbox stops, and
-  the sandbox does not run on native Windows. H7: no check ties each commit to
-  a changelog entry, by design, because entries are not keyed to commits.
 - Confirming the Gemini CLI import (`AGENTS.md` §11) waits on a session in
   Gemini CLI, which is not installed where the starter is maintained. Until
   one runs, §11 says documented, not yet observed.

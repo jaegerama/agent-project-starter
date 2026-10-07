@@ -341,7 +341,8 @@ check('every slot filled: gate green', out.status === 0, out.stdout + out.stderr
 check('every slot filled: code allowed', hook(committed, 'src/pos.ts') === 0)
 
 section('adopt')
-const adopt = (target, apply) => node(root, ['tools/adopt.mjs', '--into', target, ...(apply ? ['--apply'] : [])])
+// The starter under test is mid-edit while this runs; the cases that need a clean source make one.
+const adopt = (target, apply) => node(root, ['tools/adopt.mjs', '--into', target, '--allow-dirty', ...(apply ? ['--apply'] : [])])
 const IGNORE_PRIVATE = 'AGENTS.md\nCLAUDE.md\nGEMINI.md\n.github/copilot-instructions.md\n.claude/\n.claude.backup-*/\n'
 const makeRepo = (name, files) => {
   const dir = join(tmp, name)
@@ -464,6 +465,61 @@ for (const [what, body] of Object.entries(geminiKept)) {
   adopt(dir, true)
   check(`GEMINI.md that ${what}: kept byte for byte`, read(join(dir, 'GEMINI.md')) === body)
 }
+
+section('adopt: a committed source, and the version it records')
+const src = copyStarter('src-clean')
+git(src, 'add', '-A')
+git(src, '-c', 'commit.gpgsign=false', 'commit', '-qm', 'wip', '--allow-empty')
+git(src, 'tag', 'v9.9.9')
+const adoptFrom = (source, target, ...extra) => node(source, ['tools/adopt.mjs', '--into', target, ...extra])
+const versionIn = (dir) => read(join(dir, '.claude', 'starter-version'))
+const commitIn = (dir, file, text) => {
+  appendFileSync(join(dir, file), text)
+  git(dir, 'add', '-A')
+  git(dir, '-c', 'commit.gpgsign=false', 'commit', '-qm', `change ${file}`)
+  return git(dir, 'rev-parse', '--short', 'HEAD').stdout.trim()
+}
+
+const v1 = makeRepo('v-release', agentsOnly)
+out = adoptFrom(src, v1, '--apply')
+check('a clean source at a release: adopt records the tag', out.status === 0 && versionIn(v1) === 'v9.9.9\n', out.stdout + out.stderr)
+check('second run from the same source: the version is current', /starter-version +current: v9\.9\.9$/m.test(adoptFrom(src, v1).stdout))
+const sha = commitIn(src, '.claude/tools/lib/pointer.mjs', '// a change after the release\n')
+adoptFrom(src, v1, '--apply')
+check('an owned file changed after the release: the tag plus that commit', versionIn(v1) === `v9.9.9+${sha}\n`, versionIn(v1))
+commitIn(src, '_starter/HANDOFF.md', '\nA note.\n')
+check(
+  'a commit to a file adopt does not copy leaves the version alone',
+  new RegExp(`starter-version +current: v9\\.9\\.9\\+${sha}$`, 'm').test(adoptFrom(src, v1).stdout),
+)
+
+appendFileSync(join(src, '_starter', 'README.md'), '\nUncommitted.\n')
+check('an uncommitted change outside what adopt copies does not block it', adoptFrom(src, makeRepo('v-elsewhere', agentsOnly), '--apply').status === 0)
+appendFileSync(join(src, '.claude', 'tools', 'agent-check.mjs'), '// uncommitted\n')
+const v3 = makeRepo('v-dirty', agentsOnly)
+const v3Before = treeHash(v3)
+out = adoptFrom(src, v3, '--apply')
+check(
+  'an uncommitted change to a file adopt copies: refused, nothing written',
+  out.status === 1 && out.stderr.includes('agent-check.mjs') && treeHash(v3) === v3Before,
+  out.stdout + out.stderr,
+)
+adoptFrom(src, v3, '--apply', '--allow-dirty')
+check('--allow-dirty goes ahead, and the version says -dirty', /^v9\.9\.9\+[0-9a-f]+-dirty\n$/.test(versionIn(v3) ?? ''), versionIn(v3))
+
+const noGit = copyStarter('src-nogit')
+rmSync(join(noGit, '.git'), { recursive: true, force: true })
+const v4 = makeRepo('v-nogit', agentsOnly)
+out = adoptFrom(noGit, v4, '--apply')
+check(
+  'a source that is not a git checkout: adopted, no version recorded',
+  out.status === 0 && versionIn(v4) === null && /starter-version +not written/.test(out.stdout),
+  out.stdout + out.stderr,
+)
+// The version file is a path adopt writes, so the private-agents preflight must cover it.
+const narrowIgnore = ['AGENTS.md', 'CLAUDE.md', 'GEMINI.md', '.github/copilot-instructions.md', '.claude/tools/', '.claude/hooks/', '.claude/rules/', '.claude/commands/', '.claude/agents/', '.claude/settings.json', '.claude.backup-*/'].join('\n') + '\n'
+out = adoptFrom(src, makeRepo('v-private', { '.gitignore': narrowIgnore, 'AGENTS.md': '# AGENTS.md\n\nrules\n' }), '--apply', '--allow-dirty')
+check('private repo that does not ignore .claude/starter-version: refused', out.status === 1 && out.stderr.includes('.claude/starter-version'), out.stdout + out.stderr)
 
 section('docs-drift (the checks a new project starts with)')
 const driftIn = (name, files) => {

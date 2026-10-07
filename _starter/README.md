@@ -60,7 +60,10 @@ project customises only where they are missing, and moves a `CLAUDE.md` that
 holds rules into `AGENTS.md` verbatim. A `CLAUDE.md` or `GEMINI.md` pointer
 with no import line gets one after its title, and nothing else in it changes.
 Whatever adopt replaces is backed up into `.claude.backup-adopt-*`. The
-project's own stack, commands and rules are never rewritten. Re-run it after the starter changes: that is what keeps every
+project's own stack, commands and rules are never rewritten. adopt refuses
+while a file it copies has uncommitted changes in the starter, and records
+what it installed in the project's `.claude/starter-version`: the release
+tag, or the tag plus the last commit that changed those files. Re-run it after the starter changes: that is what keeps every
 project on the same process without making them the same project.
 
 It will not wire the docs-first hook into a project whose `AGENTS.md` still has
@@ -198,10 +201,10 @@ project does.
    tag `vX.Y.Z`. Then bring existing projects up to date with adopt, dry run
    first.
 
-adopt copies from this folder as it is on disk, not from a tag or a commit.
-Another session can run it at any time, so a saved edit reaches projects
-before it is committed: keep the working tree green, and break things on
-purpose only in a copy.
+adopt copies from this folder as it is on disk, and another session can run
+it at any time. It refuses while a file it copies has uncommitted changes, so
+a half-finished edit cannot reach a project; `--allow-dirty` is for testing
+adopt itself. Break things on purpose only in a copy.
 
 The repository is public. Nothing in it describes one machine or another
 repository: no personal paths, no other projects' names, registries or

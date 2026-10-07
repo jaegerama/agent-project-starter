@@ -45,3 +45,4 @@ restore them, so back them up before anything rewrites them. Otherwise
 **Keeping in step with the starter:** from `project-starter`, run
 `node tools/adopt.mjs --into` followed by this folder's path. It updates the
 files the starter owns and never overwrites the ones this project customised.
+`.claude/starter-version` names the starter release those files came from.

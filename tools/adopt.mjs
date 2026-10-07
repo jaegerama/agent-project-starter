@@ -23,6 +23,11 @@
  *
  * Where git ignores AGENTS.md, agent files are private (a team remote): adopt
  * writes only ignored files and seeds no tracked ones.
+ *
+ * adopt copies what is on disk, so it refuses while a file it copies, or adopt
+ * itself, has uncommitted changes; --allow-dirty is for testing adopt. The
+ * project's .claude/starter-version names what it installed: the release tag
+ * when those files match it, or the tag plus the last commit that changed them.
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, copyFileSync } from 'node:fs'
@@ -34,6 +39,7 @@ import { lineCount, isPointer, importsAgents, geminiImportsAgents } from '../.cl
 const starter = process.cwd()
 const args = process.argv.slice(2)
 const apply = args.includes('--apply')
+const allowDirty = args.includes('--allow-dirty')
 const intoIdx = args.indexOf('--into')
 const into = intoIdx >= 0 ? args[intoIdx + 1] : null
 
@@ -42,7 +48,7 @@ const fail = (msg) => {
   process.exit(1)
 }
 
-if (!into) fail('Usage: node tools/adopt.mjs --into <path to project> [--apply]\nWithout --apply it only reports.')
+if (!into) fail('Usage: node tools/adopt.mjs --into <path to project> [--apply] [--allow-dirty]\nWithout --apply it only reports.')
 if (!existsSync(join(starter, '_starter'))) {
   fail('Run this from the starter itself (the folder that still has _starter/).\nA bootstrapped project is not a source to adopt from.')
 }
@@ -66,6 +72,34 @@ const SEEDED_PRIVATE = [
 ]
 // Tracked, project-owned files: seeded only in committed mode.
 const SEEDED_TRACKED = ['CHANGELOG.md', 'tools/docs-drift.mjs']
+const VERSION_FILE = '.claude/starter-version'
+// Everything adopt copies from the starter, and the code that decides how.
+const SOURCE = [...OWNED, ...SEEDED_PRIVATE, ...SEEDED_TRACKED, 'AGENTS.md', 'CLAUDE.md', 'HANDOFF.md', '.claude/settings.json', 'tools/adopt.mjs']
+
+// null when git fails: a starter without git still adopts, unchecked and unversioned.
+const gitIn = (cwd, gitArgs) => {
+  try {
+    return execFileSync('git', gitArgs, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
+  } catch {
+    return null
+  }
+}
+const starterGit = existsSync(join(starter, '.git'))
+const dirty = starterGit ? (gitIn(starter, ['status', '--porcelain', '--', ...SOURCE]) ?? '') : ''
+if (dirty && !allowDirty) {
+  fail(
+    `Refused, nothing written. These starter files have uncommitted changes, and adopt copies what is\n` +
+      `on disk:\n\n${dirty.replace(/^/gm, '  ')}\n\nCommit them first. --allow-dirty is for testing adopt itself.`,
+  )
+}
+const version = (() => {
+  if (!starterGit) return null
+  const release = gitIn(starter, ['describe', '--tags', '--abbrev=0', '--match', 'v[0-9]*'])
+  const atRelease = release !== null && gitIn(starter, ['diff', '--quiet', release, '--', ...SOURCE]) !== null
+  if (atRelease && !dirty) return release
+  const last = gitIn(starter, ['log', '-1', '--format=%h', '--', ...SOURCE]) || 'uncommitted'
+  return `${release ?? 'untagged'}+${last}${dirty ? '-dirty' : ''}`
+})()
 
 const read = (base, p) => (existsSync(join(base, p)) ? readFileSync(join(base, p), 'utf8') : null)
 const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15)
@@ -102,6 +136,7 @@ if (privateMode) {
     'AGENTS.md',
     'CLAUDE.md',
     '.claude/settings.json',
+    VERSION_FILE,
     `.claude.backup-adopt-${stamp}/CLAUDE.md`,
   ]
   const exposed = candidates.filter((p) => !ignored(p))
@@ -133,6 +168,17 @@ for (const p of OWNED) {
     backup(p)
     write(p, read(starter, p))
     note(p, `updated${tag}, old copy backed up`)
+  }
+}
+
+if (version === null) {
+  note(VERSION_FILE, 'not written: the starter is not a git checkout, so its version is unknown')
+} else {
+  const was = read(target, VERSION_FILE)?.trim() ?? null
+  if (was === version) note(VERSION_FILE, `current: ${version}`)
+  else {
+    write(VERSION_FILE, `${version}\n`)
+    note(VERSION_FILE, `${was === null ? 'added' : `updated from ${was}`}${tag}: ${version}`)
   }
 }
 

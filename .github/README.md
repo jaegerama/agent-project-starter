@@ -58,7 +58,9 @@ node tools/adopt.mjs --into ../some-project --apply
 
 The first command is a dry run and changes nothing. adopt installs the files
 the starter owns, seeds the ones a project customises only where they are
-missing, and never rewrites the project's own rules.
+missing, and never rewrites the project's own rules. It refuses while the
+files it copies have uncommitted changes in your checkout, and writes the
+starter version it installed to the project's `.claude/starter-version`.
 
 ## What is enforced, and where
 

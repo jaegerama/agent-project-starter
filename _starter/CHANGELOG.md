@@ -20,6 +20,18 @@ itself, which no editor or diff shows, where the code around it writes the
 escape. It behaved the same, and it is an escape again. The self-test now
 fails on any file in the starter that carries the character.
 
+### Added: adopt refuses an uncommitted source, and records the starter version (2026-10-07)
+
+adopt copies the starter as it is on disk, and a project session once ran it
+while the starter was mid-edit, installing a change nobody had committed.
+adopt now refuses, and writes nothing, while a file it copies, or adopt
+itself, has uncommitted changes; `--allow-dirty` is for testing adopt. It
+also writes `.claude/starter-version` into the project: the release tag when
+the files it installs match that release, or the tag plus the last commit
+that changed them. A commit that touches only other files leaves the version
+alone, so the file changes only when what the project runs changes. A starter
+that is not a git checkout records no version.
+
 ## [0.2.0] - 2026-10-07
 
 adopt now brings an old `GEMINI.md` pointer its import line, and the profile

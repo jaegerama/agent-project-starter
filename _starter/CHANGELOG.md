@@ -10,41 +10,43 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-08
+
 ### Added
 
-- `AGENTS.md` §11 and `_starter/README.md` say how to add an agent harness:
-  the harness, not the model behind it, decides what is loaded and enforced.
 - docs-drift fails when the `CONTRIBUTING.md` gate has a command the
   `AGENTS.md` gate lacks, so an agent never runs less than people must.
+- `AGENTS.md` §11 and `_starter/README.md` say how to add an agent harness:
+  the harness, not the model behind it, decides what is loaded and enforced.
 
 ### Changed
 
-- docs-drift's failure after setup also says that creating the file a check
-  reads is enough.
 - `docs/BRIEF.md` is a seven-part form the owner fills, with conventions that
   hold unless changed; a brief in free text still works.
 - Setup asks every question in one message, what decides the build first, each
   with the answer the brief suggests where it suggests one.
-- The PRD writes a non-functional requirement the brief leaves out as "not
-  stated", and asks about it only when a story depends on it.
-- The README template's documents table and `docs/TODO.md` no longer send
-  readers to `AGENTS.md`, which a private-agents repository does not commit.
 - Setup says that a project's own port is proposed rather than measured, that
   a slot the brief answers in part asks for the rest, that a choice is never
   filled with "none" unless someone said so, and that a business rule a story
   needs is a question too.
+- The README template's documents table and `docs/TODO.md` no longer send
+  readers to `AGENTS.md`, which a private-agents repository does not commit.
+- The PRD writes a non-functional requirement the brief leaves out as "not
+  stated", and asks about it only when a story depends on it.
 - The Definition of Done's authorization test no longer assumes roles.
+- docs-drift's failure after setup also says that creating the file a check
+  reads is enough.
 
 ### Fixed
 
-- bootstrap lists the slots of `docs/ARCHITECTURE.md` as later work, as that
-  file says, not among those to fill before application code.
-- agent-check holds `.github/copilot-instructions.md` to the pointer rules
-  too, as `AGENTS.md` §11 already said it did. This can turn a gate red where
-  that file grew rules of its own.
 - With `--private-agents`, bootstrap writes `CONTRIBUTING.md` from a template:
   the gate and the rules the people without agent files need. The ignore block
   and `AGENTS.md` §4 already sent them there, and nothing created it.
+- agent-check holds `.github/copilot-instructions.md` to the pointer rules
+  too, as `AGENTS.md` §11 already said it did. This can turn a gate red where
+  that file grew rules of its own.
+- bootstrap lists the slots of `docs/ARCHITECTURE.md` as later work, as that
+  file says, not among those to fill before application code.
 
 ## [0.5.0] - 2026-10-07
 
@@ -224,7 +226,8 @@ The first public release.
   The denies hold in `bypassPermissions` mode, but do not stop an interpreter.
 - Agents never install, update or fetch a skill; the owner installs skills.
 
-[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/jaegerama/agent-project-starter/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.3.0...v0.4.0

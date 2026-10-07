@@ -488,6 +488,42 @@ for (const [name, [files, warns]] of Object.entries(gateCases)) {
   check(name, /^ {2}agent-check +run by no gate/m.test(adopt(dir, false).stdout) === warns)
 }
 
+// A seeded file still equal to one of the starter's own earlier copies was never customised.
+const oldestOf = (p) => git(root, 'show', `${git(root, 'log', '--format=%H', '--', p).stdout.trim().split('\n').at(-1)}:${p}`).stdout
+const hunterPath = '.claude/agents/silent-failure-hunter.md'
+const oldHunter = oldestOf(hunterPath)
+check('fixture: the oldest silent-failure-hunter differs from the current one', oldHunter.length > 0 && oldHunter !== read(join(root, hunterPath)))
+const seedOld = makeRepo('seed-old', { ...agentsOnly, [hunterPath]: oldHunter })
+out = adopt(seedOld, false)
+check(
+  'an untouched old seed, dry run: reported, nothing written',
+  /silent-failure-hunter\.md +updated \(would\)/.test(out.stdout) && read(join(seedOld, hunterPath)) === oldHunter,
+  out.stdout,
+)
+adopt(seedOld, true)
+check('an untouched old seed is brought up to date (a fix to it once never reached a project)', read(join(seedOld, hunterPath)) === read(join(root, hunterPath)))
+const seedBackups = readdirSync(seedOld).filter((e) => e.startsWith('.claude.backup-adopt-'))
+check('the old seed is backed up byte for byte', seedBackups.length === 1 && read(join(seedOld, seedBackups[0], hunterPath)) === oldHunter)
+const seedCrlf = makeRepo('seed-crlf', { ...agentsOnly, [hunterPath]: oldHunter.replace(/\n/g, '\r\n') })
+adopt(seedCrlf, true)
+check('the same old seed with CRLF line endings is brought up to date too', read(join(seedCrlf, hunterPath)) === read(join(root, hunterPath)))
+const customHunter = `${oldHunter}\nProject note: also check the queue workers.\n`
+const seedCustom = makeRepo('seed-custom', { ...agentsOnly, [hunterPath]: customHunter })
+adopt(seedCustom, true)
+check('a seed the project changed is kept byte for byte', read(join(seedCustom, hunterPath)) === customHunter)
+// A tracked seeded file in a private-agents repository is never written.
+const driftPath = 'tools/docs-drift.mjs'
+const oldDrift = oldestOf(driftPath)
+const seedPrivate = makeRepo('seed-private', { '.gitignore': IGNORE_PRIVATE, 'AGENTS.md': '# AGENTS.md\n\nrules\n', [driftPath]: oldDrift })
+adopt(seedPrivate, true)
+check(
+  'private repo: an old tracked seed is left alone, nothing tracked changes',
+  read(join(seedPrivate, driftPath)) === oldDrift && git(seedPrivate, 'status', '--porcelain').stdout.trim() === '',
+)
+const seedTracked = makeRepo('seed-committed', { ...agentsOnly, [driftPath]: oldDrift })
+adopt(seedTracked, true)
+check('committed repo: an old tracked seed is brought up to date', read(join(seedTracked, driftPath)) === read(join(root, driftPath)))
+
 section('adopt: a committed source, and the version it records')
 const src = copyStarter('src-clean')
 git(src, 'add', '-A')

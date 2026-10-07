@@ -10,7 +10,8 @@
  *
  *   OWNED    starter files: copied, and overwritten with a backup when they
  *            differ. Fix them in the starter, or the next adopt undoes it.
- *   SEEDED   files a project customises: copied only when missing.
+ *   SEEDED   files a project customises: copied when missing, and updated
+ *            while they still equal one of the starter's own earlier copies.
  *   project  everything else, AGENTS.md's content included: never touched.
  *
  * A CLAUDE.md that holds rules, with no AGENTS.md yet, moves into AGENTS.md
@@ -187,7 +188,31 @@ if (version === null) {
 const withImport = (body, line) =>
   /^\uFEFF?#[^\n]*\n/.test(body) ? body.replace(/^(\uFEFF?#[^\n]*\n)/, `$1\n${line}\n`) : `${line}\n\n${body}`
 
-// Seeded files: copied only when missing.
+// A seeded file that still equals one of the starter's own earlier copies was never
+// customised, so a fix to it may reach the project. Line endings do not count.
+const lf = (s) => s.replace(/\r\n/g, '\n')
+const gitShow = (commit, p) => {
+  try {
+    return execFileSync('git', ['show', `${commit}:${p}`], { cwd: starter, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })
+  } catch {
+    return null
+  }
+}
+const untouchedSeed = (p, body) => {
+  if (!starterGit) return false
+  const commits = gitIn(starter, ['log', '--format=%H', '--', p])?.split('\n').filter(Boolean) ?? []
+  return commits.some((c) => {
+    const old = gitShow(c, p)
+    return old !== null && lf(old) === lf(body)
+  })
+}
+const refreshSeed = (p) => {
+  backup(p)
+  write(p, read(starter, p))
+  note(p, `updated${tag}: the starter's own earlier copy, never customised; old copy backed up`)
+}
+
+// Seeded files: copied when missing, refreshed while the project has not changed them.
 const seeded = new Set()
 for (const p of SEEDED_PRIVATE) {
   const body = read(target, p)
@@ -197,6 +222,8 @@ for (const p of SEEDED_PRIVATE) {
     note(p, `seeded${tag}`)
   } else if (same(p)) {
     note(p, 'current')
+  } else if (untouchedSeed(p, body)) {
+    refreshSeed(p)
   } else if (p === 'GEMINI.md' && isPointer(body) && !geminiImportsAgents(body)) {
     // Gemini CLI reaches AGENTS.md only through this line.
     backup(p)
@@ -207,8 +234,12 @@ for (const p of SEEDED_PRIVATE) {
   }
 }
 for (const p of SEEDED_TRACKED) {
-  if (existsSync(join(target, p))) note(p, same(p) ? 'current' : 'project-owned, kept')
-  else if (privateMode) note(p, 'missing, not seeded: tracked file in a team repository')
+  const body = read(target, p)
+  if (body !== null) {
+    if (same(p)) note(p, 'current')
+    else if (!privateMode && untouchedSeed(p, body)) refreshSeed(p)
+    else note(p, 'project-owned, kept')
+  } else if (privateMode) note(p, 'missing, not seeded: tracked file in a team repository')
   else {
     write(p, read(starter, p))
     note(p, `seeded${tag}`)

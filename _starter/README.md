@@ -56,7 +56,9 @@ node tools/adopt.mjs --into ../some-project --apply
 ```
 
 Run from the starter. It installs the files the starter owns, seeds the ones a
-project customises only where they are missing, and moves a `CLAUDE.md` that
+project customises where they are missing, updates those the project never
+changed (a copy still equal to one of the starter's own earlier versions), and
+moves a `CLAUDE.md` that
 holds rules into `AGENTS.md` verbatim. A `CLAUDE.md` or `GEMINI.md` pointer
 with no import line gets one after its title, and nothing else in it changes.
 Whatever adopt replaces is backed up into `.claude.backup-adopt-*`. The

@@ -13,6 +13,17 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Added: adopt updates a seeded file the project never changed (2026-10-07)
+
+adopt copied a seeded file only when it was missing, so a fix to one never
+reached a project: a project still ran the first silent-failure-hunter, with
+Bash, and adopt reported it as customised. adopt now compares a seeded file
+with every version of it in the starter's history, ignoring line endings. One
+that matches was never changed by the project, so adopt brings it up to date
+and backs up the old copy; a file the project changed is kept, as before. In a
+private-agents repository a tracked seeded file is still never written, and a
+starter that is not a git checkout has no history to compare with.
+
 ### Changed: AGENTS.md §11 says which tool loads are observed (2026-10-07)
 
 The table gave Codex, Cursor and Copilot their documented convention as their

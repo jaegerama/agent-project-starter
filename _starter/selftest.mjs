@@ -507,6 +507,17 @@ check('the old seed is backed up byte for byte', seedBackups.length === 1 && rea
 const seedCrlf = makeRepo('seed-crlf', { ...agentsOnly, [hunterPath]: oldHunter.replace(/\n/g, '\r\n') })
 adopt(seedCrlf, true)
 check('the same old seed with CRLF line endings is brought up to date too', read(join(seedCrlf, hunterPath)) === read(join(root, hunterPath)))
+// The current copy as a Windows checkout writes it is current, not an earlier copy to rewrite.
+const currentCrlf = read(join(root, hunterPath)).replace(/\n/g, '\r\n')
+const seedCurrentCrlf = makeRepo('seed-current-crlf', { ...agentsOnly, [hunterPath]: currentCrlf })
+out = adopt(seedCurrentCrlf, true)
+check(
+  'the current seed with CRLF line endings is current: not rewritten, no backup',
+  read(join(seedCurrentCrlf, hunterPath)) === currentCrlf &&
+    /silent-failure-hunter\.md +current$/m.test(out.stdout) &&
+    !readdirSync(seedCurrentCrlf).some((e) => e.startsWith('.claude.backup-adopt-')),
+  out.stdout,
+)
 const customHunter = `${oldHunter}\nProject note: also check the queue workers.\n`
 const seedCustom = makeRepo('seed-custom', { ...agentsOnly, [hunterPath]: customHunter })
 adopt(seedCustom, true)

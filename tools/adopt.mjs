@@ -191,6 +191,10 @@ const withImport = (body, line) =>
 // A seeded file that still equals one of the starter's own earlier copies was never
 // customised, so a fix to it may reach the project. Line endings do not count.
 const lf = (s) => s.replace(/\r\n/g, '\n')
+const sameText = (p) => {
+  const [a, b] = [read(starter, p), read(target, p)]
+  return a !== null && b !== null && lf(a) === lf(b)
+}
 const gitShow = (commit, p) => {
   try {
     return execFileSync('git', ['show', `${commit}:${p}`], { cwd: starter, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] })
@@ -220,7 +224,7 @@ for (const p of SEEDED_PRIVATE) {
     write(p, read(starter, p))
     seeded.add(p)
     note(p, `seeded${tag}`)
-  } else if (same(p)) {
+  } else if (sameText(p)) {
     note(p, 'current')
   } else if (untouchedSeed(p, body)) {
     refreshSeed(p)
@@ -236,7 +240,7 @@ for (const p of SEEDED_PRIVATE) {
 for (const p of SEEDED_TRACKED) {
   const body = read(target, p)
   if (body !== null) {
-    if (same(p)) note(p, 'current')
+    if (sameText(p)) note(p, 'current')
     else if (!privateMode && untouchedSeed(p, body)) refreshSeed(p)
     else note(p, 'project-owned, kept')
   } else if (privateMode) note(p, 'missing, not seeded: tracked file in a team repository')

@@ -13,6 +13,14 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Fixed: adopt rewrote a current seeded file over its line endings (2026-10-07)
+
+0.4.0's adopt took a seeded file that matches the starter's current copy
+except for CRLF line endings, as a Windows checkout writes them, for one of
+the starter's earlier copies: it rewrote the file and backed it up, and said
+it had updated it. Found in the dry run before 0.4.0 reached any project. Such
+a file is current now, and left alone.
+
 ## [0.4.0] - 2026-10-07
 
 The profile checks run only for a profile marked as one, so no one's gate

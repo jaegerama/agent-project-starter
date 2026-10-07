@@ -53,6 +53,7 @@ Status per 2026-10-07.
   136 passed, 0 failed, 0 skipped; `node tools/docs-drift.mjs` 1 passed, 2
   skipped; `node .claude/tools/agent-check.mjs` red only on the template's 67
   slots, by design.
+- 2026-10-07: release 0.2.0, tagged `v0.2.0`.
 
 ## Decisions taken
 

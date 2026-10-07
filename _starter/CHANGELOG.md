@@ -13,6 +13,14 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-07
+
+adopt now brings an old `GEMINI.md` pointer its import line, and the profile
+check covers Antigravity's global rules. New projects also get the
+Makefile-aware gate-command check and a silent-failure-hunter that can only
+read, and they no longer carry adopt, nor bootstrap once setup is done.
+Documents, comments and command output carry no em dash.
+
 ### Removed: adopt from new projects, and bootstrap once setup is done (2026-10-07)
 
 `tools/adopt.mjs` runs only from the starter and refuses to run anywhere else,
@@ -283,5 +291,6 @@ scripts, which stay on the machine they were written for. The one code change
 the import needs is in bootstrap, which recognises a copied starter by its
 root commit: it now accepts the public root commit as well as the private one.
 
-[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/jaegerama/agent-project-starter/releases/tag/v0.1.0

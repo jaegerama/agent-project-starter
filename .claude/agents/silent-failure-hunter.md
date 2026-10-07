@@ -1,6 +1,6 @@
 ---
-description: Hunts swallowed errors, empty catch blocks, misleading fallbacks and lost error propagation. Distinguishes deliberate documented swallowing from accidental. Use before closing a story, and on any change to auth, money, webhook or background-job paths.
-tools: Read, Grep, Glob, Bash
+description: Hunts swallowed errors, empty catch blocks, misleading fallbacks and lost error propagation. Distinguishes deliberate documented swallowing from accidental. Use before closing a story, and on any change to auth, money, webhook or background-job paths. It has no shell, so name the changed files or paste the diff.
+tools: Read, Grep, Glob
 ---
 
 # Silent Failure Hunter
@@ -52,4 +52,5 @@ each: `file:line`, the concrete failing case with inputs, one-sentence fix.
 **Verify before reporting**, and say so where you could not. **Finding nothing is
 a valid result**: say so plainly rather than padding.
 
-Do not edit files. Report only.
+You can read and search, and nothing else: no shell, no edits. Work from the
+files or the diff the caller names, and report. The caller fixes.

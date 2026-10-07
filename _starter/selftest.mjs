@@ -155,6 +155,14 @@ check('settings.json starts the hook from $CLAUDE_PROJECT_DIR', settingsCommand 
 const deny = JSON.parse(read(join(root, '.claude/settings.json'))).permissions?.deny ?? []
 const wantDeny = ['Read(./.env)', 'Read(./.env.*)', 'Read(~/.ssh/id_*)', 'Bash(git push --force:*)', 'Bash(git push -f:*)', 'Bash(git clean:*)']
 check('settings.json denies secrets, home credentials, force pushes and git clean', wantDeny.every((r) => deny.includes(r)), wantDeny.filter((r) => !deny.includes(r)).join(' '))
+// Without a tools line a subagent gets every tool, Bash included.
+const hunterLine = read(join(root, '.claude/agents/silent-failure-hunter.md')).match(/^tools:(.*)$/m)
+const hunterTools = hunterLine ? hunterLine[1].split(',').map((t) => t.trim()).filter(Boolean) : []
+check(
+  'silent-failure-hunter can only read: Read, Grep, Glob',
+  hunterTools.length > 0 && hunterTools.every((t) => ['Read', 'Grep', 'Glob'].includes(t)),
+  hunterLine ? hunterTools.join(', ') : 'no tools line',
+)
 // Claude Code runs hook commands through bash, Git Bash on Windows.
 if (process.platform !== 'win32' || process.env.MSYSTEM) {
   const viaBash = spawnSync('bash', ['-c', settingsCommand], {

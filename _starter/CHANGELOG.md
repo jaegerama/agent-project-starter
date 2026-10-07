@@ -13,6 +13,15 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Fixed: silent-failure-hunter could edit files through Bash (2026-10-07)
+
+The agent's instructions say it reports and never edits, but its tools
+included Bash, and a shell can rewrite any file. Its tools are now Read, Grep
+and Glob, so the rule is a mechanism instead of a request. It can no longer run
+`git diff` or a test itself: the caller names the files or pastes the diff,
+and its description says so. adopt seeds this file only where it is missing,
+so an existing project keeps its own copy until its owner changes it.
+
 ### Added: adopt gives an old GEMINI.md its import line (2026-10-07)
 
 adopt copies `GEMINI.md` only when it is missing, so a project adopted before

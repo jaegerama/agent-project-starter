@@ -47,7 +47,8 @@ only job is the brief; everything else below is the agent's.
 6. **Delete what does not apply**: the Money section with no money; the
    Interface section and `DESIGN.md` with no interface.
 7. **Adapt the example checks in `tools/docs-drift.mjs`** to this stack's
-   manifest, or leave them SKIP and say why in §4.1.
+   manifest so that at least one runs: once this Setup section is gone,
+   docs-drift fails when none does. Leave the rest SKIP and say why in §4.1.
 8. **Report** how many slots were filled, how many became questions, which
    sections were deleted, and the output of `node .claude/tools/agent-check.mjs`.
    Then ask the questions.

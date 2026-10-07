@@ -13,6 +13,16 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: docs-drift fails when setup is done and no check ran (2026-10-07)
+
+A docs-drift run in which every check skipped exited 0 with a note, so a gate
+could stay green that way while checking nothing. Once setup is over,
+which `AGENTS.md` shows by no longer having its Setup section, such a run now
+fails, and step 7 of the Setup section asks for at least one check that runs.
+A new project still in setup gets the note and exit 0, as before.
+`tools/docs-drift.mjs` belongs to the project, so this reaches new projects;
+adopt leaves an existing copy alone.
+
 ### Added: adopt says when no gate runs agent-check (2026-10-07)
 
 agent-check guards a project only when its gate runs it, and a project whose

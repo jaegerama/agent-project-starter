@@ -161,6 +161,16 @@ if (CHECKS.length === 0) {
   process.exit(1)
 }
 
+// Setup ends by deleting the Setup section of AGENTS.md; after that, checking nothing is red.
+const agents = read('AGENTS.md')
+if (ran === 0 && agents !== null && !/^## Setup\b/m.test(agents)) {
+  console.error(
+    '\nFAIL  setup is done (AGENTS.md has no Setup section), yet no check ran: adapt one of' +
+      '\n      the examples above to a file this project really has.',
+  )
+  process.exit(1)
+}
+
 if (ran === 0) {
   console.error(
     '\nNothing was actually checked. That is expected on a new project and it is' +

@@ -534,7 +534,7 @@ out = adoptFrom(src, makeRepo('v-private', { '.gitignore': narrowIgnore, 'AGENTS
 check('private repo that does not ignore .claude/starter-version: refused', out.status === 1 && out.stderr.includes('.claude/starter-version'), out.stdout + out.stderr)
 
 section('docs-drift (the checks a new project starts with)')
-const driftIn = (name, files) => {
+const driftRun = (name, files) => {
   const dir = join(tmp, name)
   mkdirSync(join(dir, 'tools'), { recursive: true })
   cpSync(join(root, 'tools', 'docs-drift.mjs'), join(dir, 'tools', 'docs-drift.mjs'))
@@ -542,7 +542,10 @@ const driftIn = (name, files) => {
     mkdirSync(join(dir, p, '..'), { recursive: true })
     writeFileSync(join(dir, p), body)
   }
-  const r = node(dir, ['tools/docs-drift.mjs'])
+  return node(dir, ['tools/docs-drift.mjs'])
+}
+const driftIn = (name, files) => {
+  const r = driftRun(name, files)
   return r.stdout + r.stderr
 }
 const lineWith = (text, name) => text.split('\n').find((l) => l.includes(name)) ?? ''
@@ -580,6 +583,13 @@ check('a story past Epic 0 started before it is DONE -> red', todoIs({ 'docs/TOD
 check('Epic 0 DONE and one story in WIP -> green', todoIs({ 'docs/TODO.md': story('DONE', 'S0.1') + story('WIP', 'S1.1') + story('TODO', 'S1.2') }, 't-ok').startsWith('ok'))
 check("the template's own docs/TODO.md -> green", todoIs({ 'docs/TODO.md': read(join(root, 'docs', 'TODO.md')) }, 't-template').startsWith('ok'))
 check('no story headings -> SKIP, not a pass', todoIs({ 'docs/TODO.md': '# TODO\n' }, 't-none').startsWith('SKIP'))
+// Setup ends by deleting the Setup section of AGENTS.md; after that, a gate that checks nothing is red.
+check('setup done and no check ran -> red', driftRun('n-done', { 'AGENTS.md': '# AGENTS.md\n\nrules\n' }).status === 1)
+check(
+  'the Setup section still there and no check ran -> exit 0, a new project',
+  driftRun('n-setup', { 'AGENTS.md': '# AGENTS.md\n\n## Setup, while this file still has slots\n' }).status === 0,
+)
+check('no AGENTS.md and no check ran -> exit 0', driftRun('n-none', { 'README.md': '# x\n' }).status === 0)
 
 try {
   rmSync(tmp, { recursive: true, force: true })

@@ -134,6 +134,12 @@ const wrapped = templateFiles.flatMap((f) =>
     .map(([, at]) => at),
 )
 check('no slot in any template wraps onto a second line', wrapped.length === 0, wrapped.join(' '))
+// A one-word placeholder reads as an HTML tag, so the slot check skips it: `Branches: <model>` once passed as filled.
+const NOT_PLACEHOLDERS = ['AGENTS.md <slot>', 'docs/ARCHITECTURE.md <slug>', 'docs/TODO.md <epic>', 'docs/TODO.md <n>']
+const oneWord = templateFiles
+  .flatMap((f) => (read(join(root, f)).match(/(?<![A-Za-z0-9_])<[A-Za-z_][A-Za-z0-9_.]*>/g) ?? []).map((t) => `${f} ${t}`))
+  .filter((t) => !NOT_PLACEHOLDERS.includes(t))
+check('every placeholder in the templates is one the slot check counts', oneWord.length === 0, oneWord.join('  '))
 // U+FEFF shows in no editor and no diff; code that needs one writes the escape.
 const BOM = String.fromCharCode(0xfeff)
 const withBom = git(root, 'ls-files').stdout.split('\n').filter(Boolean).filter((f) => (read(join(root, f)) ?? '').includes(BOM))
@@ -305,6 +311,7 @@ check(
   'no <PROJECT NAME> left in the templates',
   ['AGENTS.md', 'README.md', 'CLAUDE.md', 'HANDOFF.md', 'DESIGN.md'].every((f) => !(read(join(committed, f)) ?? '').includes('<PROJECT NAME>')),
 )
+check('the Name row of AGENTS.md §0 holds the name', read(join(committed, 'AGENTS.md')).includes('| **Name** | Demo App |'))
 check(
   "the starter's inherited git history is gone (Explorer copies .git too)",
   git(committed, 'rev-list', '--all', '--count').stdout.trim() === '0',

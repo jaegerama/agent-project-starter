@@ -5,8 +5,8 @@
 ## Running it
 
 ```bash
-<install>
-<dev>
+<the install command>
+<the command that runs it>
 ```
 
 ## Gate

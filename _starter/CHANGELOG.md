@@ -15,12 +15,18 @@ empty `CHANGELOG.md` at the root. History before the public import of
 - **Breaking:** adopt installs releases only. It refuses a starter whose files
   differ from its latest release tag; `--allow-unreleased` overrides it for
   testing, and `--allow-dirty` implies it.
+- `AGENTS.md` says how to write a placeholder meant to stay, such as a
+  command's argument, so that the slot check does not count it.
 
 ### Fixed
 
 - Once setup is done, docs-drift fails until a check compares a document with
   code. The story-heading check no longer counts: the template's `docs/TODO.md`
   made it run from day one, so setup could end with nothing compared.
+- Every placeholder in the templates is one the slot check counts. One-word
+  placeholders such as `<model>` read as HTML tags, so `AGENTS.md` passed
+  agent-check with them unfilled.
+- bootstrap fills the Name row of `AGENTS.md` §0 with the project's name.
 
 ## [0.4.1] - 2026-10-07
 

@@ -15,7 +15,9 @@
 > **Every `<slot>` must be filled before the first line of application code.** A
 > slot left as a placeholder is a rule that reads as satisfied and is not,
 > which is worse than no rule, because it gets quoted back in reviews.
-> `node .claude/tools/agent-check.mjs` fails while any slot remains.
+> `node .claude/tools/agent-check.mjs` fails while any slot remains. A
+> placeholder meant to stay, such as a command's argument, is written without
+> angle brackets (`NOTES_DIR`): inside them it counts as a slot.
 
 ---
 
@@ -69,7 +71,7 @@ to another tool. Context that lives in this file is not.
 
 | | |
 |---|---|
-| **Name** | <> |
+| **Name** | <PROJECT NAME> |
 | **One sentence** | <what it is, who uses it> |
 | **What it is NOT** | <what is deliberately not built: see the note below> |
 | **Prose language** | <the language prose is written in> |
@@ -246,7 +248,7 @@ restates something the code defines, and what drifts between them.
 
 | Document | Source of truth in code | What drifts |
 |---|---|---|
-| <doc and section> | <file> | <the specific claims> |
+| <doc and section> | <the file that defines it> | <the specific claims> |
 | `CHANGELOG.md` | `git log --oneline` | Commits with no entry. The rule is the entry comes **first**. Checked by reading (`/docs-drift`), not by the script |
 | `AGENTS.md` §4 | the project manifest | Gate commands that no longer exist, or were renamed |
 | <config example> | <the module that reads it> | A variable in one and not the other: **either** direction is a defect |
@@ -329,7 +331,7 @@ This project's own CRITICAL shapes are added there, under its list, not here.
 
 - **Never a floating-point type for money.** <name the decimal type used here>
 - Currency and tax rate come from configuration, never a literal.
-- Rounding: <rule>, at <which level>, **once**.
+- Rounding: <the rounding rule>, at <which level>, **once**.
 - <Decimal places; if the currency has no minor unit, say so here.>
 
 ### Data <delete this whole section if the system keeps no database>
@@ -366,7 +368,7 @@ shows data.
   Language of commit messages: <the language commit messages are written in>.
 - **Commit with the machine's own git config.** Never override the identity.
   Co-author and tool trailers (`Co-Authored-By` and the like): <allowed, required, or never>.
-- Branches: <model>.
+- Branches: <the branch model>.
 - **`CHANGELOG.md` is updated BEFORE the code change**, not after.
 
 ### Semantic Versioning (SemVer 2.0.0)

@@ -27,7 +27,7 @@ their shape: `### [STATUS] S<epic>.<n>: title`.
 
 ---
 
-## Epic 1: <name>
+## Epic 1: <epic name>
 
 ### [TODO] S1.1: <story title>
 

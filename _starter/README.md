@@ -16,17 +16,17 @@ first document anybody else reads.
 project-starter  →  copy or git clone  →  rename to the project
 ```
 
-Open a session in the copy and give the brief: what it is, who it is for,
-what it is not, the stack if it is decided, whether it goes to a shared team
-remote. That is the whole of the owner's part. Chat or `docs/BRIEF.md`, any
-language.
+Open a session in the copy and give the brief: fill in `docs/BRIEF.md`, a
+seven-part form whose conventions hold unless changed, or write it in chat, in
+any language. That is the whole of the owner's part, and what is missing is
+asked once, in one message.
 
 Everything after that is the **Setup** section at the top of `AGENTS.md`,
 which every tool loads at session start:
 
 | # | Done by the agent | Why |
 |---|---|---|
-| 1 | Copy the brief into `docs/BRIEF.md` verbatim | A brief in chat is gone after the next `/clear` or tool switch |
+| 1 | The brief in `docs/BRIEF.md`: the owner's form, or the chat text verbatim | A brief in chat is gone after the next `/clear` or tool switch |
 | 2 | `node tools/bootstrap.mjs --name "Project Name" --apply`, plus `--private-agents` for a team remote | The mechanical part: name, starter files deleted, a fresh git history |
 | 3 | Fill every slot the brief answers, starting with `AGENTS.md` | Stack, commands and way of working come from this brief, never from another project |
 | 4 | Turn every slot the brief does not answer into a question in `docs/QUESTIONS.md` | A guessed stack or rule reads exactly like a decided one |

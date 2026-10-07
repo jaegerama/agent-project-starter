@@ -26,9 +26,11 @@
 The first job of any session in this folder until no slot is left. The owner's
 only job is the brief; everything else below is the agent's.
 
-1. **Get the brief into `docs/BRIEF.md`.** If the owner gave it in chat, copy it
-   there verbatim before doing anything else. If there is no brief, ask for
-   one and stop.
+1. **Get the brief into `docs/BRIEF.md`.** The owner fills in its sections or
+   writes freely; a brief given in chat is copied there verbatim, under "The
+   brief", before anything else. If there is no brief, ask for one and stop.
+   A convention in its section 7 that the owner left in place is the owner's
+   answer.
 2. **Run the mechanical part:** `node tools/bootstrap.mjs --name "Project Name"
    --apply`, with the name from the brief, adding `--private-agents` when the
    brief says the repository goes to a shared team remote. If the brief does
@@ -65,7 +67,11 @@ only job is the brief; everything else below is the agent's.
    creates SKIPs until then. Leave the rest SKIP and say why in §4.1.
 8. **Report** how many slots were filled, how many became questions, which
    sections were deleted, and the output of `node .claude/tools/agent-check.mjs`.
-   Then ask the questions.
+   Then ask every question in one message, ordered so that the ones deciding
+   what gets built come first, each with the answer the brief suggests where
+   it suggests one, so that one reply can answer them all. A brief given in
+   chat never showed the conventions in section 7 of `docs/BRIEF.md`: list
+   them on one line, to accept or change.
 9. **Delete this Setup section, and `tools/bootstrap.mjs` where it exists,**
    once the slot check is green. Both have done their job, and an inert section
    still costs every future session its context.

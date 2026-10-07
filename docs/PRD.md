@@ -39,8 +39,9 @@ How we know this worked. Numbers if there are any; if there are none, write
 
 ## Non-functional requirements
 
-Only what the brief states. A requirement it leaves out is a question in
-`QUESTIONS.md`, not a default written here.
+Only what the brief states. One it leaves out is written "not stated", never
+a default, and becomes a question in `QUESTIONS.md` only when a story depends
+on it.
 
 - **Security**: <>
 - **Performance and budget**: <>

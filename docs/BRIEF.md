@@ -1,40 +1,59 @@
 # Brief
 
-The owner's own description of the project, in their words and in whatever
-language they wrote it. **This file is the input of setup, and every other template is
-filled from it.**
+The owner's description of the project, in any language. Setup fills every
+other template from this file. A brief given in chat is copied under "The
+brief", verbatim, before anything else: one that lives only in a chat message
+is lost on the next session.
 
-If the brief arrived in chat, the agent copies it here verbatim first, before
-touching anything else. A brief that lives only in a chat message is lost on
-the next session, a `/clear`, or a switch to another tool.
+Answer the sections below, or write freely under "The brief" instead. Whatever
+is missing, the agent asks once, in one message. The more of section 2 you
+know, the fewer questions now and the fewer revisions later.
 
-## Rules for the agent filling the templates from this brief
+## 1. What it is
 
-- Fill a slot only with what this file actually says. Paraphrase is fine;
-  addition is not, apart from the slots Setup step 3 says are measured or
-  planned.
-- A slot the brief does not answer becomes a question in `docs/QUESTIONS.md`
-  and stays a slot. A guessed stack, command, or business rule reads exactly
-  like a decided one, and it is the most expensive thing setup can produce.
-- A stack an operator profile mentions is background, not a default. This
-  project's stack is whatever this file says, or a question.
-- Delete the template sections that do not apply (no money, no interface) and
-  say in the report which ones and why.
+What it does, who uses it (roles, roughly how many), and what it deliberately
+is not.
 
-## What a useful brief usually covers
+## 2. Rules the agent must not invent
 
-None of this is required. Write it however it comes; the agent asks for the rest.
+The business rules you already know: who may do what, what counts as what,
+what happens when something is late, wrong or missing, what must never be lost
+or changed, and anything it must agree with outside this repository, such as
+an API another team uses, a file format or a law. Write "ask me" where you
+have not decided.
 
-- What it is, who uses it, and what it deliberately is not
-- Stack, if already decided, and where it runs
-- Whether the repository is pushed to a shared team remote (that decides
-  whether agent files are committed or private)
-- Whether it has a user interface, and in which languages
-- What must never be touched, and who deploys
-- The first thing that should exist
+## 3. Stack and where it runs
+
+- Language, framework, database, tests:
+- Locally, on the host or in containers:
+- Deployed to, and by whom, or "nothing to deploy":
+- CI, or "none":
+
+## 4. The repository
+
+- Remote: mine alone, or shared with a team (then agent files stay private):
+- Agent tools that will work in it:
+- License, if it needs one:
+
+## 5. Interface
+
+None, or which kind (web, mobile, terminal, API) and in which languages. With
+a screen: who writes its design direction.
+
+## 6. First deliverable
+
+The walking skeleton, then:
+
+## 7. Conventions, which hold unless you change them
+
+- Documents and commit messages: the language of this brief
+- Commits: Conventional Commits; co-author and tool trailers: allowed
+- Branches: `main`, and one branch per story when the repository is shared
+- Commit scopes: none until the code has parts worth naming
+- Agent skills: none
 
 ---
 
 ## The brief
 
-(empty until the owner writes it)
+(free text, instead of or besides the sections above)

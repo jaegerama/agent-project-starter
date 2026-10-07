@@ -10,6 +10,15 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ## [Unreleased]
 
+### Changed
+
+- `docs/BRIEF.md` is a seven-part form the owner fills, with conventions that
+  hold unless changed; a brief in free text still works.
+- Setup asks every question in one message, what decides the build first, each
+  with the answer the brief suggests where it suggests one.
+- The PRD writes a non-functional requirement the brief leaves out as "not
+  stated", and asks about it only when a story depends on it.
+
 ## [0.5.0] - 2026-10-07
 
 ### Added

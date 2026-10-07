@@ -41,12 +41,13 @@ where it goes.
 git clone https://github.com/jaegerama/agent-project-starter.git my-app
 ```
 
-Open an agent session in `my-app` and give it the brief: what the project is,
-who it is for, what it is not, the stack if it is decided, and whether the
-repository goes to a shared team remote. The Setup section at the top of
-`AGENTS.md` does the rest. The agent copies the brief into `docs/BRIEF.md`,
-runs `node tools/bootstrap.mjs --name "My App" --apply`, fills the slots the
-brief answers, and turns the others into questions in `docs/QUESTIONS.md`.
+Open an agent session in `my-app` and give it the brief: fill in
+`docs/BRIEF.md`, a seven-part form whose conventions hold unless you change
+them, or write it in chat. The Setup section at the top of `AGENTS.md` does
+the rest. The agent puts a chat brief into `docs/BRIEF.md`, runs
+`node tools/bootstrap.mjs --name "My App" --apply`, fills the slots the brief
+answers, and asks about the rest in one message, with the answer the brief
+suggests where it suggests one.
 
 bootstrap starts a fresh git history and removes the files that belong to the
 starter: `_starter/`, this page, the self-test workflow, `tools/adopt.mjs` and

@@ -10,21 +10,16 @@ Status per 2026-10-07.
 
 ## Next Immediate Steps
 
-1. **G1: adopt updates a seeded file that is still one of the starter's own
-   earlier copies**, with a backup, and leaves a customised one alone. A fix
-   to a seeded file never reached a project before: one still runs the first
-   silent-failure-hunter, with Bash, reported as "customised, kept".
-2. **Release 0.4.0 once G1 is in** (the owner asked for it on 2026-10-07),
-   then bring every project that uses the starter to it with
+1. **Bring every project that uses the starter to 0.4.0** with
    `node tools/adopt.mjs --into ../<project>`, dry run first. Whether a
    project commits what adopt changed is that project's call.
-3. **G2: a fresh project from a clean clone goes through the whole Setup
+2. **G2: a fresh project from a clean clone goes through the whole Setup
    section** with a sample brief and reaches a green gate; whatever trips on
    the way is fixed.
-4. **G3: write down the starter's public API** in `_starter/README.md`, for
+3. **G3: write down the starter's public API** in `_starter/README.md`, for
    the owner to approve: the commands and flags, what the checks decide, the
    files adopt owns and where, and what adopt promises.
-5. **G4: one release used through a full cycle** in every project without a
+4. **G4: one release used through a full cycle** in every project without a
    breaking fix or a HIGH finding.
 
 ## Done
@@ -97,6 +92,13 @@ Status per 2026-10-07.
 - 2026-10-07: B5 and H7 recorded as accepted limits, so no audit finding is
   open, and `AGENTS.md` §11 says plainly which tool loads are observed and
   which are only documented.
+- 2026-10-07: G1. adopt brings a seeded file that is still one of the
+  starter's own earlier copies up to date, with a backup, and keeps one the
+  project changed (5 mutations, each caught by exactly its cases).
+  `node _starter/selftest.mjs` 165 passed, 0 failed, 0 skipped;
+  `node tools/docs-drift.mjs` 1 passed, 2 skipped.
+- 2026-10-07: release 0.4.0, tagged `v0.4.0`: MINOR, because the commits since
+  0.3.0 include a breaking fix and a feat while the starter is 0.x.
 
 ## Decisions taken
 

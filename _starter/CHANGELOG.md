@@ -13,6 +13,16 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-07
+
+The profile checks run only for a profile marked as one, so no one's gate
+turns red over notes they keep per tool; a machine that relied on the checks
+adds the marker line (breaking). adopt updates a seeded file the project never
+changed, so a fix to it reaches the project, and an HTML comment no longer
+counts as a slot. The template holds no preference of its owner and no story
+from a real project, and its security, data and container rules apply where
+a system has them.
+
 ### Added: adopt updates a seeded file the project never changed (2026-10-07)
 
 adopt copied a seeded file only when it was missing, so a fix to one never
@@ -446,7 +456,8 @@ scripts, which stay on the machine they were written for. The one code change
 the import needs is in bootstrap, which recognises a copied starter by its
 root commit: it now accepts the public root commit as well as the private one.
 
-[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/jaegerama/agent-project-starter/releases/tag/v0.1.0

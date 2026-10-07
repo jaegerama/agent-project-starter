@@ -16,6 +16,12 @@ empty `CHANGELOG.md` at the root. History before the public import of
   differ from its latest release tag; `--allow-unreleased` overrides it for
   testing, and `--allow-dirty` implies it.
 
+### Fixed
+
+- Once setup is done, docs-drift fails until a check compares a document with
+  code. The story-heading check no longer counts: the template's `docs/TODO.md`
+  made it run from day one, so setup could end with nothing compared.
+
 ## [0.4.1] - 2026-10-07
 
 ### Fixed

@@ -658,8 +658,18 @@ check('a story past Epic 0 started before it is DONE -> red', todoIs({ 'docs/TOD
 check('Epic 0 DONE and one story in WIP -> green', todoIs({ 'docs/TODO.md': story('DONE', 'S0.1') + story('WIP', 'S1.1') + story('TODO', 'S1.2') }, 't-ok').startsWith('ok'))
 check("the template's own docs/TODO.md -> green", todoIs({ 'docs/TODO.md': read(join(root, 'docs', 'TODO.md')) }, 't-template').startsWith('ok'))
 check('no story headings -> SKIP, not a pass', todoIs({ 'docs/TODO.md': '# TODO\n' }, 't-none').startsWith('SKIP'))
-// Setup ends by deleting the Setup section of AGENTS.md; after that, a gate that checks nothing is red.
+// Setup ends by deleting the Setup section of AGENTS.md; after that, a gate that compares no document with code is red.
 check('setup done and no check ran -> red', driftRun('n-done', { 'AGENTS.md': '# AGENTS.md\n\nrules\n' }).status === 1)
+// The template's TODO.md runs the story check from day one, and once that alone kept this guard quiet.
+check(
+  'setup done and only the story check ran -> red',
+  driftRun('n-story', { 'AGENTS.md': '# AGENTS.md\n\nrules\n', 'docs/TODO.md': read(join(root, 'docs', 'TODO.md')) }).status === 1,
+)
+check(
+  'setup done and a check against code ran -> exit 0',
+  driftRun('n-code', { 'AGENTS.md': '# AGENTS.md\n\n' + fence('npm test'), 'package.json': scripts('test'), 'docs/TODO.md': read(join(root, 'docs', 'TODO.md')) })
+    .status === 0,
+)
 check(
   'the Setup section still there and no check ran -> exit 0, a new project',
   driftRun('n-setup', { 'AGENTS.md': '# AGENTS.md\n\n## Setup, while this file still has slots\n' }).status === 0,

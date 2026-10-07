@@ -91,6 +91,8 @@ const CHECKS = [
 
   {
     name: 'docs/TODO.md has one story in WIP at most, and nothing past Epic 0 started before it is DONE',
+    // Reads documents only, and runs from day one: the post-setup guard does not count it.
+    docsOnly: true,
     run() {
       // AGENTS.md §0.1, checked. A story is a heading like `### [WIP] S1.2 title`.
       const todo = read('docs/TODO.md')
@@ -130,6 +132,7 @@ const CHECKS = [
 
 let failed = 0
 let ran = 0
+let ranOnCode = 0
 let skipped = 0
 
 for (const check of CHECKS) {
@@ -143,12 +146,14 @@ for (const check of CHECKS) {
   if (result && typeof result === 'object' && 'skipped' in result) {
     skipped += 1
     console.log(`SKIP  ${check.name}\n      ${result.skipped}`)
-  } else if (result) {
+    continue
+  }
+  ran += 1
+  if (!check.docsOnly) ranOnCode += 1
+  if (result) {
     failed += 1
-    ran += 1
     console.error(`FAIL  ${check.name}\n      ${result}\n`)
   } else {
-    ran += 1
     console.log(`ok    ${check.name}`)
   }
 }
@@ -161,19 +166,19 @@ if (CHECKS.length === 0) {
   process.exit(1)
 }
 
-// Setup ends by deleting the Setup section of AGENTS.md; after that, checking nothing is red.
+// Setup ends by deleting the Setup section of AGENTS.md; after that, comparing no document with code is red.
 const agents = read('AGENTS.md')
-if (ran === 0 && agents !== null && !/^## Setup\b/m.test(agents)) {
+if (ranOnCode === 0 && agents !== null && !/^## Setup\b/m.test(agents)) {
   console.error(
-    '\nFAIL  setup is done (AGENTS.md has no Setup section), yet no check ran: adapt one of' +
-      '\n      the examples above to a file this project really has.',
+    '\nFAIL  setup is done (AGENTS.md has no Setup section), yet no check compared a document' +
+      '\n      with code: adapt one of the examples above to a file this project really has.',
   )
   process.exit(1)
 }
 
-if (ran === 0) {
+if (ranOnCode === 0) {
   console.error(
-    '\nNothing was actually checked. That is expected on a new project and it is' +
+    '\nNo document was compared with code. That is expected on a new project and it is' +
       '\nnot a pass: until a check runs, the rules it guards are aspiration. Adapt' +
       '\nthe examples above to files this project really has.',
   )

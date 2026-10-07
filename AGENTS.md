@@ -50,8 +50,10 @@ only job is the brief; everything else below is the agent's.
    section with no database; the Interface section and `DESIGN.md` with no
    interface.
 7. **Adapt the example checks in `tools/docs-drift.mjs`** to this stack's
-   manifest so that at least one runs: once this Setup section is gone,
-   docs-drift fails when none does. Leave the rest SKIP and say why in §4.1.
+   manifest, so that at least one compares a document with code: once this
+   Setup section is gone, docs-drift fails until one does, and the
+   story-heading check does not count. A check on a file the walking skeleton
+   creates SKIPs until then. Leave the rest SKIP and say why in §4.1.
 8. **Report** how many slots were filled, how many became questions, which
    sections were deleted, and the output of `node .claude/tools/agent-check.mjs`.
    Then ask the questions.

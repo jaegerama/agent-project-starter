@@ -92,6 +92,9 @@ const slotCases = [
   ['Map<string, Item>', false],
   ['<div>', false],
   ['<slot>', false],
+  // HTML comments, such as the block markers an installer appends to AGENTS.md
+  ['<!-- notes:start -->', false],
+  ['text <!-- a note --> more', false],
   // git identities: every filled AGENTS.md has one in §7
   ['Jane Doe <jane@example.com>', false],
   ['see <https://keepachangelog.com/en/1.1.0/>', false],

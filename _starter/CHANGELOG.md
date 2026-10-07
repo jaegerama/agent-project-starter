@@ -13,6 +13,13 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Fixed: an HTML comment counted as an unfilled slot (2026-10-07)
+
+The slot pattern took any `<...>` of 3 to 120 characters on one line, so an
+HTML comment in `AGENTS.md`, such as the block markers an installer appends
+to a project's entry file, counted as a slot nobody could fill, and the gate
+stayed red for good. A comment is not a slot now.
+
 ### Changed: .gitignore and .editorconfig carry no stack (2026-10-07)
 
 The template's `.gitignore` listed the dependency and build directories of a

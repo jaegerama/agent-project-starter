@@ -12,10 +12,11 @@
  *   - a bare identifier, an HTML tag: `<div>`
  *   - an email address, as git writes an identity: `Name <someone@example.com>`
  *   - an autolink with a scheme: `<https://...>`, `<mailto:...>`
+ *   - an HTML comment: `<!-- notes:start -->`
  */
 
 export const SLOT =
-  /(?<![A-Za-z0-9_])<(?![A-Za-z_][A-Za-z0-9_.]*>)(?![^<>\s]+@[^<>\s]+>)(?![A-Za-z][A-Za-z0-9+.-]*:[^<>\s]*>)[^<>\n]{3,120}>/g
+  /(?<![A-Za-z0-9_])<(?!!--)(?![A-Za-z_][A-Za-z0-9_.]*>)(?![^<>\s]+@[^<>\s]+>)(?![A-Za-z][A-Za-z0-9+.-]*:[^<>\s]*>)[^<>\n]{3,120}>/g
 
 /**
  * An empty slot: `<>`, or a placeholder word in a slot's place (TBD, TBC, TODO,

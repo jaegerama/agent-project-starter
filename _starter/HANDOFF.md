@@ -10,16 +10,13 @@ Status per 2026-10-07.
 
 ## Next Immediate Steps
 
-1. **Bring every project that uses the starter to 0.4.1** with
-   `node tools/adopt.mjs --into ../<project>`, dry run first. Whether a
-   project commits what adopt changed is that project's call.
-2. **G2: a fresh project from a clean clone goes through the whole Setup
+1. **G2: a fresh project from a clean clone goes through the whole Setup
    section** with a sample brief and reaches a green gate; whatever trips on
    the way is fixed.
-3. **G3: write down the starter's public API** in `_starter/README.md`, for
+2. **G3: write down the starter's public API** in `_starter/README.md`, for
    the owner to approve: the commands and flags, what the checks decide, the
    files adopt owns and where, and what adopt promises.
-4. **G4: one release used through a full cycle** in every project without a
+3. **G4: one release used through a full cycle** in every project without a
    breaking fix or a HIGH finding.
 
 ## Done
@@ -103,6 +100,11 @@ Status per 2026-10-07.
   rewriting a current seeded file over its CRLF line endings. Fixed (1
   mutation, caught), and released as 0.4.1, tagged `v0.4.1`: PATCH, one fix.
   `node _starter/selftest.mjs` 166 passed, 0 failed, 0 skipped.
+- 2026-10-07: adopt brought every project that uses the starter to 0.4.1, dry
+  run first: `.claude/starter-version` reads `v0.4.1` in each, agent-check
+  passed 4 of 4, no report line says a gate skips agent-check, and a second
+  dry run found nothing left to change. Two projects got the read-only
+  silent-failure-hunter through G1; the third keeps its own customised one.
 
 ## Decisions taken
 

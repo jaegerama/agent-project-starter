@@ -427,6 +427,31 @@ check('no pointer at all: the full pointer is written', read(join(pNone, 'CLAUDE
 const pSixty = makeRepo('p-sixty', { '.gitignore': 'x\n', 'CLAUDE.md': sixty })
 check('a 60-line CLAUDE.md is a pointer to adopt as well', /CLAUDE\.md +CONFLICT: a pointer/.test(adopt(pSixty, false).stdout))
 
+// A GEMINI.md seeded before the import existed is never missing, so adopt once left it as it was.
+// CRLF, as a Windows checkout wrote it.
+const oldGemini = "# GEMINI.md\r\n\r\nThis project's rules live in **[AGENTS.md](AGENTS.md)**. Read it in full at\r\nsession start.\r\n"
+const gOld = makeRepo('g-old', { ...agentsOnly, 'GEMINI.md': oldGemini })
+const gOldBefore = treeHash(gOld)
+out = adopt(gOld, false)
+check('old GEMINI.md, dry run: the import is reported and nothing is written', treeHash(gOld) === gOldBefore && /GEMINI\.md +import line added \(would\)/.test(out.stdout), out.stdout)
+adopt(gOld, true)
+check('old GEMINI.md asking in words: only the import line is added', read(join(gOld, 'GEMINI.md')) === oldGemini.replace('# GEMINI.md\r\n', '# GEMINI.md\r\n\n@./AGENTS.md\n'))
+const gBackups = readdirSync(gOld).filter((e) => e.startsWith('.claude.backup-adopt-'))
+check('the old GEMINI.md is backed up byte for byte', gBackups.length === 1 && read(join(gOld, gBackups[0], 'GEMINI.md')) === oldGemini)
+const gOldAfter = treeHash(gOld)
+adopt(gOld, true)
+check('second run: the GEMINI.md import is not added twice', treeHash(gOld) === gOldAfter)
+const geminiKept = {
+  'imports with ./ and carries a project note': read(join(root, 'GEMINI.md')) + '\nThe mobile client lives in app/.\n',
+  'imports without ./': '# GEMINI.md\n\n@AGENTS.md\n\nRules live in AGENTS.md.\n',
+  'holds rules of its own': ['# GEMINI.md', '', 'See AGENTS.md.', ...Array.from({ length: 70 }, (_, i) => `- rule ${i + 1}`)].join('\n') + '\n',
+}
+for (const [what, body] of Object.entries(geminiKept)) {
+  const dir = makeRepo(`g-kept-${Object.keys(geminiKept).indexOf(what)}`, { ...agentsOnly, 'GEMINI.md': body })
+  adopt(dir, true)
+  check(`GEMINI.md that ${what}: kept byte for byte`, read(join(dir, 'GEMINI.md')) === body)
+}
+
 section('docs-drift (the checks a new project starts with)')
 const driftIn = (name, files) => {
   const dir = join(tmp, name)

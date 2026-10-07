@@ -11,5 +11,10 @@ export const lineCount = (body) => body.split('\n').length - (body.endsWith('\n'
 
 export const isPointer = (body) => body !== null && lineCount(body) <= 60 && body.includes('AGENTS.md')
 
+const outsideCode = (body) => body.replace(/^(```|~~~)[^\n]*\n[\s\S]*?^\1/gm, '')
+
 /** The line that makes Claude Code load AGENTS.md; like Claude Code, it ignores one inside code. */
-export const importsAgents = (body) => /^@AGENTS\.md\s*$/m.test(body.replace(/^(```|~~~)[^\n]*\n[\s\S]*?^\1/gm, ''))
+export const importsAgents = (body) => /^@AGENTS\.md\s*$/m.test(outsideCode(body))
+
+/** GEMINI.md's import: `@./AGENTS.md` as the template writes it, or `@AGENTS.md`. */
+export const geminiImportsAgents = (body) => /^@(?:\.\/)?AGENTS\.md\s*$/m.test(outsideCode(body))

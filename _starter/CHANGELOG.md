@@ -13,6 +13,19 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Added: adopt gives an old GEMINI.md its import line (2026-10-07)
+
+adopt copies `GEMINI.md` only when it is missing, so a project adopted before
+0.1.0 kept the pointer it was seeded with, one that asks in words to read
+`AGENTS.md`. Gemini CLI reads `GEMINI.md` and reaches `AGENTS.md` only through
+the `@./AGENTS.md` import, so those projects never got it. adopt now adds that
+line after the title of a `GEMINI.md` pointer that lacks one, keeps the rest
+and backs up the old copy, as it already did for `CLAUDE.md`. A `GEMINI.md`
+that already imports `AGENTS.md`, or holds rules of its own, is left alone.
+Whether Antigravity loads `AGENTS.md` natively or through this import no
+longer matters: with the line in place it loads either way, and in the session
+that was tested it loaded once with both present.
+
 ### Fixed: the profile check missed Antigravity's global rules (2026-10-06)
 
 Antigravity does not read `~/.gemini/GEMINI.md`. In a live session its global

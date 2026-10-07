@@ -15,6 +15,7 @@
  *
  * A CLAUDE.md that holds rules, with no AGENTS.md yet, moves into AGENTS.md
  * verbatim and the pointer takes its place: a paraphrased migration loses rules.
+ * A CLAUDE.md or GEMINI.md pointer with no import line gets one; the rest is kept.
  *
  * The docs-first hook is wired only where AGENTS.md has no slots: in a project
  * with code it would block the running work. An existing hook is never removed,
@@ -28,7 +29,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSy
 import { join, resolve, dirname, basename, relative, sep } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { slotsOf } from '../.claude/tools/lib/slot.mjs'
-import { lineCount, isPointer, importsAgents } from '../.claude/tools/lib/pointer.mjs'
+import { lineCount, isPointer, importsAgents, geminiImportsAgents } from '../.claude/tools/lib/pointer.mjs'
 
 const starter = process.cwd()
 const args = process.argv.slice(2)
@@ -135,13 +136,25 @@ for (const p of OWNED) {
   }
 }
 
+// An older pointer that asks in words: the import goes after its title, the rest is kept.
+const withImport = (body, line) =>
+  /^﻿?#[^\n]*\n/.test(body) ? body.replace(/^(﻿?#[^\n]*\n)/, `$1\n${line}\n`) : `${line}\n\n${body}`
+
 // Seeded files: copied only when missing.
 for (const p of SEEDED_PRIVATE) {
-  if (!existsSync(join(target, p))) {
+  const body = read(target, p)
+  if (body === null) {
     write(p, read(starter, p))
     note(p, `seeded${tag}`)
+  } else if (same(p)) {
+    note(p, 'current')
+  } else if (p === 'GEMINI.md' && isPointer(body) && !geminiImportsAgents(body)) {
+    // Gemini CLI reaches AGENTS.md only through this line.
+    backup(p)
+    write(p, withImport(body, '@./AGENTS.md'))
+    note(p, `import line added${tag}, rest kept, old copy backed up`)
   } else {
-    note(p, same(p) ? 'current' : 'customised, kept')
+    note(p, 'customised, kept')
   }
 }
 for (const p of SEEDED_TRACKED) {
@@ -216,12 +229,8 @@ if (agents === null && claude !== null && !isPointer(claude)) {
   // commands and agents, and overwriting it would erase them.
   note('CLAUDE.md', 'customised pointer, kept: it imports AGENTS.md')
 } else {
-  // An older pointer that asks in words: add the import after the title, keep the rest.
   backup('CLAUDE.md')
-  const withImport = /^\uFEFF?#[^\n]*\n/.test(claude)
-    ? claude.replace(/^(\uFEFF?#[^\n]*\n)/, '$1\n@AGENTS.md\n')
-    : `@AGENTS.md\n\n${claude}`
-  write('CLAUDE.md', withImport)
+  write('CLAUDE.md', withImport(claude, '@AGENTS.md'))
   note('CLAUDE.md', `import line added${tag}, rest kept, old copy backed up`)
 }
 

@@ -211,9 +211,10 @@ keep their names.
 
 - **An unfilled slot** is what `.claude/tools/lib/slot.mjs` matches: the named
   form and the empty forms its comments list.
-- **A pointer** is a `CLAUDE.md` or `GEMINI.md` of at most 60 lines that names
-  `AGENTS.md`. `CLAUDE.md` also imports it, with `@AGENTS.md` on a line of its
-  own outside code.
+- **A pointer** is a `CLAUDE.md`, `GEMINI.md` or
+  `.github/copilot-instructions.md` of at most 60 lines that names
+  `AGENTS.md`. `CLAUDE.md` also imports it, with `@AGENTS.md` on a line of
+  its own outside code.
 - **A story** is a heading `### [STATUS] S<epic>.<n>: title` in `docs/TODO.md`,
   with STATUS one of TODO, WIP, REVIEW, DONE, BLOCKED. One story in WIP;
   nothing past Epic 0 started before Epic 0 is DONE.

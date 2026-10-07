@@ -30,6 +30,9 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ### Fixed
 
+- agent-check holds `.github/copilot-instructions.md` to the pointer rules
+  too, as `AGENTS.md` §11 already said it did. This can turn a gate red where
+  that file grew rules of its own.
 - With `--private-agents`, bootstrap writes `CONTRIBUTING.md` from a template:
   the gate and the rules the people without agent files need. The ignore block
   and `AGENTS.md` §4 already sent them there, and nothing created it.

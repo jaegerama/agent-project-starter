@@ -26,6 +26,9 @@ const readAbs = (p) => (existsSync(p) ? readFileSync(p, 'utf8') : null)
 // SKIP(reason) when it cannot run yet. A skip is not a pass, and the output says so.
 const SKIP = (reason) => ({ skipped: reason })
 
+// Each harness's own file, where it has one: a pointer to AGENTS.md, never a second rules file.
+const POINTERS = ['CLAUDE.md', 'GEMINI.md', '.github/copilot-instructions.md']
+
 // Keeping one profile in every tool is a choice: a master opts in with this line,
 // and without it each tool's global notes are its own.
 const PROFILE_MARKER = '<!-- operator-profile -->'
@@ -49,16 +52,14 @@ const CHECKS = [
   },
 
   {
-    name: 'CLAUDE.md and GEMINI.md are still pointers, and CLAUDE.md imports AGENTS.md',
+    name: 'the pointer files are still pointers, and CLAUDE.md imports AGENTS.md',
     run() {
       // One rule pasted into a pointer makes a second source of truth. The 60-line
       // limit is a crude fence, and crude on purpose.
-      if (!read('CLAUDE.md') && !read('GEMINI.md')) return SKIP('no pointer files yet')
+      const pointers = POINTERS.map((p) => [p, read(p)]).filter(([, body]) => body !== null)
+      if (pointers.length === 0) return SKIP('no pointer files yet')
 
-      const offenders = ['CLAUDE.md', 'GEMINI.md']
-        .map((p) => [p, read(p)])
-        .filter(([, body]) => body !== null && !isPointer(body))
-        .map(([p]) => p)
+      const offenders = pointers.filter(([, body]) => !isPointer(body)).map(([p]) => p)
       // Without this line Claude Code never loads AGENTS.md, and nothing else says so.
       const claude = read('CLAUDE.md')
       if (claude !== null && !importsAgents(claude)) offenders.push('CLAUDE.md (no @AGENTS.md import line outside code)')

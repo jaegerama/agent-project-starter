@@ -231,6 +231,12 @@ const sixty = ['# CLAUDE.md', '', '@AGENTS.md', ...Array.from({ length: 57 }, (_
 writeFileSync(join(ac, 'CLAUDE.md'), sixty)
 check('pointer of exactly 60 lines -> still a pointer', line(agentCheck(), 'still pointers').startsWith('ok') && isPointer(sixty))
 writeFileSync(join(ac, 'CLAUDE.md'), pointer)
+// Copilot reads its own file, a pointer like the others, and once nothing checked it.
+const copilot = join(ac, '.github', 'copilot-instructions.md')
+const copilotPointer = read(copilot)
+writeFileSync(copilot, copilotPointer + '\n'.repeat(70))
+check('Copilot pointer grown past 60 lines -> red', line(agentCheck(), 'still pointers').startsWith('FAIL'))
+writeFileSync(copilot, copilotPointer)
 
 appendFileSync(join(home, '.codex', 'AGENTS.md'), 'drift\n')
 check('a profile mirror drifts -> red', line(agentCheck(), 'operator profile').startsWith('FAIL'))

@@ -62,10 +62,10 @@ moves a `CLAUDE.md` that
 holds rules into `AGENTS.md` verbatim. A `CLAUDE.md` or `GEMINI.md` pointer
 with no import line gets one after its title, and nothing else in it changes.
 Whatever adopt replaces is backed up into `.claude.backup-adopt-*`. The
-project's own stack, commands and rules are never rewritten. adopt refuses
-while a file it copies has uncommitted changes in the starter, and records
-what it installed in the project's `.claude/starter-version`: the release
-tag, or the tag plus the last commit that changed those files. Re-run it after the starter changes: that is what keeps every
+project's own stack, commands and rules are never rewritten. adopt installs
+releases only: it refuses a starter whose files differ from its latest
+release tag or have uncommitted changes, and records the release in the
+project's `.claude/starter-version`. Re-run it after the starter changes: that is what keeps every
 project on the same process without making them the same project.
 
 It will not wire the docs-first hook into a project whose `AGENTS.md` still has

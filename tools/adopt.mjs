@@ -25,10 +25,10 @@
  * Where git ignores AGENTS.md, agent files are private (a team remote): adopt
  * writes only ignored files and seeds no tracked ones.
  *
- * adopt copies what is on disk, so it refuses while a file it copies, or adopt
- * itself, has uncommitted changes; --allow-dirty is for testing adopt. The
- * project's .claude/starter-version names what it installed: the release tag
- * when those files match it, or the tag plus the last commit that changed them.
+ * A project receives releases only: adopt refuses a starter whose files differ
+ * from its latest release tag (--allow-unreleased), or have uncommitted changes
+ * (--allow-dirty, which implies the other). Both flags are for testing adopt.
+ * The project's .claude/starter-version names the release it installed.
  * The report says when no gate in the project runs agent-check.
  */
 
@@ -42,6 +42,7 @@ const starter = process.cwd()
 const args = process.argv.slice(2)
 const apply = args.includes('--apply')
 const allowDirty = args.includes('--allow-dirty')
+const allowUnreleased = allowDirty || args.includes('--allow-unreleased')
 const intoIdx = args.indexOf('--into')
 const into = intoIdx >= 0 ? args[intoIdx + 1] : null
 
@@ -50,7 +51,12 @@ const fail = (msg) => {
   process.exit(1)
 }
 
-if (!into) fail('Usage: node tools/adopt.mjs --into <path to project> [--apply] [--allow-dirty]\nWithout --apply it only reports.')
+if (!into) {
+  fail(
+    'Usage: node tools/adopt.mjs --into <path to project> [--apply] [--allow-unreleased] [--allow-dirty]\n' +
+      'Without --apply it only reports.',
+  )
+}
 if (!existsSync(join(starter, '_starter'))) {
   fail('Run this from the starter itself (the folder that still has _starter/).\nA bootstrapped project is not a source to adopt from.')
 }
@@ -102,6 +108,13 @@ const version = (() => {
   const last = gitIn(starter, ['log', '-1', '--format=%h', '--', ...SOURCE]) || 'uncommitted'
   return `${release ?? 'untagged'}+${last}${dirty ? '-dirty' : ''}`
 })()
+// A project receives releases only; work in progress stays in the starter.
+if (version?.includes('+') && !allowUnreleased) {
+  fail(
+    `Refused, nothing written. The starter is not at a release: what adopt would install is ${version}.\n` +
+      'Check out a release tag, or pass --allow-unreleased to test adopt itself.',
+  )
+}
 
 const read = (base, p) => (existsSync(join(base, p)) ? readFileSync(join(base, p), 'utf8') : null)
 const stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15)

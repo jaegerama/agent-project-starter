@@ -10,6 +10,12 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking:** adopt installs releases only. It refuses a starter whose files
+  differ from its latest release tag; `--allow-unreleased` overrides it for
+  testing, and `--allow-dirty` implies it.
+
 ## [0.4.1] - 2026-10-07
 
 ### Fixed

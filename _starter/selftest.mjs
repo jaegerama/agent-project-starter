@@ -554,12 +554,29 @@ out = adoptFrom(src, v1, '--apply')
 check('a clean source at a release: adopt records the tag', out.status === 0 && versionIn(v1) === 'v9.9.9\n', out.stdout + out.stderr)
 check('second run from the same source: the version is current', /starter-version +current: v9\.9\.9$/m.test(adoptFrom(src, v1).stdout))
 const sha = commitIn(src, '.claude/tools/lib/pointer.mjs', '// a change after the release\n')
-adoptFrom(src, v1, '--apply')
-check('an owned file changed after the release: the tag plus that commit', versionIn(v1) === `v9.9.9+${sha}\n`, versionIn(v1))
+// A project receives releases only; work in progress stays in the starter.
+const vPast = makeRepo('v-past-release', agentsOnly)
+const vPastBefore = treeHash(vPast)
+out = adoptFrom(src, vPast, '--apply')
+check(
+  'a source past its release: refused, nothing written',
+  out.status === 1 && /not at a release/.test(out.stderr) && treeHash(vPast) === vPastBefore,
+  out.stdout + out.stderr,
+)
+adoptFrom(src, v1, '--apply', '--allow-unreleased')
+check('--allow-unreleased: the tag plus the commit that changed an owned file', versionIn(v1) === `v9.9.9+${sha}\n`, versionIn(v1))
 commitIn(src, '_starter/HANDOFF.md', '\nA note.\n')
 check(
   'a commit to a file adopt does not copy leaves the version alone',
-  new RegExp(`starter-version +current: v9\\.9\\.9\\+${sha}$`, 'm').test(adoptFrom(src, v1).stdout),
+  new RegExp(`starter-version +current: v9\\.9\\.9\\+${sha}$`, 'm').test(adoptFrom(src, v1, '--allow-unreleased').stdout),
+)
+git(src, 'tag', 'v9.9.10', sha)
+const vLater = makeRepo('v-later-docs', agentsOnly)
+out = adoptFrom(src, vLater, '--apply')
+check(
+  'a commit to other files after a release keeps the source at that release',
+  out.status === 0 && versionIn(vLater) === 'v9.9.10\n',
+  out.stdout + out.stderr,
 )
 
 appendFileSync(join(src, '_starter', 'README.md'), '\nUncommitted.\n')
@@ -574,7 +591,7 @@ check(
   out.stdout + out.stderr,
 )
 adoptFrom(src, v3, '--apply', '--allow-dirty')
-check('--allow-dirty goes ahead, and the version says -dirty', /^v9\.9\.9\+[0-9a-f]+-dirty\n$/.test(versionIn(v3) ?? ''), versionIn(v3))
+check('--allow-dirty goes ahead, and the version says -dirty', /^v9\.9\.10\+[0-9a-f]+-dirty\n$/.test(versionIn(v3) ?? ''), versionIn(v3))
 
 const noGit = copyStarter('src-nogit')
 rmSync(join(noGit, '.git'), { recursive: true, force: true })

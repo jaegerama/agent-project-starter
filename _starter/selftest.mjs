@@ -304,6 +304,13 @@ check('dry run changes nothing', treeHash(committed) === before)
 
 out = node(committed, ['tools/bootstrap.mjs', '--name', 'Demo App', '--apply'])
 check('apply exits 0', out.status === 0, out.stderr)
+// ARCHITECTURE.md says it is written when the second component appears, and the report once said otherwise.
+const [, fillAndLater = ''] = out.stdout.split('Fill before application code')
+const [fillNow, fillLater = ''] = fillAndLater.split('Later, when the second component appears')
+check(
+  'ARCHITECTURE.md is listed as later work, not before application code',
+  !fillNow.includes('docs/ARCHITECTURE.md') && fillLater.includes('docs/ARCHITECTURE.md'),
+)
 check('_starter/ deleted', !existsSync(join(committed, '_starter')))
 check(
   'the other starter-only files are gone: LICENSE, .github/README.md, the self-test workflow',

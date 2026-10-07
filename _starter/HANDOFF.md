@@ -10,8 +10,13 @@ Status per 2026-10-07.
 
 ## Next Immediate Steps
 
-1. **G4: one release used through a full cycle** in every project without a
-   breaking fix or a HIGH finding.
+1. **G4: a release used through a full cycle** in every project without a
+   breaking fix or a HIGH finding. Done when every project has closed at least
+   one piece of work on that release, committed with its gate green
+   (agent-check included), and no session recorded the hook, agent-check,
+   docs-drift or adopt blocking or passing wrongly. Checked at the dry run of
+   the release after it. It counts from the next release: 0.5.0 had a HIGH
+   finding, a private-agents project got no `CONTRIBUTING.md`, fixed on `next`.
 
 ## Done
 
@@ -118,6 +123,34 @@ Status per 2026-10-07.
   decides, the files adopt manages and where, adopt's six promises, and how
   the version moves from 1.0.0. Each claim was checked against the code
   before it was written down.
+- 2026-10-07: release 0.5.0, tagged `v0.5.0`: MINOR, because the commits since
+  0.4.1 include a breaking change while the starter is 0.x. CI run
+  37632563737 on the release commit: 4 of 4 jobs green (Ubuntu on Node 22 and
+  24, macOS and Windows on 24).
+- 2026-10-07: adopt brought every project that uses the starter to 0.5.0, dry
+  run first. The only change was `.claude/starter-version`, which reads
+  `v0.5.0` in each; agent-check passed 4 of 4, a second dry run found nothing
+  left to change, and no report line says a gate skips agent-check.
+- 2026-10-07: G2 in private-agents mode. A sample team project (an HTTP API in
+  Node.js, a shared team remote) went through every Setup step to its walking
+  skeleton with the gate green, and a teammate's clone without agent files ran
+  the `CONTRIBUTING.md` gate green. What it tripped on is fixed: no
+  `CONTRIBUTING.md` existed for the people without agent files, and committed
+  documents sent them to `AGENTS.md` (6 mutations); a `CONTRIBUTING.md` gate
+  step missing from the `AGENTS.md` gate went unnoticed (4 mutations); the
+  Copilot pointer was outside the pointer check (1 mutation).
+- 2026-10-07: the brief became a form. Both trials asked seven questions about
+  conventions the brief implied; `docs/BRIEF.md` is now a seven-part form whose
+  conventions hold unless changed, and Setup asks once, in one message. A
+  third trial on the same project, by an agent with no other context, asked 13
+  questions where the free-text brief raised 19: none about conventions, ten
+  about the domain and operations. What it was unsure of is settled in the
+  Setup steps, and bootstrap lists `ARCHITECTURE.md` as later work (1
+  mutation). Each mutation was caught by exactly the cases written for it.
+  Windows 11, Node 24.13.1: `node _starter/selftest.mjs` 183 passed, 0
+  failed, 0 skipped; `node tools/docs-drift.mjs` 1 passed, 3 skipped;
+  `node .claude/tools/agent-check.mjs` red only on the template's 70 slots,
+  by design.
 
 ## Decisions taken
 
@@ -148,6 +181,17 @@ Status per 2026-10-07.
   (2026-10-07). A fix that brings a tool back to its documentation is PATCH
   even when it can turn a gate red, because the documentation is the
   contract; its changelog entry says that it can.
+- G4 is measured by use, not by time (2026-10-07): time that passes without
+  the release being used proves nothing.
+- The brief is a form, and Setup asks once (2026-10-07): the convention
+  questions both trials raised cost the owner a reply and prevented nothing.
+- The starter supports harnesses, not models (2026-10-07): a model behind a
+  harness changes nothing it relies on; adding a harness follows
+  `_starter/README.md`.
+- In a private-agents project, `CONTRIBUTING.md` carries the gate and the
+  commit rules only (2026-10-08): the gate and CI hold the mechanical part,
+  and the security rules and the Definition of Done stay with the agents in
+  `AGENTS.md`, with no second copy to keep in step.
 - B5 and H7 of the audit before 0.1.0 are accepted limits, not open work
   (2026-10-07); §7 of that audit gives the reasons.
 - Whether Antigravity loads `AGENTS.md` natively or through the `GEMINI.md`
@@ -156,9 +200,11 @@ Status per 2026-10-07.
 
 ## Blocked and pending
 
-- Confirming the Gemini CLI import (`AGENTS.md` §11) waits on a session in
-  Gemini CLI, which is not installed where the starter is maintained. Until
-  one runs, §11 says documented, not yet observed.
+- Confirming the Gemini CLI import, and that Codex, Cursor and Copilot load
+  `AGENTS.md` (§11), waits on a session in each tool. Codex and Gemini CLI
+  are not installed where the starter is maintained, and no Cursor or Copilot
+  session has been run there. Until one runs, §11 says documented, not yet
+  observed.
 
 ## Daily commands
 

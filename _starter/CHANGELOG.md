@@ -37,6 +37,8 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ### Fixed
 
+- bootstrap lists the slots of `docs/ARCHITECTURE.md` as later work, as that
+  file says, not among those to fill before application code.
 - agent-check holds `.github/copilot-instructions.md` to the pointer rules
   too, as `AGENTS.md` §11 already said it did. This can turn a gate red where
   that file grew rules of its own.

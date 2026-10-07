@@ -7,7 +7,7 @@ Status: `TODO` · `WIP` · `REVIEW` · `DONE` · `BLOCKED`
 
 ## Execution rules
 
-They live in `AGENTS.md` §0.1: one story in WIP at a time, and Epic 0 first.
+One story in WIP at a time, and nothing past Epic 0 before it is DONE.
 `node tools/docs-drift.mjs` checks both against the headings below, so keep
 their shape: `### [STATUS] S<epic>.<n>: title`.
 

@@ -18,6 +18,14 @@ empty `CHANGELOG.md` at the root. History before the public import of
   with the answer the brief suggests where it suggests one.
 - The PRD writes a non-functional requirement the brief leaves out as "not
   stated", and asks about it only when a story depends on it.
+- The README template's documents table and `docs/TODO.md` no longer send
+  readers to `AGENTS.md`, which a private-agents repository does not commit.
+
+### Fixed
+
+- With `--private-agents`, bootstrap writes `CONTRIBUTING.md` from a template:
+  the gate and the rules the people without agent files need. The ignore block
+  and `AGENTS.md` §4 already sent them there, and nothing created it.
 
 ## [0.5.0] - 2026-10-07
 

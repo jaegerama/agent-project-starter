@@ -39,9 +39,10 @@ only job is the brief; everything else below is the agent's.
    `tools/adopt.mjs`, skip this step: the name is set, git exists, and the
    brief is the project's existing `HANDOFF.md` and `README.md`.
 3. **Fill every slot the brief answers**: this file first, then `README.md`,
-   `docs/PRD.md`, `docs/TODO.md`, `HANDOFF.md`, and `DESIGN.md` if there is an
-   interface; add the stack's dependency and build directories to `.gitignore`
-   and its language settings to `.editorconfig`. Stack, commands and way of
+   `docs/PRD.md`, `docs/TODO.md`, `HANDOFF.md`, `DESIGN.md` if there is an
+   interface, and `CONTRIBUTING.md` where agent files are private (bootstrap
+   writes it only then); add the stack's dependency and build directories to
+   `.gitignore` and its language settings to `.editorconfig`. Stack, commands and way of
    working are this project's own, taken from the brief. Nothing is carried
    over from another project, and a stack an operator profile mentions is
    background, not a default. Two kinds of slot are not asked: what this

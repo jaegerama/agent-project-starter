@@ -14,7 +14,8 @@
  *   3. Starts a fresh git history when the copy carries the starter's.
  *   4. Prints the slots a human still has to fill, grouped by file.
  *   5. With --private-agents, appends the .gitignore block that keeps agent
- *      files out of git, for a repository that goes to a shared team remote.
+ *      files out of git, for a repository that goes to a shared team remote,
+ *      and writes CONTRIBUTING.md for the people who do not have them.
  *
  * It never fills a slot: a guessed decision reads exactly like a made one.
  * Dry run is the default because step 2 deletes a directory.
@@ -58,7 +59,7 @@ if (['project-starter', 'agent-project-starter'].includes(basename(root).toLower
 
 // Templates only: tools/ and .claude/ hold <...> that are not slots, such as
 // regexes and the PLACEHOLDER constant above, which --apply would overwrite.
-const TEMPLATE_FILES = ['AGENTS.md', 'README.md', 'CHANGELOG.md', 'CLAUDE.md', 'GEMINI.md', 'HANDOFF.md', 'DESIGN.md']
+const TEMPLATE_FILES = ['AGENTS.md', 'README.md', 'CHANGELOG.md', 'CLAUDE.md', 'GEMINI.md', 'HANDOFF.md', 'DESIGN.md', 'CONTRIBUTING.md']
 const TEMPLATE_DIRS = ['docs']
 
 const walk = (dir, out = []) => {
@@ -71,12 +72,13 @@ const walk = (dir, out = []) => {
 }
 
 const rel = (f) => relative(root, f).split(sep).join('/')
-const files = [
+const templateFiles = () => [
   ...TEMPLATE_FILES.map((f) => join(root, f)).filter((f) => existsSync(f)),
   ...TEMPLATE_DIRS.map((d) => join(root, d))
     .filter((d) => existsSync(d))
     .flatMap((d) => walk(d)),
 ]
+const files = templateFiles()
 
 const touched = []
 for (const file of files) {
@@ -92,6 +94,17 @@ for (const file of files) {
 const STARTER_ONLY = ['_starter', 'LICENSE', '.github/README.md', '.github/workflows/selftest.yml', 'tools/adopt.mjs']
 const hasStarterDir = existsSync(join(root, '_starter'))
 const starterOnly = hasStarterDir ? STARTER_ONLY.filter((p) => existsSync(join(root, p))) : []
+
+// GitHub would show a root CONTRIBUTING.md as the starter's own guide, so the
+// template waits in _starter/; one the project already has is never replaced.
+const CONTRIBUTING = 'CONTRIBUTING.md'
+const contributingTemplate = join(root, '_starter', 'templates', CONTRIBUTING)
+const hasContributing = existsSync(join(root, CONTRIBUTING))
+const writeContributing = privateAgents && !hasContributing && existsSync(contributingTemplate)
+if (writeContributing && apply) {
+  writeFileSync(join(root, CONTRIBUTING), readFileSync(contributingTemplate, 'utf8').split(PLACEHOLDER).join(name))
+}
+
 if (apply) for (const p of starterOnly) rmSync(join(root, p), { recursive: true, force: true })
 
 // A copy carries the starter's .git, and with it a private-agents project would
@@ -148,7 +161,7 @@ if (privateAgents && !alreadyPrivate && apply) writeFileSync(gitignorePath, giti
 const slotsIn = (file) => (existsSync(file) ? slotsOf(readFileSync(file, 'utf8')) : [])
 
 const blocking = slotsIn(join(root, 'AGENTS.md'))
-const remaining = files
+const remaining = templateFiles()
   .filter((f) => rel(f) !== 'AGENTS.md')
   .map((f) => [rel(f), slotsIn(f).filter((s) => !(apply && s === PLACEHOLDER))])
   .filter(([, slots]) => slots.length > 0)
@@ -177,6 +190,17 @@ console.log(
         ? 'private (block already in .gitignore)'
         : `private, .gitignore block appended${verb}`
       : 'committed (default; --private-agents for a shared team remote)'
+  }`,
+)
+console.log(
+  `  ${CONTRIBUTING}   ${
+    !privateAgents
+      ? 'none: AGENTS.md is committed and holds the rules'
+      : hasContributing
+        ? 'kept: the project already has one'
+        : writeContributing
+          ? `written from the template${verb}: the gate and rules people need`
+          : "not written: the starter's template is gone"
   }`,
 )
 

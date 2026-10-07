@@ -18,7 +18,6 @@ Every change passes the gate before it is committed:
 
 | File | What it holds |
 |---|---|
-| [`AGENTS.md`](AGENTS.md) | This project's working rules, the single source of truth |
 | [`docs/PRD.md`](docs/PRD.md) | What is being built, for whom, and what is out of scope |
 | [`docs/TODO.md`](docs/TODO.md) | Epics → stories → acceptance criteria |
 | [`docs/QUESTIONS.md`](docs/QUESTIONS.md) | What still needs a human answer |

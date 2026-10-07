@@ -34,12 +34,14 @@ which every tool loads at session start:
 
 Bootstrap replaces `<PROJECT NAME>`, deletes `_starter/` and the other files
 that belong to the starter (`LICENSE`, `.github/README.md`, the self-test
-workflow, `tools/adopt.mjs`), and prints the slots still to fill. Duplicating in Explorer copies the hidden `.git` too, so on the
-first run it also removes the starter's inherited history and starts a fresh
-one: otherwise a private-agents project keeps `AGENTS.md` and `.claude/`
-tracked, and pushes them on the first push. Without `--apply` it is a dry run,
-and it refuses to run inside a folder called `project-starter` or
-`agent-project-starter`.
+workflow, `tools/adopt.mjs`), and prints the slots still to fill. With
+`--private-agents` it also writes `CONTRIBUTING.md` from `_starter/templates/`,
+for the people who do not have the agent files. Duplicating in Explorer copies
+the hidden `.git` too, so on the first run it also removes the starter's
+inherited history and starts a fresh one: otherwise a private-agents project
+keeps `AGENTS.md` and `.claude/` tracked, and pushes them on the first push.
+Without `--apply` it is a dry run, and it refuses to run inside a folder
+called `project-starter` or `agent-project-starter`.
 
 In Claude Code, "no code before `AGENTS.md` is filled" is **machine-enforced
 for the file tools**: the hook `.claude/hooks/guard-slots.mjs` refuses Write,
@@ -175,6 +177,7 @@ aspiration** until it is one.
 | `CHANGELOG.md` | The starter's own history, separate from the project's changelog |
 | `AUDIT-2026-10-05.md` | The audit before the first public release: each finding, its evidence, and the commit that fixed it |
 | `AUDIT-2026-10-07-agnostic.md` | The review of whether the starter is agnostic: each finding, and the commit that fixed it |
+| `templates/CONTRIBUTING.md` | The guide bootstrap writes for a private-agents project. It waits here because GitHub would show a root one as the starter's own |
 
 The other files that belong to the starter alone live outside this directory,
 and bootstrap removes them from a project with `_starter/`: `LICENSE`,

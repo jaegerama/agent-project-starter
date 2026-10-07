@@ -125,7 +125,7 @@ check(
   `found: ${templateSlots.length}`,
 )
 // SLOT stops at a newline, so a template slot that wraps would never be counted.
-const templateFiles = ['AGENTS.md', 'README.md', 'CHANGELOG.md', 'CLAUDE.md', 'GEMINI.md', 'HANDOFF.md', 'DESIGN.md', ...readdirSync(join(root, 'docs')).filter((f) => f.endsWith('.md')).map((f) => `docs/${f}`)]
+const templateFiles = ['AGENTS.md', 'README.md', 'CHANGELOG.md', 'CLAUDE.md', 'GEMINI.md', 'HANDOFF.md', 'DESIGN.md', '_starter/templates/CONTRIBUTING.md', ...readdirSync(join(root, 'docs')).filter((f) => f.endsWith('.md')).map((f) => `docs/${f}`)]
 const wrapped = templateFiles.flatMap((f) =>
   read(join(root, f))
     .split('\n')
@@ -319,12 +319,15 @@ check(
 git(committed, 'add', '-A')
 const stagedCommitted = git(committed, 'diff', '--cached', '--name-only').stdout.split('\n')
 check('committed mode: AGENTS.md and .claude/ would be committed', stagedCommitted.includes('AGENTS.md') && stagedCommitted.some((f) => f.startsWith('.claude/')))
+check('committed mode: no CONTRIBUTING.md, since AGENTS.md is committed and holds the rules', !existsSync(join(committed, 'CONTRIBUTING.md')))
 out = node(committed, ['tools/bootstrap.mjs', '--name', 'Demo App', '--apply'])
 check('second run: "already a repo", history untouched', out.stdout.includes('already a repo'))
 check('a new project ignores adopt backups from day one', git(committed, 'check-ignore', '-q', '.claude.backup-adopt-x/CLAUDE.md').status === 0)
 
 const priv = copyStarter('demo-private')
 node(priv, ['tools/bootstrap.mjs', '--name', 'Demo App', '--private-agents', '--apply'])
+// Read before the second run, which would replace a name the first one missed.
+const firstGuide = read(join(priv, 'CONTRIBUTING.md')) ?? ''
 node(priv, ['tools/bootstrap.mjs', '--name', 'Demo App', '--private-agents', '--apply'])
 git(priv, 'add', '-A')
 const stagedPrivate = git(priv, 'diff', '--cached', '--name-only').stdout.split('\n').filter(Boolean)
@@ -334,6 +337,18 @@ check(
   stagedPrivate.join(' '),
 )
 check('private mode: the .gitignore block appears once after two runs', read(join(priv, '.gitignore')).split('bootstrap --private-agents').length - 1 === 1)
+// The people without agent files once got no committed gate at all.
+check(
+  'private mode: CONTRIBUTING.md is written, named, and committed',
+  firstGuide.startsWith('# Contributing to Demo App\n') && stagedPrivate.includes('CONTRIBUTING.md'),
+)
+const toAgents = (dir) =>
+  ['README.md', 'CONTRIBUTING.md', 'docs/TODO.md'].filter((f) => (read(join(dir, f)) ?? '').replace(SLOT_PATTERN, '').includes('AGENTS.md'))
+check('private mode: README, CONTRIBUTING.md and docs/TODO.md send nobody to the ignored AGENTS.md', toAgents(priv).length === 0, toAgents(priv).join(' '))
+const ownGuide = copyStarter('demo-own-contributing')
+writeFileSync(join(ownGuide, 'CONTRIBUTING.md'), '# How we work\n')
+node(ownGuide, ['tools/bootstrap.mjs', '--name', 'Demo App', '--private-agents', '--apply'])
+check("private mode: the project's own CONTRIBUTING.md is kept", read(join(ownGuide, 'CONTRIBUTING.md')) === '# How we work\n')
 
 const later = copyStarter('demo-later')
 rmSync(join(later, '_starter'), { recursive: true, force: true })

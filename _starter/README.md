@@ -110,6 +110,28 @@ The second check in `.claude/tools/agent-check.mjs` enforces this: a pointer fil
 past 60 lines or loses its reference to `AGENTS.md` turns the gate red, and so
 does a `CLAUDE.md` whose `@AGENTS.md` import line is gone or sits inside code.
 
+### Adding an agent harness
+
+The starter supports harnesses, not models: what matters is which files a
+harness loads at session start, and which of its mechanisms run. A different
+model behind the same harness, such as another provider's model run through
+Claude Code, loads and enforces exactly what that harness does; only how well
+it follows the rules changes, and the gate is what catches that. The gate and
+CI hold in every harness; the docs-first hook is Claude Code's alone.
+
+1. From the harness's documentation, find what it loads at session start.
+2. If it reads `AGENTS.md`, add nothing. If it reads its own file, add that
+   file as a pointer, with its import line where it has one. A pointer that
+   only asks in words is the weakest form: in Claude Code it was never acted
+   on before the import existed.
+3. Add its row to `AGENTS.md` §11 as documented, not yet observed.
+4. Observe it once: a fresh session in a clone, asked before using any tool
+   to quote the last sentence of `AGENTS.md`. Then mark its row observed,
+   with the date.
+5. In the starter, a new pointer file joins `POINTERS` in
+   `.claude/tools/agent-check.mjs` and, being an agent file, the private block
+   in `tools/bootstrap.mjs`.
+
 ### The operator profile (working process, verification, reporting, git)
 
 Rules that hold on every project of one machine live outside the projects, in

@@ -476,6 +476,15 @@ itself says so.
 | Gemini CLI | `GEMINI.md`, which imports this file with `@./AGENTS.md`; plus `~/.gemini/GEMINI.md` | **Documented, not yet observed**: Gemini CLI documents `@` imports in `GEMINI.md`, but no Gemini CLI session has been checked for it yet. Confirm it once (ask which files it loaded), then mark it verified |
 | Antigravity | `AGENTS.md` and `GEMINI.md` as workspace rules, loaded at session start; global rules from `~/.gemini/config/AGENTS.md` | **Verified 2026-10-06**: a fresh session quoted the last sentence of this file before using any tool. Not yet separated: whether `AGENTS.md` loads natively or through the import in `GEMINI.md` |
 
+**Another harness.** This table tracks harnesses, the programs that load files
+and run tools. The model behind one changes nothing here: another model run
+through Claude Code is a Claude Code session. To add a harness, find what it
+loads at session start. If that is not `AGENTS.md`, give it a pointer file
+with its import line, where it has one; a pointer that only asks in words is
+the weakest form. Add its row above as documented, not yet observed, and mark
+it observed once a fresh session, before using any tool, quotes the last
+sentence of this file.
+
 The operator profile (working process, verification, reporting, git) is not
 shared across tools: each reads its own file, `~/.claude/CLAUDE.md`,
 `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`, and `~/.gemini/config/AGENTS.md`

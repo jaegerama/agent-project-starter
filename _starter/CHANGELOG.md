@@ -12,6 +12,8 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ### Added
 
+- `AGENTS.md` §11 and `_starter/README.md` say how to add an agent harness:
+  the harness, not the model behind it, decides what is loaded and enforced.
 - docs-drift fails when the `CONTRIBUTING.md` gate has a command the
   `AGENTS.md` gate lacks, so an agent never runs less than people must.
 

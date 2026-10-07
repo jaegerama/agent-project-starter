@@ -138,7 +138,7 @@ for (const p of OWNED) {
 
 // An older pointer that asks in words: the import goes after its title, the rest is kept.
 const withImport = (body, line) =>
-  /^﻿?#[^\n]*\n/.test(body) ? body.replace(/^(﻿?#[^\n]*\n)/, `$1\n${line}\n`) : `${line}\n\n${body}`
+  /^\uFEFF?#[^\n]*\n/.test(body) ? body.replace(/^(\uFEFF?#[^\n]*\n)/, `$1\n${line}\n`) : `${line}\n\n${body}`
 
 // Seeded files: copied only when missing.
 for (const p of SEEDED_PRIVATE) {

@@ -13,6 +13,13 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Fixed: two invisible characters in adopt (2026-10-07)
+
+0.2.0 wrote the byte order mark in adopt's import helper as the character
+itself, which no editor or diff shows, where the code around it writes the
+escape. It behaved the same, and it is an escape again. The self-test now
+fails on any file in the starter that carries the character.
+
 ## [0.2.0] - 2026-10-07
 
 adopt now brings an old `GEMINI.md` pointer its import line, and the profile

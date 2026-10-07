@@ -130,6 +130,10 @@ const wrapped = templateFiles.flatMap((f) =>
     .map(([, at]) => at),
 )
 check('no slot in any template wraps onto a second line', wrapped.length === 0, wrapped.join(' '))
+// U+FEFF shows in no editor and no diff; code that needs one writes the escape.
+const BOM = String.fromCharCode(0xfeff)
+const withBom = git(root, 'ls-files').stdout.split('\n').filter(Boolean).filter((f) => (read(join(root, f)) ?? '').includes(BOM))
+check('no file in the starter carries an invisible U+FEFF character', withBom.length === 0, withBom.join(' '))
 
 section('docs-first hook (starter itself, AGENTS.md has slots)')
 check('application code is blocked (exit 2)', hook(root, 'src/app.ts') === 2)

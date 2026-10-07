@@ -28,6 +28,7 @@
  * itself, has uncommitted changes; --allow-dirty is for testing adopt. The
  * project's .claude/starter-version names what it installed: the release tag
  * when those files match it, or the tag plus the last commit that changed them.
+ * The report says when no gate in the project runs agent-check.
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, copyFileSync } from 'node:fs'
@@ -187,10 +188,12 @@ const withImport = (body, line) =>
   /^\uFEFF?#[^\n]*\n/.test(body) ? body.replace(/^(\uFEFF?#[^\n]*\n)/, `$1\n${line}\n`) : `${line}\n\n${body}`
 
 // Seeded files: copied only when missing.
+const seeded = new Set()
 for (const p of SEEDED_PRIVATE) {
   const body = read(target, p)
   if (body === null) {
     write(p, read(starter, p))
+    seeded.add(p)
     note(p, `seeded${tag}`)
   } else if (same(p)) {
     note(p, 'current')
@@ -333,6 +336,21 @@ if (settings !== undefined) {
   } else {
     note(settingsPath, 'current')
   }
+}
+
+// agent-check guards nothing unless a gate runs it; a private repository cannot
+// put it in a tracked gate, so its own gates are where it goes missing.
+const AGENT_CHECK = 'node .claude/tools/agent-check.mjs'
+const afterThisRun = (p) => read(target, p) ?? (seeded.has(p) ? read(starter, p) : null)
+const scriptsDir = join(target, 'scripts')
+const gateScripts = existsSync(scriptsDir)
+  ? readdirSync(scriptsDir)
+      .filter((f) => /gate/i.test(f) && statSync(join(scriptsDir, f)).isFile())
+      .map((f) => `scripts/${f}`)
+  : []
+const gateFiles = ['CONTRIBUTING.md', '.claude/commands/gate.md', 'package.json', 'composer.json', 'Makefile', 'GNUmakefile', 'makefile', ...gateScripts]
+if (![agents, ...gateFiles.map(afterThisRun)].some((body) => body?.includes(AGENT_CHECK))) {
+  note('agent-check', `run by no gate: add \`${AGENT_CHECK}\` to the gate in AGENTS.md or .claude/commands/gate.md`)
 }
 
 // adopt writes backups, so the target ignores them before a `git add -A` commits one.

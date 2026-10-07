@@ -13,6 +13,17 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Added: adopt says when no gate runs agent-check (2026-10-07)
+
+agent-check guards a project only when its gate runs it, and a project whose
+gate is its own can easily have none that does; a private repository cannot
+put it in a tracked gate at all, because clones and CI have no `.claude/`.
+adopt's report now names that case. It looks
+for `node .claude/tools/agent-check.mjs` in `AGENTS.md`, `CONTRIBUTING.md`,
+`.claude/commands/gate.md`, the package and make manifests, and any file in
+`scripts/` with gate in its name, counting a file this run seeds. A mention
+anywhere in those files counts, so prose that says to run it is enough.
+
 ### Fixed: two invisible characters in adopt (2026-10-07)
 
 0.2.0 wrote the byte order mark in adopt's import helper as the character

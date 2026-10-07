@@ -466,6 +466,18 @@ for (const [what, body] of Object.entries(geminiKept)) {
   check(`GEMINI.md that ${what}: kept byte for byte`, read(join(dir, 'GEMINI.md')) === body)
 }
 
+// agent-check guards nothing unless a gate runs it.
+const gateCases = {
+  'no gate runs agent-check: the report says so': [{ '.claude/commands/gate.md': '# Gate\n\nRun npm test.\n' }, true],
+  'a /gate command runs agent-check: no warning': [{ '.claude/commands/gate.md': '# Gate\n\nThen `node .claude/tools/agent-check.mjs`.\n' }, false],
+  'a scripts/ gate runs agent-check: no warning': [{ '.claude/commands/gate.md': '# Gate\n\nRun scripts/gate.sh.\n', 'scripts/gate.sh': 'node .claude/tools/agent-check.mjs\n' }, false],
+  'a /gate command this run seeds counts, even in a dry run': [{}, false],
+}
+for (const [name, [files, warns]] of Object.entries(gateCases)) {
+  const dir = makeRepo(`gate-${Object.keys(gateCases).indexOf(name)}`, { ...agentsOnly, ...files })
+  check(name, /^ {2}agent-check +run by no gate/m.test(adopt(dir, false).stdout) === warns)
+}
+
 section('adopt: a committed source, and the version it records')
 const src = copyStarter('src-clean')
 git(src, 'add', '-A')

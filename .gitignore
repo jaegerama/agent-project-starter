@@ -8,7 +8,8 @@
 # Dependencies and build output: add this stack's during setup.
 *.log
 
-# Per-machine preferences; the rest of .claude/ is committed so the tooling travels.
+# Per-machine preferences, never committed. In committed mode the rest of .claude/
+# is committed, so the tooling travels.
 .claude/settings.local.json
 
 # Backups adopt writes before it replaces a file: copies of agent files that one

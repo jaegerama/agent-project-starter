@@ -29,6 +29,11 @@ empty `CHANGELOG.md` at the root. History before the public import of
   stated", and asks about it only when a story depends on it.
 - The README template's documents table and `docs/TODO.md` no longer send
   readers to `AGENTS.md`, which a private-agents repository does not commit.
+- Setup says that a project's own port is proposed rather than measured, that
+  a slot the brief answers in part asks for the rest, that a choice is never
+  filled with "none" unless someone said so, and that a business rule a story
+  needs is a question too.
+- The Definition of Done's authorization test no longer assumes roles.
 
 ### Fixed
 

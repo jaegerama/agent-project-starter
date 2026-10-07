@@ -42,21 +42,24 @@ only job is the brief; everything else below is the agent's.
    `docs/PRD.md`, `docs/TODO.md`, `HANDOFF.md`, `DESIGN.md` if there is an
    interface, and `CONTRIBUTING.md` where agent files are private (bootstrap
    writes it only then); add the stack's dependency and build directories to
-   `.gitignore` and its language settings to `.editorconfig`. Stack, commands and way of
-   working are this project's own, taken from the brief. Nothing is carried
-   over from another project, and a stack an operator profile mentions is
-   background, not a default. Two kinds of slot are not asked: what this
-   machine runs (§10) is measured, with the date, and what follows from the
-   stack once it is set (the directory map, the commands, the drift pairs)
-   is written as the plan the walking skeleton makes true.
+   `.gitignore` and its language settings to `.editorconfig`. Stack, commands
+   and way of working are this project's own, taken from the brief. Nothing
+   is carried over from another project, and a stack an operator profile
+   mentions is background, not a default. Two kinds of slot are not asked:
+   what this machine already runs (§10) is measured, with the date, while the
+   project's own port is a choice, so it is proposed; and what follows from
+   the stack once it is set (the directory map, the commands, the drift
+   pairs) is written as the plan the walking skeleton makes true.
 4. **Every slot the brief does not answer** becomes a numbered question in
-   `docs/QUESTIONS.md` and stays a slot. Never fill one with a guess: a
-   question may carry what the brief suggests, for the owner to confirm,
-   and "none" is written only where the brief or the owner says so. A list
-   item with nothing to hold is deleted.
+   `docs/QUESTIONS.md` and stays a slot; one the brief answers in part keeps
+   what it says and asks for the rest. Never fill one with a guess: a
+   question may carry what the brief suggests, for the owner to confirm, and
+   a choice is never filled with "none" unless the brief or the owner says
+   so. A list item with nothing to hold is deleted.
 5. **Decompose the PRD into `docs/TODO.md`**, step 1 of §0.1: Epic 0, the
    walking skeleton, then the core flows as atomic stories with testable
-   criteria.
+   criteria. A business rule a story needs and the brief does not settle is
+   a question too.
 6. **Delete what does not apply**: the Money section with no money; the Data
    section with no database; the Interface section and `DESIGN.md` with no
    interface; the server rows of §2 and the paragraph about servers when
@@ -413,7 +416,7 @@ Conventional Commits defines them.
 2. Story executed atomically (strictly ONE story in `[WIP]` at any time).
 3. Epic 0, the walking skeleton, verified before feature stories began.
 4. The gate is green: every command in §4.
-5. Authorization enforced server-side, with a negative test (wrong role ⇒ denied).
+5. Authorization enforced server-side, with a negative test: a request without the permission ⇒ denied.
 6. Mutating paths emit an audit row, where §6 names an audit trail.
 7. Empty and error states handled; with an interface, a loading state too,
    and each one visible.

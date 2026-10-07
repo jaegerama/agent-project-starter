@@ -13,6 +13,14 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-07
+
+adopt refuses to copy starter files with uncommitted changes, writes the
+release it installed to `.claude/starter-version`, and says when no gate in a
+project runs agent-check. New projects get a docs-drift that fails once setup
+is done and nothing was checked. adopt's import helper writes the byte order
+mark as an escape again.
+
 ### Changed: docs-drift fails when setup is done and no check ran (2026-10-07)
 
 A docs-drift run in which every check skipped exited 0 with a note, so a gate
@@ -331,6 +339,7 @@ scripts, which stay on the machine they were written for. The one code change
 the import needs is in bootstrap, which recognises a copied starter by its
 root commit: it now accepts the public root commit as well as the private one.
 
-[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/jaegerama/agent-project-starter/releases/tag/v0.1.0

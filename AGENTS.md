@@ -37,8 +37,8 @@ only job is the brief; everything else below is the agent's.
 3. **Fill every slot the brief answers**: this file first, then `README.md`,
    `docs/PRD.md`, `docs/TODO.md`, `HANDOFF.md`, and `DESIGN.md` if there is an
    interface. Stack, commands and way of working are this project's own, taken
-   from the brief. Nothing is carried over from another project, and the stack
-   list in the operator profile is background, not a default.
+   from the brief. Nothing is carried over from another project, and a stack an
+   operator profile mentions is background, not a default.
 4. **Every slot the brief does not answer** becomes a numbered question in
    `docs/QUESTIONS.md` and stays a slot. Never fill one with a guess.
 5. **Decompose the PRD into `docs/TODO.md`**, step 1 of §0.1: Epic 0, the
@@ -264,9 +264,11 @@ first, then cause, then fix: people search by symptom.
 ## 5. Working rules specific to this project
 
 The general working process (docs-first, scope containment, targeted reads,
-verification, how to report) lives in the operator profile and is **not
-repeated here**: repeating it would create a second source of truth. Only the
-project's own rules belong in this section.
+verification, how to report) lives in the machine's operator profile and is
+**not repeated here**: repeating it would create a second source of truth. A
+machine without one installs the example from the starter repository,
+`_starter/operator-profile.md`, before its first project. Only the project's
+own rules belong in this section.
 
 1. **Never scan:** <dependency dir>, <build output>, `.git/`, migrations,
    lockfiles, any volume mount.
@@ -434,7 +436,7 @@ belongs in §2, and is never read off this table.
 | **PATH / filesystem gotchas** | <> |
 | **Containers run locally** | <memory limits, the volumes that hold data, the image tags; or "none"> |
 
-Machine-wide limits, where this machine has any, are in the operator profile.
+Machine-wide limits, where this machine has any, live in its operator profile.
 
 Record **which machine** a number was measured on. A timeout chosen on a 12-core
 laptop is a different number on a 2-core server, and nothing in the number
@@ -453,11 +455,12 @@ itself says so.
 | Antigravity | `AGENTS.md` and `GEMINI.md` as workspace rules, loaded at session start; global rules from `~/.gemini/config/AGENTS.md` | **Verified 2026-10-06**: a fresh session quoted the last sentence of this file before using any tool. Not yet separated: whether `AGENTS.md` loads natively or through the import in `GEMINI.md` |
 
 The operator profile (working process, verification, reporting, git) is not
-inherited across tools automatically. Its master is `~/CLAUDE.md`, or
-`~/.claude/CLAUDE.md` on a machine without one, copied to `~/.codex/AGENTS.md`,
-`~/.gemini/GEMINI.md` and `~/.gemini/config/AGENTS.md` (Antigravity). Change
-the master first, then copy; never edit a copy. A machine with no profile can start from `_starter/operator-profile.md`
-in the starter repository.
+shared across tools: each reads its own file, `~/.claude/CLAUDE.md`,
+`~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`, and `~/.gemini/config/AGENTS.md`
+for Antigravity. A machine that wants one profile in all of them keeps a
+master, copies it over the others, and marks it with the `operator-profile`
+comment line the starter's README describes; agent-check then compares the
+copies with it.
 
 ### Which of these is a mechanism, and which is still an intention
 

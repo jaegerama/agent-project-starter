@@ -15,8 +15,8 @@ the next session, a `/clear`, or a switch to another tool.
 - A slot the brief does not answer becomes a question in `docs/QUESTIONS.md`
   and stays a slot. A guessed stack, command, or business rule reads exactly
   like a decided one, and it is the most expensive thing setup can produce.
-- The stack list in the global operator profile is background, not a default.
-  This project's stack is whatever this file says, or a question.
+- A stack an operator profile mentions is background, not a default. This
+  project's stack is whatever this file says, or a question.
 - Delete the template sections that do not apply (no money, no interface) and
   say in the report which ones and why.
 

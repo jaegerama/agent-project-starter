@@ -9,7 +9,5 @@ own line and outside backticks: an import inside code is skipped.
 This file deliberately **carries no rules of its own**. Two copies of a rule
 are two sources of truth, and they drift.
 
-The global operator profile (working process, verification, reporting) lives
-in `~/.gemini/GEMINI.md`, a copy of the master: `~/CLAUDE.md`, or
-`~/.claude/CLAUDE.md` on a machine without one. The copy is never edited
-directly.
+If this machine keeps an operator profile (working process, verification,
+reporting), Gemini CLI reads it from `~/.gemini/GEMINI.md`.

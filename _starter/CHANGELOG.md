@@ -13,6 +13,16 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: the operator profile is stated as an option (2026-10-07)
+
+Several project files stated one machine's arrangement as fact: a master
+profile at `~/CLAUDE.md`, copied to every tool, with a stack list and
+interface mandates inside it. They now say what holds wherever a profile is
+kept: each tool reads its own file, and keeping one profile in all of them is
+the opt-in convention the checks follow. The working rules point a machine
+without a profile at the example in the starter repository, which the public
+README asks to install first.
+
 ### Changed: lessons without stories from real projects (2026-10-07)
 
 Seven files that reach every project, and the starter's own README, told

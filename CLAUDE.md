@@ -20,7 +20,7 @@ truth, and they drift.
 | Agent | `silent-failure-hunter` |
 | Agent-configuration check | `node .claude/tools/agent-check.mjs` |
 | Permissions and hooks | `.claude/settings.json` |
-| Global operator profile | `~/CLAUDE.md`, or `~/.claude/CLAUDE.md` on a machine without one |
+| Global operator profile, if the machine keeps one | `~/.claude/CLAUDE.md`, or a `CLAUDE.md` in a parent directory |
 
 **A hook blocks while `AGENTS.md` has slots**, when `.claude/settings.json`
 wires it: `.claude/hooks/guard-slots.mjs` refuses Write, Edit and NotebookEdit
@@ -30,10 +30,10 @@ hook, and the gate stays red for it. If a genuine setup file gets blocked, the
 owner adds its path to `SETUP_PATHS`/`SETUP_DIRS` in that script. Do not
 disable the hook.
 
-**Inheriting the global profile is conditional.** Claude Code reads it because
-that file sits in a parent directory of this project, not because of a global
-setting. A project moved outside the profile's parent directory inherits nothing,
-and nothing warns you when that happens.
+**A profile in a parent directory is inherited by location.** Claude Code
+reads a `CLAUDE.md` from the directories above this project, so a project
+moved out from under it inherits nothing, and nothing warns you when that
+happens.
 
 **Committed or private depends on the repository.** When `.gitignore` lists
 `AGENTS.md` and `.claude/`, this is a private-agents repository (it goes to a

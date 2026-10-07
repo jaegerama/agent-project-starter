@@ -10,6 +10,8 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-07
+
 ### Added
 
 - `_starter/README.md` defines the public API: the commands, checks, files and
@@ -186,7 +188,8 @@ The first public release.
   The denies hold in `bypassPermissions` mode, but do not stop an interpreter.
 - Agents never install, update or fetch a skill; the owner installs skills.
 
-[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/jaegerama/agent-project-starter/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.2.0...v0.3.0

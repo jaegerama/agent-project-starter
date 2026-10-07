@@ -118,24 +118,21 @@ Status per 2026-10-07.
 - The starter's `LICENSE` stays out of projects; the tool files carry its
   SPDX notice instead.
 - 1.0.0 comes when all of these hold; until then the starter stays at 0.x,
-  released by the rules of `AGENTS.md` §7 (the owner, 2026-10-07):
-  1. every project the owner uses the starter in runs the current release:
-     adopt's dry run finds nothing to change, `.claude/starter-version` names
-     the release, and the report has no line saying no gate runs agent-check;
+  released by the rules of `AGENTS.md` §7 (2026-10-07):
+  1. every project the starter is used in runs the current release: adopt's
+     dry run finds nothing to change, `.claude/starter-version` names the
+     release, and the report has no line saying no gate runs agent-check;
   2. no audit finding is open, and CI is green on Ubuntu, macOS and Windows
      for the release commit;
   3. every tool row in `AGENTS.md` §11 says observed, or says plainly why not;
   4. the starter is agnostic: it names no project it is used in, assumes no
      language or stack, and holds no preference of its owner as a rule. The
-     license and copyright notices are the owner's, and stay.
-
-  The owner added four more on 2026-10-07, after the implementer judged the
-  starter not yet stable enough for 1.0.0: G1 to G4 in Next Immediate Steps.
-- Releases and tags happen only when the owner asks; until then changes
-  collect under `[Unreleased]`, and a pushed tag is never moved (the owner,
-  2026-10-07).
-- B5 and H7 of the audit before 0.1.0 are accepted limits, not open work (the
-  owner, 2026-10-07); §7 of that audit gives the reasons.
+     license and copyright notices are the owner's, and stay;
+  5. G1 to G4 in Next Immediate Steps are done.
+- Releases and tags happen only when the owner asks, following the release
+  steps in `_starter/README.md`; a pushed tag is never moved (2026-10-07).
+- B5 and H7 of the audit before 0.1.0 are accepted limits, not open work
+  (2026-10-07); §7 of that audit gives the reasons.
 - Whether Antigravity loads `AGENTS.md` natively or through the `GEMINI.md`
   import needs no further test: adopt gives every old pointer the import, so
   it loads either way, and the tested session loaded it once with both present.
@@ -152,6 +149,7 @@ Status per 2026-10-07.
 node _starter/selftest.mjs                         # the starter's tests: green before any commit
 node tools/docs-drift.mjs                          # the starter's gate, with the self-test
 node .claude/tools/agent-check.mjs                 # agent config (red on template slots, by design)
-node tools/adopt.mjs --into ../some-project        # dry run first, always
+node tools/adopt.mjs --into ../some-project --allow-unreleased   # verify a release candidate (dry run)
+node tools/adopt.mjs --into ../some-project                      # from a release tag: dry run first
 node tools/adopt.mjs --into ../some-project --apply
 ```

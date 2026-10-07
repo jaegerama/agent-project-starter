@@ -186,29 +186,37 @@ the starter.
 
 ## Changing the starter
 
-The starter follows its own rules, so a change to it goes the way a change to a
-project does.
+The starter follows its own rules, and is released like a product: work stays
+local until a release is ready, and a project only ever receives a release.
 
-1. **Changelog first.** The entry goes into `_starter/CHANGELOG.md` under
-   `[Unreleased]`, before the change. The root `CHANGELOG.md` is the template a
-   project starts with, and stays empty here.
-2. **Self-test green.** `node _starter/selftest.mjs` passes before every
-   commit. A fix gets a case that pins the defect, and the fix is broken once
-   on purpose to see that case go red, and nothing else.
-3. **Gate.** `node tools/docs-drift.mjs` passes here too.
-   `node .claude/tools/agent-check.mjs` is red in the starter by design: its
-   `AGENTS.md` is the template, full of slots.
-4. **Commit** with Conventional Commits, the body saying why. CI repeats steps
-   2 and 3 on Ubuntu, macOS and Windows.
-5. **Release** when the change reaches projects: one commit,
-   `chore(release): X.Y.Z`, that turns `[Unreleased]` into the version, and the
-   tag `vX.Y.Z`. Then bring existing projects up to date with adopt, dry run
-   first.
+1. **Work on a local branch.** `main` moves only at a release. adopt refuses
+   to install anything that is not a release, so a project never picks up
+   work in progress.
+2. **One commit is one complete change**: the code, its test, the documents it
+   touches and its line under `[Unreleased]` in `_starter/CHANGELOG.md`. A fix
+   to work that is not released yet goes into the commit it fixes. The root
+   `CHANGELOG.md` is the template a project starts with, and stays empty here.
+3. **Green before every commit.** `node _starter/selftest.mjs` and
+   `node tools/docs-drift.mjs` pass; `node .claude/tools/agent-check.mjs` is
+   red here by design, because this `AGENTS.md` is the template. A fix gets a
+   case that pins the defect, and the fix is broken once on purpose, in a copy,
+   to see that case go red and nothing else.
+4. **Release a coherent set of changes when the owner asks**, never one check
+   at a time. Verify the candidate first: the self-test, the gate, and
+   `node tools/adopt.mjs --into ../<project> --allow-unreleased` as a dry run
+   into every project. Then one commit, `chore(release): X.Y.Z`, with the
+   version the commits since the last release decide (`AGENTS.md` §7). Push
+   `main`, wait for CI on Ubuntu, macOS and Windows, and only then tag
+   `vX.Y.Z` and push the tag. A defect found before the tag is fixed inside
+   the release, not in a new version.
+5. **Bring the projects up to date** with adopt from the tagged release, dry
+   run first.
 
-adopt copies from this folder as it is on disk, and another session can run
-it at any time. It refuses while a file it copies has uncommitted changes, so
-a half-finished edit cannot reach a project; `--allow-dirty` is for testing
-adopt itself. Break things on purpose only in a copy.
+Commit messages follow Conventional Commits: an imperative summary of about 72
+characters at most, and a body only when the reason is not obvious, in
+technical terms. A message describes the change, not the conversation that led
+to it. Changelog entries are one line each, under Added, Changed, Deprecated,
+Removed, Fixed or Security, written for the person who upgrades.
 
 The repository is public. Nothing in it describes one machine or another
 repository: no personal paths, no other projects' names, registries or

@@ -10,10 +10,7 @@ Status per 2026-10-07.
 
 ## Next Immediate Steps
 
-1. **G3: write down the starter's public API** in `_starter/README.md`, for
-   the owner to approve: the commands and flags, what the checks decide, the
-   files adopt owns and where, and what adopt promises.
-2. **G4: one release used through a full cycle** in every project without a
+1. **G4: one release used through a full cycle** in every project without a
    breaking fix or a HIGH finding.
 
 ## Done
@@ -116,6 +113,11 @@ Status per 2026-10-07.
   failed, 0 skipped; `node tools/docs-drift.mjs` 1 passed, 2 skipped;
   `node .claude/tools/agent-check.mjs` red only on the template's 70 slots,
   by design.
+- 2026-10-07: G3. The public API is in `_starter/README.md`, approved by the
+  owner: the commands with their flags and exit codes, what each check
+  decides, the files adopt manages and where, adopt's six promises, and how
+  the version moves from 1.0.0. Each claim was checked against the code
+  before it was written down.
 
 ## Decisions taken
 
@@ -142,6 +144,10 @@ Status per 2026-10-07.
   5. G1 to G4 in Next Immediate Steps are done.
 - Releases and tags happen only when the owner asks, following the release
   steps in `_starter/README.md`; a pushed tag is never moved (2026-10-07).
+- From 1.0.0 a version protects the public API in `_starter/README.md`
+  (2026-10-07). A fix that brings a tool back to its documentation is PATCH
+  even when it can turn a gate red, because the documentation is the
+  contract; its changelog entry says that it can.
 - B5 and H7 of the audit before 0.1.0 are accepted limits, not open work
   (2026-10-07); §7 of that audit gives the reasons.
 - Whether Antigravity loads `AGENTS.md` natively or through the `GEMINI.md`

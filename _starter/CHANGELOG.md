@@ -10,6 +10,11 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ## [Unreleased]
 
+### Added
+
+- `_starter/README.md` defines the public API: the commands, checks, files and
+  adopt promises a version number protects, and how the version moves.
+
 ### Changed
 
 - **Breaking:** adopt installs releases only. It refuses a starter whose files
@@ -27,7 +32,9 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 - Once setup is done, docs-drift fails until a check compares a document with
   code. The story-heading check no longer counts: the template's `docs/TODO.md`
-  made it run from day one, so setup could end with nothing compared.
+  made it run from day one, so setup could end with nothing compared. This can
+  turn a gate red: a committed project whose `tools/docs-drift.mjs` adopt
+  updates, and which compares nothing with code.
 - Every placeholder in the templates is one the slot check counts. One-word
   placeholders such as `<model>` read as HTML tags, so `AGENTS.md` passed
   agent-check with them unfilled.

@@ -184,6 +184,77 @@ the starter.
 
 ---
 
+## Public API: what a version number protects
+
+From 1.0.0 the starter's version follows Semantic Versioning over the four
+groups below. Everything else can change in any release: the wording of
+messages, the self-test, the starter's own documents, and the prose of the
+templates a new project fills.
+
+### 1. Commands, flags and exit codes
+
+| Command | Run from | Flags | Exit |
+|---|---|---|---|
+| `node tools/bootstrap.mjs` | a new copy | `--name`, `--private-agents`, `--apply` | 0 done or dry run; 1 refused |
+| `node tools/adopt.mjs` | the starter | `--into`, `--apply`, `--allow-unreleased`, `--allow-dirty` | 0 done or dry run; 1 refused |
+| `node .claude/tools/agent-check.mjs` | the project root | none | 0 no check failed; 1 one did |
+| `node tools/docs-drift.mjs` | the project root | none | 0 no check failed; 1 one did, or setup is done and no check compared a document with code |
+| `.claude/hooks/guard-slots.mjs` | Claude Code, as a PreToolUse hook | JSON on stdin | 0 allow; 2 block |
+
+The `/gate` and `/docs-drift` commands and the `silent-failure-hunter` agent
+keep their names.
+
+### 2. What the checks decide
+
+- **An unfilled slot** is what `.claude/tools/lib/slot.mjs` matches: the named
+  form and the empty forms its comments list.
+- **A pointer** is a `CLAUDE.md` or `GEMINI.md` of at most 60 lines that names
+  `AGENTS.md`. `CLAUDE.md` also imports it, with `@AGENTS.md` on a line of its
+  own outside code.
+- **A story** is a heading `### [STATUS] S<epic>.<n>: title` in `docs/TODO.md`,
+  with STATUS one of TODO, WIP, REVIEW, DONE, BLOCKED. One story in WIP;
+  nothing past Epic 0 started before Epic 0 is DONE.
+- **Setup is done** when `AGENTS.md` has no heading that starts `## Setup`.
+- **The operator profile** opts in with a master that carries
+  `<!-- operator-profile -->`; a shared block is marked
+  `<!-- name:start -->` … `<!-- name:end -->`.
+
+### 3. The files adopt manages, and where they live
+
+| | Files | adopt |
+|---|---|---|
+| Owned | `.claude/tools/agent-check.mjs`, `.claude/tools/lib/slot.mjs`, `.claude/tools/lib/pointer.mjs`, `.claude/hooks/guard-slots.mjs` | Replaces them, old copy backed up |
+| Seeded | `.claude/rules/review-severity.md`, `.claude/commands/gate.md`, `.claude/commands/docs-drift.md`, `.claude/agents/silent-failure-hunter.md`, `GEMINI.md`, `.github/copilot-instructions.md`; in committed mode also `CHANGELOG.md` and `tools/docs-drift.mjs` | Copies a missing one; updates one only while it equals one of the starter's own earlier versions |
+| Wired | `.claude/settings.json`: the PreToolUse entry `node "$CLAUDE_PROJECT_DIR/.claude/hooks/guard-slots.mjs"` on `Write\|Edit\|NotebookEdit` | Adds it once `AGENTS.md` has no slots |
+| Recorded | `.claude/starter-version`: one line, `vX.Y.Z`, or `vX.Y.Z+<commit>` with `-dirty` when the starter was not a release | Writes it on every apply from a git checkout of the starter |
+| Backups | `.claude.backup-adopt-<stamp>/` | Writes one per apply that replaces anything |
+| Private mode | the `.gitignore` block bootstrap appends, which starts `# agent files: private (bootstrap --private-agents)` | Refuses to write a private file that git does not ignore |
+
+### 4. What adopt promises
+
+1. Without `--apply` it writes nothing.
+2. It never rewrites a project's own rules, stack or commands. It writes
+   `AGENTS.md` only where there is none: from a `CLAUDE.md` that holds rules,
+   verbatim, or else from the template.
+3. Whatever it replaces or moves is backed up first.
+4. It installs a release, from a committed starter; only `--allow-unreleased`
+   and `--allow-dirty` say otherwise, and they are for testing adopt.
+5. In private mode it writes no file that git would track.
+6. It never wires the docs-first hook while `AGENTS.md` has slots.
+
+### How the version moves, from 1.0.0
+
+| The change | Bump |
+|---|---|
+| Anything above removed, renamed or narrowed: a command, flag, exit code, file, location, marker or format; a promise weakened; a check that fails a project which passed before, with nothing in the project changed | MAJOR |
+| Something added that every existing project passes or skips: a command, flag, check, seeded file or promise | MINOR |
+| A tool brought back to what its documentation already says. When that can turn a gate red, the changelog entry says so | PATCH |
+
+The commit's type names the row: `!` for MAJOR, `feat` for MINOR, `fix` for
+PATCH. Until 1.0.0, `AGENTS.md` §7 applies: what is MAJOR above is MINOR.
+
+---
+
 ## Changing the starter
 
 The starter follows its own rules, and is released like a product: work stays
@@ -205,7 +276,7 @@ local until a release is ready, and a project only ever receives a release.
    at a time. Verify the candidate first: the self-test, the gate, and
    `node tools/adopt.mjs --into ../<project> --allow-unreleased` as a dry run
    into every project. Then one commit, `chore(release): X.Y.Z`, with the
-   version the commits since the last release decide (`AGENTS.md` §7). Push
+   version the commits since the last release decide (Public API, above). Push
    `main`, wait for CI on Ubuntu, macOS and Windows, and only then tag
    `vX.Y.Z` and push the tag. A defect found before the tag is fixed inside
    the release, not in a new version.

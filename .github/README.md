@@ -68,7 +68,9 @@ or still unchanged from an earlier starter version, and never rewrites what
 the project changed or its own rules. It installs releases only, refusing a
 checkout whose files differ from the latest release tag or have uncommitted
 changes, and writes the release it installed to the project's
-`.claude/starter-version`.
+`.claude/starter-version`. What a release promises, and how its version moves,
+is the Public API section of
+[`_starter/README.md`](/_starter/README.md#public-api-what-a-version-number-protects).
 
 ## What is enforced, and where
 

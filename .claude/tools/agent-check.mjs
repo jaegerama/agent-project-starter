@@ -26,6 +26,12 @@ const readAbs = (p) => (existsSync(p) ? readFileSync(p, 'utf8') : null)
 // SKIP(reason) when it cannot run yet. A skip is not a pass, and the output says so.
 const SKIP = (reason) => ({ skipped: reason })
 
+// Keeping one profile in every tool is a choice: a master opts in with this line,
+// and without it each tool's global notes are its own.
+const PROFILE_MARKER = '<!-- operator-profile -->'
+const profileMaster = () =>
+  [join(homedir(), 'CLAUDE.md'), join(homedir(), '.claude', 'CLAUDE.md')].find((p) => readAbs(p)?.includes(PROFILE_MARKER)) ?? null
+
 const CHECKS = [
   {
     name: 'no unfilled <> slots remain in AGENTS.md',
@@ -66,13 +72,11 @@ const CHECKS = [
   {
     name: 'the operator profile is identical across Claude, Codex, Gemini and Antigravity',
     run() {
-      // A profile updated in one tool while the others run the old one. The master
-      // is ~/CLAUDE.md, or ~/.claude/CLAUDE.md where there is none; a tool nobody
-      // uses here has no copy, so only the copies that exist are compared.
-      // Antigravity reads ~/.gemini/config/AGENTS.md, not ~/.gemini/GEMINI.md.
+      // A profile updated in one tool while the others run the old one. Only the
+      // copies that exist are compared. Antigravity reads ~/.gemini/config/AGENTS.md.
       const home = homedir()
-      const master = [join(home, 'CLAUDE.md'), join(home, '.claude', 'CLAUDE.md')].find((p) => existsSync(p))
-      if (!master) return SKIP('no operator profile in the home directory')
+      const master = profileMaster()
+      if (!master) return SKIP(`no operator profile in the home directory carries ${PROFILE_MARKER}`)
       const copies = [
         join(home, '.codex', 'AGENTS.md'),
         join(home, '.gemini', 'GEMINI.md'),
@@ -89,28 +93,25 @@ const CHECKS = [
   },
 
   {
-    name: 'the antislop block in ~/.claude/CLAUDE.md matches the master profile',
+    name: 'the marked blocks in ~/.claude/CLAUDE.md match the master profile',
     run() {
-      // ~/.claude/CLAUDE.md carries only this block, not the profile, so the check
-      // above cannot see it go stale.
-      const home = homedir()
-      const master = join(home, 'CLAUDE.md')
-      const global = join(home, '.claude', 'CLAUDE.md')
-      const block = (body) => {
-        if (body === null) return null
-        const start = body.indexOf('<!-- antislop:start -->')
-        const end = body.indexOf('<!-- antislop:end -->')
-        return start === -1 || end < start ? null : body.slice(start, end)
-      }
-      // Without ~/CLAUDE.md there is no master to copy the block from.
-      if (!existsSync(master)) return SKIP('no ~/CLAUDE.md, so no master block to compare')
-      const a = block(readAbs(master))
-      const b = block(readAbs(global))
-      if (a === null && b === null) return SKIP('no antislop block in either file')
-      if (a === null || b === null) {
-        return `the antislop block exists in ${a === null ? global : master} but not in ${a === null ? master : global}`
-      }
-      return a === b ? null : `the antislop block in ${global} has drifted from ${master}: copy it over again`
+      // ~/.claude/CLAUDE.md loads in every session, so it can carry blocks of the
+      // master between <!-- name:start --> and <!-- name:end -->; the check above cannot see them.
+      const master = profileMaster()
+      const global = join(homedir(), '.claude', 'CLAUDE.md')
+      if (!master) return SKIP(`no operator profile in the home directory carries ${PROFILE_MARKER}`)
+      if (master === global) return SKIP('the master is ~/.claude/CLAUDE.md itself, so there is nothing to compare')
+      const blocks = (body) => new Map([...(body ?? '').matchAll(/<!-- ([\w-]+):start -->([\s\S]*?)<!-- \1:end -->/g)].map(([, name, text]) => [name, text]))
+      const a = blocks(readAbs(master))
+      const b = blocks(readAbs(global))
+      const names = [...new Set([...a.keys(), ...b.keys()])]
+      if (names.length === 0) return SKIP('no marked block in either file')
+      const problems = names.flatMap((n) => {
+        if (!a.has(n)) return [`block ${n} is in ${global} but not in ${master}`]
+        if (!b.has(n)) return [`block ${n} is in ${master} but not in ${global}`]
+        return a.get(n) === b.get(n) ? [] : [`block ${n} in ${global} has drifted from ${master}: copy it over again`]
+      })
+      return problems.length === 0 ? null : problems.join('; ')
     },
   },
 ]

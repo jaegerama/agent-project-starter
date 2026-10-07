@@ -97,20 +97,21 @@ order because each one makes the next cheaper:
 
 ## D. What you do NOT need to say
 
-Because the global operator profile (`~/CLAUDE.md`, copied to Codex and
-Gemini) already covers it:
+Because the operator profile, installed once per machine before the first
+project, already covers it (`_starter/operator-profile.md` is the example):
 
-- Persona, tone, output format.
-- How to write a commit message, or that the CHANGELOG comes first.
-- Docs-first, scope containment, targeted reads.
+- The working process: docs first, scope containment, targeted reads, state
+  kept on disk.
 - The verification rules: mutation-check every new assertion, read the exit code
   of the thing you ran, a count is half the check, mark mechanism versus
   intention.
-- That business rules may not be invented. `AGENTS.md` §9 lists **which** ones,
-  and that is the project-specific part.
+- How to report: verify a finding before reporting it, and finding nothing is a
+  valid result.
+- How to commit: the machine's own identity, Conventional Commits, and the
+  changelog entry before the change.
 
-A machine with no operator profile starts from `_starter/operator-profile.md`,
-installed once, before the first project.
+That business rules may not be invented is already in `AGENTS.md` §9, which
+also lists **which** ones: that list is the project-specific part.
 
 ---
 

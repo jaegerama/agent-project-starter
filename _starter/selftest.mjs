@@ -182,15 +182,18 @@ if (process.platform !== 'win32' || process.env.MSYSTEM) {
 
 section('agent-check (fake home, real profile untouched)')
 const home = join(tmp, 'home')
-const block = '<!-- antislop:start -->\n# ANTISLOP\nthe block\n<!-- antislop:end -->\n'
+// A profile opts in to the profile checks with this line; a marked block may carry any name.
+const MARK = '<!-- operator-profile -->\n'
+const block = '<!-- shared:start -->\n# SHARED\nthe block\n<!-- shared:end -->\n'
+const notes = '<!-- notes:start -->\nmore\n<!-- notes:end -->\n'
 const writeHome = () => {
   rmSync(home, { recursive: true, force: true })
   for (const d of ['.claude', '.codex', '.gemini']) mkdirSync(join(home, d), { recursive: true })
-  const master = `# profile\n\nrules\n\n${block}`
+  const master = `${MARK}# profile\n\nrules\n\n${block}${notes}`
   writeFileSync(join(home, 'CLAUDE.md'), master)
   writeFileSync(join(home, '.codex', 'AGENTS.md'), master)
   writeFileSync(join(home, '.gemini', 'GEMINI.md'), master)
-  writeFileSync(join(home, '.claude', 'CLAUDE.md'), `# global\n\n${block}`)
+  writeFileSync(join(home, '.claude', 'CLAUDE.md'), `# global\n\n${block}${notes}`)
 }
 const ac = copyStarter('ac')
 const env = { ...process.env, USERPROFILE: home, HOME: home }
@@ -201,7 +204,7 @@ const pointer = read(join(ac, 'CLAUDE.md'))
 writeHome()
 let out = agentCheck()
 check('baseline: red only on template slots', out.status === 1 && line(out, 'unfilled <> slots').startsWith('FAIL'))
-check('baseline: pointers, profile and antislop block green', ['still pointers', 'operator profile', 'antislop block'].every((n) => line(out, n).startsWith('ok')))
+check('baseline: pointers, profile and marked blocks green', ['still pointers', 'operator profile', 'marked blocks'].every((n) => line(out, n).startsWith('ok')))
 // Not required by the gate, whose adopted projects keep their own GEMINI.md; pinned for the template.
 check("the template's GEMINI.md imports AGENTS.md on a line of its own", /^@\.\/AGENTS\.md\s*$/m.test(read(join(root, 'GEMINI.md'))))
 
@@ -222,14 +225,13 @@ writeFileSync(join(ac, 'CLAUDE.md'), pointer)
 appendFileSync(join(home, '.codex', 'AGENTS.md'), 'drift\n')
 check('a profile mirror drifts -> red', line(agentCheck(), 'operator profile').startsWith('FAIL'))
 writeHome()
-writeFileSync(join(home, '.claude', 'CLAUDE.md'), `# global\n\n${block.replace('the block', 'another block')}`)
-check('the global antislop block drifts -> red', line(agentCheck(), 'antislop block').startsWith('FAIL'))
+writeFileSync(join(home, '.claude', 'CLAUDE.md'), `# global\n\n${block}${notes.replace('more', 'other')}`)
+check('a marked block in ~/.claude/CLAUDE.md drifts -> red, whatever its name', line(agentCheck(), 'marked blocks').startsWith('FAIL'))
+writeFileSync(join(home, '.claude', 'CLAUDE.md'), `# global\n\n${block}`)
+check('a marked block of the master missing from ~/.claude/CLAUDE.md -> red', line(agentCheck(), 'marked blocks').startsWith('FAIL'))
+for (const p of ['CLAUDE.md', '.codex/AGENTS.md', '.gemini/GEMINI.md']) writeFileSync(join(home, p), `${MARK}# profile\n`)
 writeFileSync(join(home, '.claude', 'CLAUDE.md'), '# global\n')
-check('the global antislop block goes missing -> red', line(agentCheck(), 'antislop block').startsWith('FAIL'))
-writeFileSync(join(home, 'CLAUDE.md'), '# profile\n')
-writeFileSync(join(home, '.codex', 'AGENTS.md'), '# profile\n')
-writeFileSync(join(home, '.gemini', 'GEMINI.md'), '# profile\n')
-check('no antislop block anywhere -> SKIP, not a pass', line(agentCheck(), 'antislop block').startsWith('SKIP'))
+check('no marked block anywhere -> SKIP, not a pass', line(agentCheck(), 'marked blocks').startsWith('SKIP'))
 // Other machines keep other layouts; none of them is drift.
 const homeWith = (files) => {
   rmSync(home, { recursive: true, force: true })
@@ -242,20 +244,25 @@ const homeWith = (files) => {
 homeWith({ '.claude/CLAUDE.md': `# global\n\n${block}` })
 out = agentCheck()
 check(
-  'antislop in ~/.claude/CLAUDE.md alone, no ~/CLAUDE.md -> SKIP, not red',
-  line(out, 'antislop block').startsWith('SKIP') && line(out, 'operator profile').startsWith('SKIP'),
-  `${line(out, 'antislop block')} / ${line(out, 'operator profile')}`,
+  'blocks in ~/.claude/CLAUDE.md, no marked profile -> SKIP, not red',
+  line(out, 'marked blocks').startsWith('SKIP') && line(out, 'operator profile').startsWith('SKIP'),
+  `${line(out, 'marked blocks')} / ${line(out, 'operator profile')}`,
 )
-homeWith({ 'CLAUDE.md': '# my notes\n' })
-check('a ~/CLAUDE.md with no Codex or Gemini copy -> SKIP, not red', line(agentCheck(), 'operator profile').startsWith('SKIP'))
-homeWith({ '.claude/CLAUDE.md': '# profile\n', '.codex/AGENTS.md': '# profile\n' })
-check('master in ~/.claude/CLAUDE.md, matching Codex copy -> green', line(agentCheck(), 'operator profile').startsWith('ok'))
+homeWith({ 'CLAUDE.md': `${MARK}# my notes\n` })
+check('a marked ~/CLAUDE.md with no Codex or Gemini copy -> SKIP, not red', line(agentCheck(), 'operator profile').startsWith('SKIP'))
+// Different notes per tool are a choice; only a marked master asks for identical copies.
+homeWith({ '.claude/CLAUDE.md': '# my Claude Code notes\n', '.codex/AGENTS.md': '# my Codex notes\n' })
+check('unmarked: different Claude Code and Codex notes -> SKIP, not red', line(agentCheck(), 'operator profile').startsWith('SKIP'))
+homeWith({ '.claude/CLAUDE.md': `${MARK}# profile\n\n${block}`, '.codex/AGENTS.md': `${MARK}# profile\n\n${block}` })
+out = agentCheck()
+check('marked master in ~/.claude/CLAUDE.md, matching Codex copy -> green', line(out, 'operator profile').startsWith('ok'))
+check('a master in ~/.claude/CLAUDE.md has no block to compare with itself -> SKIP', line(out, 'marked blocks').startsWith('SKIP'))
 appendFileSync(join(home, '.codex', 'AGENTS.md'), 'drift\n')
-check('master in ~/.claude/CLAUDE.md, drifted Codex copy -> red', line(agentCheck(), 'operator profile').startsWith('FAIL'))
+check('marked master in ~/.claude/CLAUDE.md, drifted Codex copy -> red', line(agentCheck(), 'operator profile').startsWith('FAIL'))
 // Antigravity's global rules are ~/.gemini/config/AGENTS.md; they once held an older, separate profile.
-homeWith({ 'CLAUDE.md': '# profile\n', '.gemini/config/AGENTS.md': '# other rules\n' })
+homeWith({ 'CLAUDE.md': `${MARK}# profile\n`, '.gemini/config/AGENTS.md': '# other rules\n' })
 check("Antigravity's rules differ from the master -> red", line(agentCheck(), 'operator profile').startsWith('FAIL'))
-homeWith({ 'CLAUDE.md': '# profile\n', '.gemini/config/AGENTS.md': '# profile\n' })
+homeWith({ 'CLAUDE.md': `${MARK}# profile\n`, '.gemini/config/AGENTS.md': `${MARK}# profile\n` })
 check("Antigravity's rules identical to the master -> green", line(agentCheck(), 'operator profile').startsWith('ok'))
 writeHome()
 

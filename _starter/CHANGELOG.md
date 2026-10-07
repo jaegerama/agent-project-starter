@@ -13,6 +13,21 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: the profile checks run only for a profile marked as one (2026-10-07)
+
+agent-check required every tool's global instructions to equal one master, so
+anyone who keeps different notes for Claude Code and for Codex, on purpose,
+got a red gate in every project. The two profile checks now run only when the
+master, `~/CLAUDE.md` or `~/.claude/CLAUDE.md`, carries the line
+`<!-- operator-profile -->`, and skip otherwise. The block check no longer
+names one tool: every block between `<!-- name:start -->` and
+`<!-- name:end -->`, whatever the name, must read the same in the master and
+in `~/.claude/CLAUDE.md`. A machine that relied on the checks adds the line to
+its master and copies the master over again; until then both skip. The
+example profile carries the line, the public README asks for a profile before
+the first project, and `_starter/INTAKE.md` lists what the example covers
+rather than what one machine's profile happened to.
+
 ## [0.3.0] - 2026-10-07
 
 adopt refuses to copy starter files with uncommitted changes, writes the

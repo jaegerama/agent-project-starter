@@ -31,6 +31,12 @@ them: a rule it cannot fill from the brief becomes a question.
 
 ## Start a project
 
+Once per machine, install an operator profile first: the working process every
+project follows (docs first, verification, reporting, git) lives there, not in
+each project. [`_starter/operator-profile.md`](/_starter/operator-profile.md)
+is an example to adapt; [The operator profile](#the-operator-profile) says
+where it goes.
+
 ```bash
 git clone https://github.com/jaegerama/agent-project-starter.git my-app
 ```
@@ -80,11 +86,14 @@ plus the project's own checks. Nothing runs it for you unless CI does.
 
 Rules that hold in every project on a machine (working process, verification,
 reporting, git) live outside the project, in an operator profile:
-`~/CLAUDE.md` copied to `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md` and
-`~/.gemini/config/AGENTS.md` (Antigravity), or
-`~/.claude/CLAUDE.md` on a machine without `~/CLAUDE.md`. The gate goes red
-when a copy drifts from the master. [`_starter/operator-profile.md`](/_starter/operator-profile.md)
-is an example to start from.
+`~/.claude/CLAUDE.md` for Claude Code, or `~/CLAUDE.md` for projects under the
+home directory. A machine that wants the same profile in every tool copies the
+master to `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md` and
+`~/.gemini/config/AGENTS.md` (Antigravity), and marks it with the line
+`<!-- operator-profile -->`: the gate then goes red when a copy drifts from the
+master. Without the line, the gate leaves each tool's notes alone.
+[`_starter/operator-profile.md`](/_starter/operator-profile.md) is an example
+to start from.
 
 ## Changing the starter
 

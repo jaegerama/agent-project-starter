@@ -106,27 +106,27 @@ The second check in `.claude/tools/agent-check.mjs` enforces this: a pointer fil
 past 60 lines or loses its reference to `AGENTS.md` turns the gate red, and so
 does a `CLAUDE.md` whose `@AGENTS.md` import line is gone or sits inside code.
 
-### The operator profile (persona, hard limits, verification)
+### The operator profile (working process, verification, reporting, git)
 
-Not inherited across tools automatically. The master is:
+Rules that hold on every project of one machine live outside the projects, in
+an operator profile, if the machine keeps one. No tool shares it with another:
+each reads its own file. Keeping them identical is an opt-in convention, for a
+machine that wants one profile in every tool:
 
 ```
-~/CLAUDE.md              ← change it here
+~/CLAUDE.md, or ~/.claude/CLAUDE.md   the master: change it here
   → ~/.codex/AGENTS.md
   → ~/.gemini/GEMINI.md
-  → ~/.gemini/config/AGENTS.md   (Antigravity)
+  → ~/.gemini/config/AGENTS.md         (Antigravity)
 ```
 
-Sync by copying the master over every copy. On a machine without `~/CLAUDE.md` the
-master is `~/.claude/CLAUDE.md`, and a check with no copy to compare skips. The third check in `.claude/tools/agent-check.mjs`
-compares them all and goes red when one diverges, which has already happened
-once: `~/.gemini/GEMINI.md` carried a separate English profile with port 3000
-hardcoded.
-
-`~/.claude/CLAUDE.md` is not a copy of the profile. It carries only
-the antislop block, because it is the one file Claude Code loads in every
-session whatever the working directory. The fourth check in `.claude/tools/agent-check.mjs` compares that block,
-between its HTML comment markers, with the same block in the master.
+The master opts in with the line `<!-- operator-profile -->`, and the copies
+are the master copied over again. Then the third check in
+`.claude/tools/agent-check.mjs` goes red when a copy diverges, and the fourth
+when `~/.claude/CLAUDE.md`, the one file Claude Code loads in every session
+whatever the working directory, stops carrying a block of the master marked
+`<!-- name:start -->` … `<!-- name:end -->` word for word. Without the line
+both checks skip: a machine that keeps different notes per tool is left alone.
 
 **Verified for Antigravity, not yet for Gemini CLI:** on 2026-10-06 a fresh
 Antigravity session loaded `AGENTS.md` and `GEMINI.md` at session start

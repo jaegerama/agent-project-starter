@@ -14,12 +14,17 @@ starting point, and every line in it should be one you would defend.
 | Gemini CLI | `~/.gemini/GEMINI.md` | A copy of the master |
 | Antigravity | `~/.gemini/config/AGENTS.md`, its global rules | A copy of the master |
 
-`node .claude/tools/agent-check.mjs` compares the copies with the master and
-goes red when one drifts. Edit the master, then copy it over the others.
+The line `<!-- operator-profile -->` at the top of the profile opts in to two
+checks in `node .claude/tools/agent-check.mjs`: every copy must equal the
+master, and `~/.claude/CLAUDE.md` must carry, word for word, each block of the
+master marked `<!-- name:start -->` … `<!-- name:end -->`. Without the line
+both checks skip. Edit the master, then copy it over the others.
 
 Everything below the line is the profile.
 
 ---
+
+<!-- operator-profile -->
 
 # Working process
 

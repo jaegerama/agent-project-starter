@@ -22,6 +22,12 @@ if (!existsSync(join(root, '_starter', 'selftest.mjs'))) {
   console.error('Run this from the starter root: node _starter/selftest.mjs')
   process.exit(1)
 }
+// In a git worktree .git is a file that points at the parent repository, so every copy
+// below would share its refs: the fixtures' tags once landed in the real repository.
+if (existsSync(join(root, '.git')) && !statSync(join(root, '.git')).isDirectory()) {
+  console.error('Run the self-test from a full clone, not a git worktree: its copies would write into the parent repository.')
+  process.exit(1)
+}
 const { slotsOf, SLOT: SLOT_PATTERN } = await import(pathToFileURL(join(root, '.claude/tools/lib/slot.mjs')).href)
 const { isPointer } = await import(pathToFileURL(join(root, '.claude/tools/lib/pointer.mjs')).href)
 

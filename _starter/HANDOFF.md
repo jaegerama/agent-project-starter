@@ -151,6 +151,11 @@ Status per 2026-10-07.
   failed, 0 skipped; `node tools/docs-drift.mjs` 1 passed, 3 skipped;
   `node .claude/tools/agent-check.mjs` red only on the template's 70 slots,
   by design.
+- 2026-10-08: the self-test refuses to run from a git worktree. Run there, its
+  copies shared the parent repository, and two fixture tags, `v9.9.9` and
+  `v9.9.10`, landed in the real one; both were local only, never pushed, and
+  are deleted. In a worktree it now exits 1 at once; from a full clone it runs
+  as before.
 
 ## Decisions taken
 

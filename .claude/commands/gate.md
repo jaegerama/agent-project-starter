@@ -15,9 +15,8 @@ Run every check in `AGENTS.md` §4, in order, and report the result of each.
 
 2. **Read the exit code of the thing you ran, not of the wrapper around it.** A
    command inside a container, a pipe, or a background job reports the wrapper's
-   status. One project spent hours believing a test suite passed while the build
-   feeding it had failed, because `&&` and a log tail both looked fine. Where a
-   wrapper is involved, echo the inner status explicitly so it lands in the
+   status, so a failed build behind a passing log tail looks like success. Where
+   a wrapper is involved, echo the inner status explicitly so it lands in the
    output you actually read.
 
 3. **A count is half the check.** "Tests passed" means nothing without how many

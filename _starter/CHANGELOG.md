@@ -13,6 +13,13 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Changed: lessons without stories from real projects (2026-10-07)
+
+Seven files that reach every project, and the starter's own README, told
+their lessons through stories from the projects the starter came out of, with
+their real details and numbers. Each states its lesson in general terms now.
+The credit to ECC in the review ladder stays: it names a public source.
+
 ### Changed: security, data and container rules apply where the system has them (2026-10-07)
 
 The security section, marked non-negotiable, assumed accounts, endpoints and a

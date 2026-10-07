@@ -150,9 +150,8 @@ each one cheaper than the last.
 
 **The failure mode this is meant to prevent** is a new project that quotes all
 these rules, has none of the enforcement, and lets everybody relax against a net
-nobody built. In one day on the source project, three documents were found stating
-things the code had stopped doing, and two of them already carried a note from
-a previous correction of exactly the same kind.
+nobody built. A document goes on stating what the code stopped doing, even
+after a correction of exactly that kind, until a check reads it.
 
 Prose asking people to remember does not work. A check that fails does. So when
 something in your new project is aspiration rather than mechanism, **mark it as

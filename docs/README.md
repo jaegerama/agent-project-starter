@@ -28,19 +28,16 @@ what was asked for at the start.
 ### `PRD.md`
 
 State the scope, and state the **anti-scope**: what this system is not. That
-second half settles more arguments than the first. One project's "no public
-signup, every user is internal personnel" ended a dozen design discussions on
-its own.
+second half settles more arguments than the first: one line such as "no public
+signup" closes a whole family of design discussions before they start.
 
 ### `TODO.md`
 
 A story is not a title, it is **acceptance criteria**. If a criterion cannot be
 checked by looking at something, it is a wish.
 
-Give each story one status marker and never two. One project once carried the
-same story under two headings 941 lines apart (one open, one closed, both true
-when written), and somebody picked up work to build something that already
-existed.
+Give each story one status marker and never two. The same story under two
+headings, one open and one closed, sends someone to build what already exists.
 
 ### `ARCHITECTURE.md`
 
@@ -54,9 +51,8 @@ One row per question, a stable id (`TAX-1`, `AUTH-3`), and the answer written
 beside it once it arrives, above what it replaced, so the history survives.
 
 **If you also keep a summary of what is still open, put a check on it.** That
-summary is the most-read and least-maintained thing in the folder. One
-project's said 83 questions were open when all 76 it listed had been answered,
-and its purpose was telling you who to chase.
+summary is the most-read and least-maintained thing in the folder, and a stale
+one sends people to chase answers they already have.
 
 ---
 

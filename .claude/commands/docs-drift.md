@@ -35,9 +35,8 @@ If that table still holds empty slots, that is the first finding to report.
    - Code diverged from a ratified decision → the **code** is wrong. Say so, and
      do not quietly update the doc to match it.
 3. **A summary that restates a list is the first thing to check.** It is the most
-   likely to be stale and the most likely to be read, because it sits at the top.
-   One project had one presenting 76 resolved questions as open, and a reader
-   following it would have chased people for answers already given.
+   likely to be stale and the most likely to be read, because it sits at the top,
+   and a stale one sends its reader after answers that already exist.
 4. Where a document restates a **number**, propose a check for
    `tools/docs-drift.mjs` rather than only fixing it. Fixing it by hand is the
    thing that has already failed.

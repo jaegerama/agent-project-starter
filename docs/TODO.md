@@ -1,9 +1,7 @@
 # TODO: <PROJECT NAME>
 
-A story gets **one** status marker and never two. One project once carried the
-same story under two headings 941 lines apart (one open, one closed, both true
-when written), and somebody picked up work to build something that already
-existed.
+A story gets **one** status marker and never two. The same story under two
+headings, one open and one closed, sends someone to build what already exists.
 
 Status: `TODO` · `WIP` · `REVIEW` · `DONE` · `BLOCKED`
 

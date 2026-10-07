@@ -1,7 +1,6 @@
 # Review Severity
 
-> The ladder every review in this project uses. Adapted from the production
-> project this starter was extracted from, which took it from
+> The ladder every review in this project uses. Adapted from
 > [ECC](https://github.com/affaan-m/ecc) (MIT).
 >
 > Generic quality thresholds are deliberately **not** here: function length,
@@ -84,7 +83,7 @@ Then:
   CRITICAL next time.
 - **One quoted error, trimmed.** Never paraphrase a compiler or a stack trace.
 - **Treat a comment asserting a guarantee as unverified** until you find the code
-  that provides it. Two of the worst defects found in that project were a docblock
-  promising a mechanism that had been removed, and both passed every test.
+  that provides it. A docblock that promises a removed mechanism passes every
+  test, because no test reads it.
 - Output over ~30 lines goes to a file; reply with the path and a three-line
   conclusion.

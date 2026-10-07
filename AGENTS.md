@@ -72,9 +72,8 @@ to another tool. Context that lives in this file is not.
 | **UI language** | <i18n dictionaries / single language / no UI> |
 | **First deliverable** | <docs first / a walking skeleton / a specific feature> |
 
-The "is NOT" half matters more than it looks. One sentence like "not
-customer-facing, no public signup, every user is internal personnel" settles a
-dozen design arguments without a meeting.
+The "is NOT" half matters more than it looks: one sentence like "no public
+signup" settles a whole family of design arguments without a meeting.
 
 ### Ratified decisions (do not re-litigate)
 
@@ -225,9 +224,8 @@ Write them exactly as the owner would type them. Not an approximation.
 **Write down why each step is in that list, as you learn it.** Not what it does,
 which the command shows, but what went wrong when it was missing.
 
-> *The shape of such a note: "format check is in that line because CI used to
-> run it and this file did not. Three stories were pushed and the pipeline
-> failed on 34 unformatted files."*
+> *The shape of such a note: "format check is in that line because CI runs it
+> and this list did not, so work that was green here went red there."*
 
 A step with no note is a step somebody will eventually remove as redundant.
 

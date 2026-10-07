@@ -13,6 +13,13 @@ where it applies, in the code comments and in the cases of `_starter/selftest.mj
 
 ## [Unreleased]
 
+### Added: the agnostic review (2026-10-07)
+
+`_starter/AUDIT-2026-10-07-agnostic.md` records the review against the fourth
+criterion for 1.0.0, that the starter names no project, assumes no stack and
+holds no preference of its owner as a rule: fifteen findings, each with its
+evidence and the commit that fixed it.
+
 ### Fixed: an HTML comment counted as an unfilled slot (2026-10-07)
 
 The slot pattern took any `<...>` of 3 to 120 characters on one line, so an

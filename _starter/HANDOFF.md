@@ -10,13 +10,12 @@ Status per 2026-10-07.
 
 ## Next Immediate Steps
 
-1. **Bring every project that uses the starter to 0.3.0** with
-   `node tools/adopt.mjs --into ../<project>`, dry run first. It adds
-   `.claude/starter-version`, and its report names a project where no gate
-   runs agent-check. Whether a project commits what adopt changed is that
-   project's call.
-2. **Review the starter against the agnostic criterion for 1.0.0** (Decisions
-   taken): list each finding first, and change only what the owner approves.
+1. **When the owner asks for a release, cut it from `[Unreleased]`, then bring
+   every project that uses the starter to it** with
+   `node tools/adopt.mjs --into ../<project>`, dry run first. agent-check and
+   the slot pattern changed after 0.3.0, so every project's copy is behind
+   until then. Whether a project commits what adopt changed is that project's
+   call.
 
 ## Done
 
@@ -73,6 +72,18 @@ Status per 2026-10-07.
   skipped; `node .claude/tools/agent-check.mjs` red only on the template's 67
   slots, by design.
 - 2026-10-07: release 0.3.0, tagged `v0.3.0`.
+- 2026-10-07: adopt brought every project that uses the starter to 0.3.0:
+  `.claude/starter-version` reads `v0.3.0` in each, agent-check passed 4 of 4,
+  and a second dry run found nothing left to change.
+- 2026-10-07: the agnostic review, `_starter/AUDIT-2026-10-07-agnostic.md`: 15
+  findings, all fixed with the owner's approval, and an HTML comment that the
+  slot pattern counted as a slot. The profile checks became opt-in for a
+  marked master (5 mutations) and the slot fix has 1, each caught by exactly
+  the cases written for it. Windows 11, Node 24.13.1:
+  `node _starter/selftest.mjs` 157 passed, 0 failed, 0 skipped;
+  `node tools/docs-drift.mjs` 1 passed, 2 skipped;
+  `node .claude/tools/agent-check.mjs` red only on the template's 69 slots,
+  by design.
 
 ## Decisions taken
 
@@ -96,12 +107,20 @@ Status per 2026-10-07.
   4. the starter is agnostic: it names no project it is used in, assumes no
      language or stack, and holds no preference of its owner as a rule. The
      license and copyright notices are the owner's, and stay.
+- Releases and tags happen only when the owner asks; until then changes
+  collect under `[Unreleased]`, and a pushed tag is never moved (the owner,
+  2026-10-07).
 - Whether Antigravity loads `AGENTS.md` natively or through the `GEMINI.md`
   import needs no further test: adopt gives every old pointer the import, so
   it loads either way, and the tested session loaded it once with both present.
 
 ## Blocked and pending
 
+- Criterion 2 of 1.0.0 waits on the owner: whether the audit's two partly
+  fixed findings count as accepted limits or as open work. B5: an interpreter
+  one-liner can still read a secret file, which only the sandbox stops, and
+  the sandbox does not run on native Windows. H7: no check ties each commit to
+  a changelog entry, by design, because entries are not keyed to commits.
 - Confirming the Gemini CLI import (`AGENTS.md` §11) waits on a session in
   Gemini CLI, which is not installed where the starter is maintained. Until
   one runs, §11 says documented, not yet observed.

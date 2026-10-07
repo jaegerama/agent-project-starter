@@ -170,6 +170,7 @@ aspiration** until it is one.
 | `operator-profile.md` | An example operator profile, for a machine that has none: installed once per machine, not per project |
 | `CHANGELOG.md` | The starter's own history, separate from the project's changelog |
 | `AUDIT-2026-10-05.md` | The audit before the first public release: each finding, its evidence, and the commit that fixed it |
+| `AUDIT-2026-10-07-agnostic.md` | The review of whether the starter is agnostic: each finding, and the commit that fixed it |
 
 The other files that belong to the starter alone live outside this directory,
 and bootstrap removes them from a project with `_starter/`: `LICENSE`,

@@ -153,11 +153,12 @@ check('no file in the starter carries an invisible U+FEFF character', withBom.le
 
 section('docs-first hook (starter itself, AGENTS.md has slots)')
 check('application code is blocked (exit 2)', hook(root, 'src/app.ts') === 2)
-for (const f of ['AGENTS.md', 'CLAUDE.md', 'HANDOFF.md', 'DESIGN.md', 'LICENSE', '.gitattributes', 'docs/BRIEF.md', 'tools/adopt.mjs', 'tools/docs-drift.mjs', '.claude/settings.json']) {
+for (const f of ['AGENTS.md', 'CLAUDE.md', 'HANDOFF.md', 'DESIGN.md', 'LICENSE', '.gitattributes', 'docs/BRIEF.md', 'tools/adopt.mjs', 'tools/docs-drift.mjs', 'tools/gate.mjs', '.githooks/pre-push', '.claude/settings.json']) {
   check(`setup file allowed: ${f}`, hook(root, f) === 0)
 }
 check('malformed input fails open, as documented', hook(root, 'x', 'not json') === 0)
 check('application code under tools/ is blocked', hook(root, 'tools/server.ts') === 2)
+check('.githooks/ opens for its one hook, not for other files', hook(root, '.githooks/app.ts') === 2)
 check('a relative path that climbs out of docs/ is blocked', runHook({ project: root, input: write('docs/../src/app.ts', root) }) === 2)
 check(
   'a notebook outside setup is blocked (NotebookEdit names notebook_path)',
@@ -310,6 +311,9 @@ check('dry run changes nothing', treeHash(committed) === before)
 
 out = node(committed, ['tools/bootstrap.mjs', '--name', 'Demo App', '--apply'])
 check('apply exits 0', out.status === 0, out.stderr)
+check('bootstrap points git at .githooks/, so the pre-push hook runs the gate', git(committed, 'config', '--get', 'core.hooksPath').stdout.trim() === '.githooks')
+// Windows keeps no exec bit, and git on macOS and Linux skips a hook without one.
+check('the pre-push hook is staged executable', git(committed, 'ls-files', '-s', '--', '.githooks/pre-push').stdout.startsWith('100755'))
 // ARCHITECTURE.md says it is written when the second component appears, and the report once said otherwise.
 const [, fillAndLater = ''] = out.stdout.split('Fill before application code')
 const [fillNow, fillLater = ''] = fillAndLater.split('Later, when the second component appears')
@@ -705,6 +709,45 @@ check(
   peopleGate({ 'CONTRIBUTING.md': read(join(root, '_starter', 'templates', 'CONTRIBUTING.md')), 'AGENTS.md': read(join(root, 'AGENTS.md')) }, 'c-templates').startsWith('SKIP'),
 )
 check('setup done and only the two gates compared -> red: no document met code', driftRun('c-guard', gates('npm test', 'npm test')).status === 1)
+
+section('the gate runs on this machine, and before every push')
+const gateDoc = (heading, ...lines) => `${heading}\n\n${'```'}bash\n${lines.join('\n')}\n${'```'}\n`
+const mark = (file) => `node -e "require('fs').writeFileSync('${file}','x')"`
+const gateRun = (name, files) => {
+  const dir = join(tmp, name)
+  mkdirSync(join(dir, 'tools'), { recursive: true })
+  cpSync(join(root, 'tools', 'gate.mjs'), join(dir, 'tools', 'gate.mjs'))
+  for (const [p, body] of Object.entries(files)) writeFileSync(join(dir, p), body)
+  return { dir, run: node(dir, ['tools/gate.mjs']) }
+}
+let gr = gateRun('g-green', { 'AGENTS.md': gateDoc('### The gate: all green', mark('one'), mark('two')) })
+check('every line of the gate runs, and a green gate exits 0', gr.run.status === 0 && existsSync(join(gr.dir, 'one')) && existsSync(join(gr.dir, 'two')), gr.run.stderr)
+gr = gateRun('g-red', { 'AGENTS.md': gateDoc('### The gate: all green', 'node -e "process.exit(3)"', mark('after')) })
+check('the first failing line ends the run with its exit code, and nothing after it runs', gr.run.status === 3 && !existsSync(join(gr.dir, 'after')))
+gr = gateRun('g-people', { 'CONTRIBUTING.md': gateDoc('## The gate', mark('people')) })
+check('with no AGENTS.md, the CONTRIBUTING.md gate runs, as a teammate without agent files has it', gr.run.status === 0 && existsSync(join(gr.dir, 'people')))
+gr = gateRun('g-both', { 'AGENTS.md': gateDoc('### The gate: all green', mark('agents')), 'CONTRIBUTING.md': gateDoc('## The gate', mark('people')) })
+check('with both, the AGENTS.md gate runs: on an agent machine it is the larger one', existsSync(join(gr.dir, 'agents')) && !existsSync(join(gr.dir, 'people')))
+gr = gateRun('g-slot', { 'AGENTS.md': read(join(root, 'AGENTS.md')) })
+check("the template's gate is still a slot: refused, exit 1", gr.run.status === 1 && gr.run.stderr.includes('still a slot'))
+gr = gateRun('g-none', { 'AGENTS.md': '# AGENTS.md\n\nno gate here\n' })
+check('no gate block: refused, exit 1', gr.run.status === 1)
+
+// A real push through the hook bootstrap wires, to a local bare remote.
+const pushing = copyStarter('demo-push')
+node(pushing, ['tools/bootstrap.mjs', '--name', 'Demo App', '--apply'])
+const pushRemote = join(tmp, 'push-remote.git')
+git(tmp, 'init', '-q', '--bare', pushRemote)
+git(pushing, 'add', '-A')
+git(pushing, '-c', 'commit.gpgsign=false', 'commit', '-qm', 'fixture')
+git(pushing, 'remote', 'add', 'origin', pushRemote)
+const redPush = git(pushing, 'push', '-q', 'origin', 'HEAD:refs/heads/main')
+check('a push while the gate is red is refused, and nothing reaches the remote', redPush.status !== 0 && git(pushRemote, 'branch', '--list').stdout.trim() === '')
+const agentsFile = join(pushing, 'AGENTS.md')
+writeFileSync(agentsFile, read(agentsFile).replace('<the commands above, in the order they must run, as one block>', () => 'node -e "process.exit(0)"'))
+git(pushing, '-c', 'commit.gpgsign=false', 'commit', '-qam', 'a green gate')
+const greenPush = git(pushing, 'push', '-q', 'origin', 'HEAD:refs/heads/main')
+check('once the gate is green, the same push goes through', greenPush.status === 0 && git(pushRemote, 'branch', '--list').stdout.includes('main'), greenPush.stderr)
 
 const story = (status, id) => `### [${status}] ${id} title\n`
 check('two stories in WIP -> red', todoIs({ 'docs/TODO.md': story('DONE', 'S0.1') + story('WIP', 'S1.1') + story('WIP', 'S1.2') }, 't-two').startsWith('FAIL'))

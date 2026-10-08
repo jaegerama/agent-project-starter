@@ -16,6 +16,7 @@
  *   5. With --private-agents, appends the .gitignore block that keeps agent
  *      files out of git, for a repository that goes to a shared team remote,
  *      and writes CONTRIBUTING.md for the people who do not have them.
+ *   6. Points git at .githooks/, whose pre-push hook runs the gate.
  *
  * It never fills a slot: a guessed decision reads exactly like a made one.
  * Dry run is the default because step 2 deletes a directory.
@@ -133,6 +134,18 @@ if (!hasGit && apply) {
   }
 }
 
+// git runs hooks only from the configured path, and on macOS and Linux only when the file is executable.
+const PRE_PUSH = '.githooks/pre-push'
+const wireHooks = hasStarterDir && existsSync(join(root, PRE_PUSH))
+if (wireHooks && apply) {
+  try {
+    execFileSync('git', ['config', 'core.hooksPath', '.githooks'], { cwd: root })
+    execFileSync('git', ['add', '--chmod=+x', '--', PRE_PUSH], { cwd: root })
+  } catch (error) {
+    console.error(`  git hooks not wired: ${error.message}`)
+  }
+}
+
 // The marker makes a second run a no-op instead of a second block.
 const IGNORE_MARKER = '# agent files: private (bootstrap --private-agents)'
 const IGNORE_BLOCK = [
@@ -207,6 +220,7 @@ console.log(
           : "not written: the starter's template is gone"
   }`,
 )
+console.log(`  git hooks         ${wireHooks ? `${PRE_PUSH} runs the gate before every push${verb}` : 'left as they are'}`)
 
 const show = (file, slots) => {
   console.log(`  ${file}`)

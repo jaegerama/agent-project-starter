@@ -127,7 +127,8 @@ features in one leap.
 `node tools/docs-drift.mjs` checks the story headings in `docs/TODO.md` for
 both rules: one story in WIP, and nothing past Epic 0 started before it is
 DONE. Nothing in the repository can prove that the proof in `HANDOFF.md` is
-real; a gate re-run by CI, not by the agent that wrote the proof, can.
+real; the gate run again by the pre-push hook, not by the agent that wrote the
+proof, can.
 
 ---
 
@@ -137,7 +138,7 @@ real; a gate re-run by CI, not by the agent that wrote the proof, can.
 |---|---|
 | **Never touch** | <.env on the server? production? migrations by hand?> |
 | **Deploy is done by** | <manually by the owner / a script / CI, and who may run it> |
-| **CI** | <runs what, or "nothing: the local gate is the only check"> |
+| **CI** | <runs what, or "nothing: the pre-push hook runs the gate on this machine"> |
 | **Never committed** | <secrets, dumps, private tooling> |
 
 ---
@@ -245,6 +246,13 @@ Write them exactly as the owner would type them. Not an approximation.
 ```bash
 <the commands above, in the order they must run, as one block>
 ```
+
+`node tools/gate.mjs` runs this block as written, a line at a time, and stops
+at the first line that fails. Git runs it before every push through the
+pre-push hook in `.githooks/`: bootstrap points this clone at it, and any
+other clone runs `git config core.hooksPath .githooks` once. The checks run on
+this machine, so an agent adds no CI workflow, GitHub Actions or another,
+unless the owner asks for one.
 
 **Write down why each step is in that list, as you learn it.** Not what it does,
 which the command shows, but what went wrong when it was missing.
@@ -525,6 +533,7 @@ copies with it.
 | Zero unfilled slots in `AGENTS.md` | **Mechanism**: gate goes red | **Mechanism**: same gate, run by hand |
 | Pointer files carry no rules, and `CLAUDE.md` keeps its import line | **Mechanism**: gate goes red | **Mechanism** |
 | One story in WIP; nothing past Epic 0 before it is DONE | **Mechanism**: `tools/docs-drift.mjs` reads the story headings | **Mechanism**: same gate, run by hand |
+| The gate runs before every push | **Mechanism**: the pre-push hook, once `core.hooksPath` points at `.githooks/` (bootstrap sets it; another clone sets it once). `git push --no-verify` skips it | **Mechanism**: git runs it, whatever the harness |
 | Secret files are not read | **Partial**: the Read tool and common shell readers are denied, even in `bypassPermissions` mode; an interpreter one-liner is not. The sandbox closes that, on macOS, Linux and WSL2 only | **Intention** |
 | No new dependency without approval | **Partial**: in the default permission mode, a command that is not allowlisted asks first. `bypassPermissions` and a direct edit of the manifest are not guarded | **Intention** |
 | Docs-first, scope containment, CHANGELOG first | **Intention** | **Intention** |

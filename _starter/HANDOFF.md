@@ -166,6 +166,15 @@ Status per 2026-10-07.
   backed up, and `.claude/starter-version`, which reads `v0.6.0` in each;
   agent-check passed 4 of 4, a second dry run found nothing left to change,
   and no report line says a gate skips agent-check.
+- 2026-10-08: guardrails and the local gate, from the owner's update. `AGENTS.md`
+  §6 and the review ladder cover server secrets in client code, queries not
+  scoped to the session's owner, a browser-facing database without its
+  row-level rules, and destructive down-migrations; the interface rules cover
+  labels, loading states and destructive actions; the PRD has a Legal and
+  privacy section. `node tools/gate.mjs` runs the gate as written, and the
+  pre-push hook bootstrap wires runs it before every push, so a new project
+  needs no CI service; a real push to a local remote is refused while the gate
+  is red and goes through once it is green (8 mutations).
 
 ## Decisions taken
 
@@ -203,6 +212,10 @@ Status per 2026-10-07.
 - The starter supports harnesses, not models (2026-10-07): a model behind a
   harness changes nothing it relies on; adding a harness follows
   `_starter/README.md`.
+- A project's checks run on the machine that made the change, before every
+  push, not in a CI service (2026-10-08, the owner's rule for every project).
+  The template's design choices stay the owner's per project: the starter
+  names no colours, grid or component library, and no skill list.
 - In a private-agents project, `CONTRIBUTING.md` carries the gate and the
   commit rules only (2026-10-08): the gate and CI hold the mechanical part,
   and the security rules and the Definition of Done stay with the agents in

@@ -36,6 +36,8 @@ const SETUP_PATHS = [
   'tools/bootstrap.mjs',
   'tools/adopt.mjs',
   'tools/docs-drift.mjs',
+  'tools/gate.mjs',
+  '.githooks/pre-push',
 ]
 const SETUP_DIRS = ['docs', '.claude', '.github', '_starter']
 

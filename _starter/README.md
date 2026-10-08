@@ -40,6 +40,8 @@ for the people who do not have the agent files. Duplicating in Explorer copies
 the hidden `.git` too, so on the first run it also removes the starter's
 inherited history and starts a fresh one: otherwise a private-agents project
 keeps `AGENTS.md` and `.claude/` tracked, and pushes them on the first push.
+It points git at `.githooks/`, whose pre-push hook runs the gate on the
+owner's machine before every push, so a project needs no CI service for it.
 Without `--apply` it is a dry run, and it refuses to run inside a folder
 called `project-starter` or `agent-project-starter`.
 
@@ -167,7 +169,8 @@ observed (`AGENTS.md` §11).
 It carries the **process**. It cannot carry the part of a mature project's
 quality that is accumulated rather than configured:
 
-- a gate that mechanically blocks: there is nothing to test on day one;
+- the tests the gate runs: the pre-push hook blocks a push on a red gate, but
+  on day one there is nothing to test;
 - dozens of tests that read the source and the docs and fail when they
   disagree: there is no code yet to lock;
 - notes explaining why each rule exists, every one written after something went
@@ -225,6 +228,7 @@ templates a new project fills.
 | `node tools/adopt.mjs` | the starter | `--into`, `--apply`, `--allow-unreleased`, `--allow-dirty` | 0 done or dry run; 1 refused |
 | `node .claude/tools/agent-check.mjs` | the project root | none | 0 no check failed; 1 one did |
 | `node tools/docs-drift.mjs` | the project root | none | 0 no check failed; 1 one did, or setup is done and no check compared a document with code |
+| `node tools/gate.mjs` | the project root, or git's pre-push hook in `.githooks/` | none | 0 every line of the gate passed; else the first failing line's exit code, or 1 with no gate to run |
 | `.claude/hooks/guard-slots.mjs` | Claude Code, as a PreToolUse hook | JSON on stdin | 0 allow; 2 block |
 
 The `/gate` and `/docs-drift` commands and the `silent-failure-hunter` agent

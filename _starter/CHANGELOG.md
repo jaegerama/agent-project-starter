@@ -12,6 +12,11 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ### Added
 
+- `node tools/gate.mjs` runs the gate as `AGENTS.md` §4 writes it, or as
+  `CONTRIBUTING.md` does where there is no `AGENTS.md`, and stops at the first
+  failing line.
+- bootstrap points git at `.githooks/`, whose pre-push hook runs the gate
+  before every push, in whatever harness made the change.
 - `AGENTS.md` §6 keeps server secrets out of client code, scopes every query
   to the user or tenant of the session, keeps a browser-facing database behind
   its row-level rules, and lets production migrations only move forward.
@@ -22,6 +27,9 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ### Changed
 
+- A new project runs its checks on the owner's machine: the brief's
+  conventions say so unless changed, and an agent adds no CI workflow unless
+  the owner asks for one.
 - The interface rules ask for a visible label on every field, a loading state
   in the shape of what loads, and a destructive action named in its label and
   confirmed, never marked by colour alone.

@@ -27,7 +27,6 @@ have not decided.
 - Language, framework, database, tests:
 - Locally, on the host or in containers:
 - Deployed to, and by whom, or "nothing to deploy":
-- CI, or "none":
 
 ## 4. The repository
 
@@ -50,6 +49,8 @@ The walking skeleton, then:
 - Commits: Conventional Commits; co-author and tool trailers: allowed
 - Branches: `main`, and one branch per story when the repository is shared
 - Commit scopes: none until the code has parts worth naming
+- Tests and checks: on this machine, run by the pre-push hook before every
+  push; no CI service
 - Agent skills: none
 
 ---

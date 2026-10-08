@@ -81,11 +81,14 @@ is the Public API section of
 | No application code while slots remain | Hook, for the file tools only. A file written through Bash is not seen | Gate only |
 | No empty slot; pointers stay pointers | Gate | Gate |
 | One story in WIP, and Epic 0 first | Gate | Gate |
+| The gate runs before every push | Git's pre-push hook | Git's pre-push hook |
 | Secret files are not read | The Read tool and common shell readers are denied; an interpreter one-liner is not | Not enforced |
 | Docs first, changelog first, no new dependency without approval | Written down only | Written down only |
 
-"Gate" means `node .claude/tools/agent-check.mjs` and `node tools/docs-drift.mjs`
-plus the project's own checks. Nothing runs it for you unless CI does.
+"Gate" means the block in `AGENTS.md` §4: `node .claude/tools/agent-check.mjs`,
+`node tools/docs-drift.mjs` and the project's own checks. `node tools/gate.mjs`
+runs it, and git's pre-push hook runs it before every push, so the checks
+happen on the machine that wrote the change rather than in a CI service.
 
 ## The operator profile
 

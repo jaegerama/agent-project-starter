@@ -210,6 +210,12 @@ Status per 2026-10-08.
   that leads back, live password rules and a one-time code field that takes
   paste and autofill. Each story starts in a fresh session, and Setup reports
   the skills §2.1 lists that are not on disk, with how to install each.
+- 2026-10-08: adopt seeds `tools/gate.mjs` into a committed project that has
+  none, as a new project gets it, and its docblock no longer says a hook
+  calls it: an adopted project may have no hook. Wiring it to a pre-push
+  hook stays the project's call; a private-agents project gets no tracked
+  seed, as before. Windows 11, Node 24.13.1: 203 passed, 0 failed; 1 of 1
+  mutation caught exactly.
 
 ## Decisions taken
 

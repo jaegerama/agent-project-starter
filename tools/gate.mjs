@@ -9,8 +9,8 @@
  *     node tools/gate.mjs
  *
  * Each line runs in order, and the first one that fails ends the run with its
- * exit code. The pre-push hook in .githooks/ calls this, so the gate runs on
- * this machine before anything is pushed.
+ * exit code. A pre-push hook that calls it, such as the one bootstrap wires in
+ * .githooks/, runs the gate on this machine before anything is pushed.
  */
 
 import { readFileSync, existsSync } from 'node:fs'

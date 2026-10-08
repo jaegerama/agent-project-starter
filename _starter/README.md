@@ -259,7 +259,7 @@ keep their names.
 | | Files | adopt |
 |---|---|---|
 | Owned | `.claude/tools/agent-check.mjs`, `.claude/tools/lib/slot.mjs`, `.claude/tools/lib/pointer.mjs`, `.claude/hooks/guard-slots.mjs` | Replaces them, old copy backed up |
-| Seeded | `.claude/rules/review-severity.md`, `.claude/commands/gate.md`, `.claude/commands/docs-drift.md`, `.claude/agents/silent-failure-hunter.md`, `GEMINI.md`, `.github/copilot-instructions.md`; in committed mode also `CHANGELOG.md` and `tools/docs-drift.mjs` | Copies a missing one; updates one only while it equals one of the starter's own earlier versions |
+| Seeded | `.claude/rules/review-severity.md`, `.claude/commands/gate.md`, `.claude/commands/docs-drift.md`, `.claude/agents/silent-failure-hunter.md`, `GEMINI.md`, `.github/copilot-instructions.md`; in committed mode also `CHANGELOG.md`, `tools/docs-drift.mjs` and `tools/gate.mjs` | Copies a missing one; updates one only while it equals one of the starter's own earlier versions |
 | Wired | `.claude/settings.json`: the PreToolUse entry `node "$CLAUDE_PROJECT_DIR/.claude/hooks/guard-slots.mjs"` on `Write\|Edit\|NotebookEdit` | Adds it once `AGENTS.md` has no slots |
 | Recorded | `.claude/starter-version`: one line, `vX.Y.Z`, or `vX.Y.Z+<commit>` with `-dirty` when the starter was not a release | Writes it on every apply from a git checkout of the starter |
 | Backups | `.claude.backup-adopt-<stamp>/` | Writes one per apply that replaces anything |

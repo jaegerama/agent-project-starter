@@ -612,6 +612,7 @@ check(
 const seedTracked = makeRepo('seed-committed', { ...agentsOnly, [driftPath]: oldDrift })
 adopt(seedTracked, true)
 check('committed repo: an old tracked seed is brought up to date', read(join(seedTracked, driftPath)) === read(join(root, driftPath)))
+check('committed repo: tools/gate.mjs is seeded where it is missing, as a new project has it', read(join(seedTracked, 'tools', 'gate.mjs')) === read(join(root, 'tools', 'gate.mjs')))
 
 section('adopt: a committed source, and the version it records')
 const src = copyStarter('src-clean')

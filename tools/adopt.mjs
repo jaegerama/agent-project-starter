@@ -80,7 +80,7 @@ const SEEDED_PRIVATE = [
   '.github/copilot-instructions.md',
 ]
 // Tracked, project-owned files: seeded only in committed mode.
-const SEEDED_TRACKED = ['CHANGELOG.md', 'tools/docs-drift.mjs']
+const SEEDED_TRACKED = ['CHANGELOG.md', 'tools/docs-drift.mjs', 'tools/gate.mjs']
 const VERSION_FILE = '.claude/starter-version'
 // Everything adopt copies from the starter, and the code that decides how.
 const SOURCE = [...OWNED, ...SEEDED_PRIVATE, ...SEEDED_TRACKED, 'AGENTS.md', 'CLAUDE.md', 'HANDOFF.md', '.claude/settings.json', 'tools/adopt.mjs']

@@ -26,6 +26,8 @@ empty `CHANGELOG.md` at the root. History before the public import of
 - Setup's report names the skills `AGENTS.md` §2.1 lists that are not on
   disk, with how the owner installs each, which §2.1 now asks for; a skill
   used in every project belongs in the operator profile.
+- adopt seeds `tools/gate.mjs` into a committed project that has none, as a
+  new project gets it; wiring it to a pre-push hook stays the project's call.
 
 ### Changed
 

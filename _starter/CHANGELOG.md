@@ -10,6 +10,8 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-08
+
 ### Added
 
 - `node tools/gate.mjs` runs the gate as `AGENTS.md` §4 writes it, or as
@@ -251,7 +253,8 @@ The first public release.
   The denies hold in `bypassPermissions` mode, but do not stop an interpreter.
 - Agents never install, update or fetch a skill; the owner installs skills.
 
-[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/jaegerama/agent-project-starter/compare/v0.4.0...v0.4.1

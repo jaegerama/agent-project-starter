@@ -10,6 +10,8 @@ public import of 2026-10-05 is not published.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-08
+
 ### Added
 
 - adopt names a seeded file it keeps although the starter changed it after the
@@ -23,11 +25,11 @@ public import of 2026-10-05 is not published.
   data must never break, a fixed number of queries per list, a not-found page
   that leads back, password rules shown while typing, and a one-time code
   field that takes paste and autofill.
+- adopt seeds `tools/gate.mjs` into a committed project that has none, as a
+  new project gets it; wiring it to a pre-push hook stays the project's call.
 - Setup's report names the skills `AGENTS.md` §2.1 lists that are not on
   disk, with how the owner installs each, which §2.1 now asks for; a skill
   used in every project belongs in the operator profile.
-- adopt seeds `tools/gate.mjs` into a committed project that has none, as a
-  new project gets it; wiring it to a pre-push hook stays the project's call.
 
 ### Changed
 
@@ -36,6 +38,10 @@ public import of 2026-10-05 is not published.
   `HANDOFF.md` come from `_starter/templates/`: bootstrap writes them, and
   adopt seeds `CHANGELOG.md` and `HANDOFF.md` from there. What a project
   receives is unchanged.
+- The review ladder treats a gap an outer layer reliably blocks as a
+  hardening note, except in payments, authorization and the audit trail.
+- Each story starts in a fresh session, with `HANDOFF.md` carrying what the
+  next one needs.
 - The template documents state each rule once: why a decision needs its
   reason, the rules for stories and questions, and why pointer files hold no
   rules each live in one file, and the others refer to it. `AGENTS.md` opens
@@ -52,6 +58,7 @@ public import of 2026-10-05 is not published.
   the import line it adds to pointers, and the release steps, which now
   publish a GitHub Release so that people who watch the repository hear of
   each one.
+- The PRD's performance slot names Core Web Vitals as one kind of budget.
 
 ### Removed
 
@@ -60,20 +67,15 @@ public import of 2026-10-05 is not published.
   accepted ones and their reasons in `_starter/HANDOFF.md`; INTAKE repeated
   `AGENTS.md` and had fallen behind it. Every tag up to v0.7.0 still holds
   them.
-- Each story starts in a fresh session, with `HANDOFF.md` carrying what the
-  next one needs.
-- The review ladder treats a gap an outer layer reliably blocks as a
-  hardening note, except in payments, authorization and the audit trail.
-- The PRD's performance slot names Core Web Vitals as one kind of budget.
 
 ### Fixed
 
-- bootstrap removes the `.github/workflows/` folder that deleting the
-  starter's own workflow leaves empty, so a new project holds no CI folder.
 - bootstrap no longer turns off hooks that already run: it leaves
   `core.hooksPath` unset where `.git/hooks` holds hooks of its own, and
   unchanged where the repository or the machine already sets it. The report
   says to add `node tools/gate.mjs` to their pre-push hook instead.
+- bootstrap removes the `.github/workflows/` folder that deleting the
+  starter's own workflow leaves empty, so a new project holds no CI folder.
 
 ## [0.7.0] - 2026-10-08
 
@@ -318,7 +320,8 @@ The first public release.
   The denies hold in `bypassPermissions` mode, but do not stop an interpreter.
 - Agents never install, update or fetch a skill; the owner installs skills.
 
-[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.4.1...v0.5.0

@@ -10,6 +10,13 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ## [Unreleased]
 
+### Fixed
+
+- bootstrap no longer turns off hooks that already run: it leaves
+  `core.hooksPath` unset where `.git/hooks` holds hooks of its own, and
+  unchanged where the repository or the machine already sets it. The report
+  says to add `node tools/gate.mjs` to their pre-push hook instead.
+
 ## [0.7.0] - 2026-10-08
 
 ### Added

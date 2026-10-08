@@ -42,6 +42,8 @@ inherited history and starts a fresh one: otherwise a private-agents project
 keeps `AGENTS.md` and `.claude/` tracked, and pushes them on the first push.
 It points git at `.githooks/`, whose pre-push hook runs the gate on the
 owner's machine before every push, so a project needs no CI service for it.
+Where hooks already run, in `.git/hooks` or through a `core.hooksPath` set
+before, it leaves them and says to add the gate to their pre-push hook.
 Without `--apply` it is a dry run, and it refuses to run inside a folder
 called `project-starter` or `agent-project-starter`.
 

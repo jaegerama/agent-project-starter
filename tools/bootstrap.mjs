@@ -16,7 +16,8 @@
  *   5. With --private-agents, appends the .gitignore block that keeps agent
  *      files out of git, for a repository that goes to a shared team remote,
  *      and writes CONTRIBUTING.md for the people who do not have them.
- *   6. Points git at .githooks/, whose pre-push hook runs the gate.
+ *   6. Points git at .githooks/, whose pre-push hook runs the gate, unless
+ *      hooks already run there.
  *
  * It never fills a slot: a guessed decision reads exactly like a made one.
  * Dry run is the default because step 2 deletes a directory.
@@ -136,7 +137,23 @@ if (!hasGit && apply) {
 
 // git runs hooks only from the configured path, and on macOS and Linux only when the file is executable.
 const PRE_PUSH = '.githooks/pre-push'
-const wireHooks = hasStarterDir && existsSync(join(root, PRE_PUSH))
+// Setting core.hooksPath turns off .git/hooks and any path set before, so hooks that already run are kept.
+let hooksPath = ''
+try {
+  hooksPath = execFileSync('git', ['config', '--get', 'core.hooksPath'], { cwd: root, encoding: 'utf8' }).trim()
+} catch {
+  // git exits 1 when the key is unset.
+}
+const hooksDir = join(root, '.git', 'hooks')
+const ownHooks = existsSync(hooksDir) ? readdirSync(hooksDir).filter((f) => !f.endsWith('.sample')) : []
+const keptHooks = hooksPath
+  ? hooksPath === '.githooks'
+    ? ''
+    : `core.hooksPath is already ${hooksPath}`
+  : ownHooks.length
+    ? `.git/hooks has its own (${ownHooks.join(', ')})`
+    : ''
+const wireHooks = hasStarterDir && existsSync(join(root, PRE_PUSH)) && !keptHooks
 if (wireHooks && apply) {
   try {
     execFileSync('git', ['config', 'core.hooksPath', '.githooks'], { cwd: root })
@@ -220,7 +237,15 @@ console.log(
           : "not written: the starter's template is gone"
   }`,
 )
-console.log(`  git hooks         ${wireHooks ? `${PRE_PUSH} runs the gate before every push${verb}` : 'left as they are'}`)
+console.log(
+  `  git hooks         ${
+    wireHooks
+      ? `${PRE_PUSH} runs the gate before every push${verb}`
+      : keptHooks
+        ? `left as they are, ${keptHooks}: add node tools/gate.mjs to their pre-push hook`
+        : 'left as they are'
+  }`,
+)
 
 const show = (file, slots) => {
   console.log(`  ${file}`)

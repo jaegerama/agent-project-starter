@@ -290,6 +290,17 @@ check("Antigravity's rules identical to the master -> green", line(agentCheck(),
 writeHome()
 
 section('bootstrap')
+// bootstrap keeps a core.hooksPath it finds, so the runs that check the hooks read no global git config.
+const emptyGitconfig = join(tmp, 'empty.gitconfig')
+writeFileSync(emptyGitconfig, '')
+const isolatedGit = { env: { ...baseEnv, GIT_CONFIG_GLOBAL: emptyGitconfig } }
+const bootstrap = (dir, ...args) => node(dir, ['tools/bootstrap.mjs', ...args], isolatedGit)
+const freshRepo = (name) => {
+  const dir = copyStarter(name)
+  rmSync(join(dir, '.git'), { recursive: true, force: true })
+  spawnSync('git', ['init', '-q'], { cwd: dir, ...isolatedGit })
+  return dir
+}
 check('refuses to run inside the starter itself', node(root, ['tools/bootstrap.mjs', '--name', 'X', '--apply']).status === 1)
 // A clone takes the repository's name, and CI checks out into a folder of that name.
 const clone = join(mkdtempSync(join(tmp, 'clone-')), 'agent-project-starter')
@@ -309,11 +320,32 @@ const before = treeHash(committed)
 node(committed, ['tools/bootstrap.mjs', '--name', 'Demo App', '--private-agents'])
 check('dry run changes nothing', treeHash(committed) === before)
 
-out = node(committed, ['tools/bootstrap.mjs', '--name', 'Demo App', '--apply'])
+out = bootstrap(committed, '--name', 'Demo App', '--apply')
 check('apply exits 0', out.status === 0, out.stderr)
-check('bootstrap points git at .githooks/, so the pre-push hook runs the gate', git(committed, 'config', '--get', 'core.hooksPath').stdout.trim() === '.githooks')
+check('bootstrap points git at .githooks/, so the pre-push hook runs the gate', git(committed, 'config', '--local', '--get', 'core.hooksPath').stdout.trim() === '.githooks')
 // Windows keeps no exec bit, and git on macOS and Linux skips a hook without one.
 check('the pre-push hook is staged executable', git(committed, 'ls-files', '-s', '--', '.githooks/pre-push').stdout.startsWith('100755'))
+// Setting core.hooksPath turns off the hooks that already run, and nothing says so.
+const ownHooks = freshRepo('demo-own-hooks')
+writeFileSync(join(ownHooks, '.git', 'hooks', 'pre-commit'), '#!/bin/sh\n')
+const ownHooksRun = bootstrap(ownHooks, '--name', 'Demo App', '--apply')
+check(
+  'hooks of its own in .git/hooks: core.hooksPath stays unset, and the report says where the gate goes',
+  git(ownHooks, 'config', '--local', '--get', 'core.hooksPath').status === 1 &&
+    ownHooksRun.stdout.includes('.git/hooks has its own (pre-commit): add node tools/gate.mjs to their pre-push hook'),
+  ownHooksRun.stdout,
+)
+const hooksPathSet = freshRepo('demo-hooks-path')
+git(hooksPathSet, 'config', 'core.hooksPath', '.husky')
+const hooksPathRun = bootstrap(hooksPathSet, '--name', 'Demo App', '--apply')
+check(
+  'a core.hooksPath set before, as husky sets it, is kept',
+  git(hooksPathSet, 'config', '--local', '--get', 'core.hooksPath').stdout.trim() === '.husky' && hooksPathRun.stdout.includes('core.hooksPath is already .husky'),
+  hooksPathRun.stdout,
+)
+const hooksPathOurs = freshRepo('demo-hooks-path-ours')
+git(hooksPathOurs, 'config', 'core.hooksPath', '.githooks')
+check('a core.hooksPath already at .githooks is wired, not reported as foreign', bootstrap(hooksPathOurs, '--name', 'Demo App', '--apply').stdout.includes('runs the gate before every push'))
 // ARCHITECTURE.md says it is written when the second component appears, and the report once said otherwise.
 const [, fillAndLater = ''] = out.stdout.split('Fill before application code')
 const [fillNow, fillLater = ''] = fillAndLater.split('Later, when the second component appears')
@@ -735,7 +767,7 @@ check('no gate block: refused, exit 1', gr.run.status === 1)
 
 // A real push through the hook bootstrap wires, to a local bare remote.
 const pushing = copyStarter('demo-push')
-node(pushing, ['tools/bootstrap.mjs', '--name', 'Demo App', '--apply'])
+bootstrap(pushing, '--name', 'Demo App', '--apply')
 const pushRemote = join(tmp, 'push-remote.git')
 git(tmp, 'init', '-q', '--bare', pushRemote)
 git(pushing, 'add', '-A')

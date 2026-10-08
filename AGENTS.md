@@ -250,9 +250,10 @@ Write them exactly as the owner would type them. Not an approximation.
 `node tools/gate.mjs` runs this block as written, a line at a time, and stops
 at the first line that fails. Git runs it before every push through the
 pre-push hook in `.githooks/`: bootstrap points this clone at it, and any
-other clone runs `git config core.hooksPath .githooks` once. The checks run on
-this machine, so an agent adds no CI workflow, GitHub Actions or another,
-unless the owner asks for one.
+other clone runs `git config core.hooksPath .githooks` once. Where a clone
+already runs hooks of its own, bootstrap leaves them, and their pre-push hook
+calls the gate instead. The checks run on this machine, so an agent adds no CI
+workflow, GitHub Actions or another, unless the owner asks for one.
 
 **Write down why each step is in that list, as you learn it.** Not what it does,
 which the command shows, but what went wrong when it was missing.
@@ -533,7 +534,7 @@ copies with it.
 | Zero unfilled slots in `AGENTS.md` | **Mechanism**: gate goes red | **Mechanism**: same gate, run by hand |
 | Pointer files carry no rules, and `CLAUDE.md` keeps its import line | **Mechanism**: gate goes red | **Mechanism** |
 | One story in WIP; nothing past Epic 0 before it is DONE | **Mechanism**: `tools/docs-drift.mjs` reads the story headings | **Mechanism**: same gate, run by hand |
-| The gate runs before every push | **Mechanism**: the pre-push hook, once `core.hooksPath` points at `.githooks/` (bootstrap sets it; another clone sets it once). `git push --no-verify` skips it | **Mechanism**: git runs it, whatever the harness |
+| The gate runs before every push | **Mechanism**: the pre-push hook, once `core.hooksPath` points at `.githooks/` (bootstrap sets it unless hooks already run; another clone sets it once), or once a hook that already runs calls the gate. `git push --no-verify` skips it | **Mechanism**: git runs it, whatever the harness |
 | Secret files are not read | **Partial**: the Read tool and common shell readers are denied, even in `bypassPermissions` mode; an interpreter one-liner is not. The sandbox closes that, on macOS, Linux and WSL2 only | **Intention** |
 | No new dependency without approval | **Partial**: in the default permission mode, a command that is not allowlisted asks first. `bypassPermissions` and a direct edit of the manifest are not guarded | **Intention** |
 | Docs-first, scope containment, CHANGELOG first | **Intention** | **Intention** |

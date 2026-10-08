@@ -4,7 +4,7 @@ The root `HANDOFF.md` is a **template** for projects. This file is the
 starter's own state. It lives in `_starter/`, so bootstrap deletes it from
 every copy along with the rest of the starter's documentation.
 
-Status per 2026-10-07.
+Status per 2026-10-08.
 
 ---
 
@@ -15,8 +15,9 @@ Status per 2026-10-07.
    one piece of work on that release, committed with its gate green
    (agent-check included), and no session recorded the hook, agent-check,
    docs-drift or adopt blocking or passing wrongly. Checked at the dry run of
-   the release after it. It counts from 0.6.0, released 2026-10-08: 0.5.0
-   had a HIGH finding, a private-agents project got no `CONTRIBUTING.md`.
+   the release after it. It counts from the release after 0.7.0, which had a
+   HIGH finding: bootstrap turned off the hooks a repository already ran.
+   0.5.0 had one as well: a private-agents project got no `CONTRIBUTING.md`.
 
 ## Done
 
@@ -175,6 +176,25 @@ Status per 2026-10-07.
   pre-push hook bootstrap wires runs it before every push, so a new project
   needs no CI service; a real push to a local remote is refused while the gate
   is red and goes through once it is green (8 mutations).
+- 2026-10-08: release 0.7.0, tagged `v0.7.0`: MINOR, because the commits since
+  0.6.0 include a feat while the starter is 0.x. CI run 37745022231 on the
+  release commit: 4 of 4 jobs green (Ubuntu on Node 22 and 24, macOS and
+  Windows on 24).
+- 2026-10-08: adopt brought every project that uses the starter to 0.7.0, dry
+  run first. The changes were `.claude/hooks/guard-slots.mjs`, its old copy
+  backed up, and `.claude/starter-version`, which reads `v0.7.0` in each;
+  agent-check passed 4 of 4, and a second dry run from a clean clone of the
+  tag found nothing left to change. adopt writes neither `.githooks/` nor
+  `tools/gate.mjs`: an existing project puts its gate into a pre-push hook
+  itself, or keeps the hooks it already runs.
+- 2026-10-08: a HIGH in 0.7.0, fixed. bootstrap set `core.hooksPath` over
+  hooks that already ran: a repository's own files in `.git/hooks`, or a
+  hooks path set before, by husky or a machine-wide directory, all stopped
+  running without a word. It now wires `.githooks/` only where no hooks run,
+  and otherwise says to add the gate to their pre-push hook. The bootstrap
+  calls those cases check read no global git config, so a maintainer's own
+  hooks path cannot turn the suite red. Windows 11, Node 24.13.1: 199 passed,
+  0 failed; 5 of 5 mutations caught exactly.
 
 ## Decisions taken
 

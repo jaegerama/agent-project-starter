@@ -1,6 +1,6 @@
 # HANDOFF: the starter itself
 
-The root `HANDOFF.md` is a **template** for projects. This file is the
+The template for projects is `_starter/templates/HANDOFF.md`. This file is the
 starter's own state. It lives in `_starter/`, so bootstrap deletes it from
 every copy along with the rest of the starter's documentation.
 

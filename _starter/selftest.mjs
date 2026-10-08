@@ -131,7 +131,7 @@ check(
   `found: ${templateSlots.length}`,
 )
 // SLOT stops at a newline, so a template slot that wraps would never be counted.
-const templateFiles = ['AGENTS.md', 'README.md', 'CHANGELOG.md', 'CLAUDE.md', 'GEMINI.md', 'HANDOFF.md', 'DESIGN.md', '_starter/templates/CONTRIBUTING.md', ...readdirSync(join(root, 'docs')).filter((f) => f.endsWith('.md')).map((f) => `docs/${f}`)]
+const templateFiles = ['AGENTS.md', 'CLAUDE.md', 'GEMINI.md', 'DESIGN.md', ...readdirSync(join(root, '_starter', 'templates')).map((f) => `_starter/templates/${f}`), ...readdirSync(join(root, 'docs')).filter((f) => f.endsWith('.md')).map((f) => `docs/${f}`)]
 const wrapped = templateFiles.flatMap((f) =>
   read(join(root, f))
     .split('\n')
@@ -317,8 +317,9 @@ check(
 
 const committed = copyStarter('demo-committed')
 const before = treeHash(committed)
-node(committed, ['tools/bootstrap.mjs', '--name', 'Demo App', '--private-agents'])
+const dryRun = node(committed, ['tools/bootstrap.mjs', '--name', 'Demo App', '--private-agents'])
 check('dry run changes nothing', treeHash(committed) === before)
+check("the dry run lists the slots of the project's README template, not of the starter's own README", dryRun.stdout.includes('<the install command>'), dryRun.stdout)
 
 out = bootstrap(committed, '--name', 'Demo App', '--apply')
 check('apply exits 0', out.status === 0, out.stderr)
@@ -355,8 +356,16 @@ check(
 )
 check('_starter/ deleted', !existsSync(join(committed, '_starter')))
 check(
-  'the other starter-only files are gone: LICENSE, .github/README.md, the self-test workflow',
-  ['LICENSE', '.github/README.md', '.github/workflows/selftest.yml'].every((p) => !existsSync(join(committed, p))),
+  'the other starter-only files are gone: LICENSE, the self-test workflow',
+  ['LICENSE', '.github/workflows/selftest.yml'].every((p) => !existsSync(join(committed, p))),
+)
+check('no empty .github/workflows/ is left behind, so a project starts with no CI setup at all', !existsSync(join(committed, '.github', 'workflows')))
+// The starter's own README and changelog sit at its root; a project once received the starter's history as its own.
+const asTemplate = (f) => read(join(root, '_starter', 'templates', f)).split('<PROJECT NAME>').join('Demo App')
+check(
+  "README.md, CHANGELOG.md and HANDOFF.md are the project's templates, not the starter's own",
+  ['README.md', 'CHANGELOG.md', 'HANDOFF.md'].every((f) => read(join(committed, f)) === asTemplate(f)),
+  ['README.md', 'CHANGELOG.md', 'HANDOFF.md'].filter((f) => read(join(committed, f)) !== asTemplate(f)).join(' '),
 )
 check('tools/adopt.mjs is gone: it refuses to run outside the starter', !existsSync(join(committed, 'tools', 'adopt.mjs')))
 const mjsUnder = (dir) => readdirSync(dir, { recursive: true }).map(String).filter((f) => f.endsWith('.mjs')).map((f) => join(dir, f))
@@ -481,7 +490,8 @@ const fresh = makeRepo('fresh', { '.gitignore': 'node_modules/\n', 'README.md': 
 out = adopt(fresh, true)
 check('no agent files: AGENTS.md seeded from the template', (read(join(fresh, 'AGENTS.md')) ?? '').includes('## Setup'))
 check('slots remain: the hook is NOT wired (it would block running work)', !(read(join(fresh, '.claude/settings.json')) ?? '').includes('guard-slots.mjs'))
-check('HANDOFF.md seeded where there is none', existsSync(join(fresh, 'HANDOFF.md')))
+check('HANDOFF.md seeded where there is none, from the template', read(join(fresh, 'HANDOFF.md')) === read(join(root, '_starter', 'templates', 'HANDOFF.md')).split('<PROJECT NAME>').join('fresh'))
+check("CHANGELOG.md seeded from the template, not the starter's own history", read(join(fresh, 'CHANGELOG.md')) === read(join(root, '_starter', 'templates', 'CHANGELOG.md')))
 
 // A new project mid-setup keeps the hook its copy of the starter wired.
 const hookEntry = (command) => JSON.stringify({ hooks: { PreToolUse: [{ matcher: 'Write|Edit|NotebookEdit', hooks: [{ type: 'command', command }] }] } }, null, 2)
@@ -676,6 +686,30 @@ check('a kept seed the starter left alone since that release: kept, nothing more
 const unknownRelease = makeRepo('v-unknown-release', { ...agentsOnly, [ladderPath]: '# our ladder\n', '.claude/starter-version': 'v8.8.8\n' })
 out = adoptFrom(srcSeeds, unknownRelease)
 check('a recorded release the starter does not have: kept, with no diff it cannot show', /review-severity\.md +customised, kept$/m.test(out.stdout), out.stdout)
+// Up to 0.7.0 the templates lived at the root, so a release from then holds the changelog template there.
+const srcMoved = copyStarter('src-moved')
+const changelogTemplate = read(join(srcMoved, '_starter', 'templates', 'CHANGELOG.md'))
+writeFileSync(join(srcMoved, 'CHANGELOG.md'), changelogTemplate)
+rmSync(join(srcMoved, '_starter', 'templates', 'CHANGELOG.md'))
+git(srcMoved, 'add', '-A')
+git(srcMoved, '-c', 'commit.gpgsign=false', 'commit', '-qm', 'the old layout')
+git(srcMoved, 'tag', 'v9.8.0')
+writeFileSync(join(srcMoved, '_starter', 'templates', 'CHANGELOG.md'), changelogTemplate)
+writeFileSync(join(srcMoved, 'CHANGELOG.md'), "# The starter's own history\n")
+git(srcMoved, 'add', '-A')
+git(srcMoved, '-c', 'commit.gpgsign=false', 'commit', '-qm', 'the templates move')
+git(srcMoved, 'tag', 'v9.8.1')
+const movedProject = makeRepo('v-moved-template', { ...agentsOnly, 'CHANGELOG.md': '# Changelog\n\n## [Unreleased]\n\n- our first entry\n', '.claude/starter-version': 'v9.8.0\n' })
+out = adoptFrom(srcMoved, movedProject)
+check('a changelog template that only moved since the recorded release: kept, with no notice', /CHANGELOG\.md +project-owned, kept$/m.test(out.stdout), out.stdout + out.stderr)
+commitIn(srcMoved, '_starter/templates/CHANGELOG.md', '\nA new line in the template.\n')
+git(srcMoved, 'tag', 'v9.8.2')
+out = adoptFrom(srcMoved, movedProject)
+check(
+  'a changelog template changed after a release that held it at the root: the diff names both paths',
+  out.stdout.includes('project-owned, kept, though the starter changed it after v9.8.0: git diff v9.8.0:CHANGELOG.md HEAD:_starter/templates/CHANGELOG.md'),
+  out.stdout + out.stderr,
+)
 
 appendFileSync(join(src, '_starter', 'README.md'), '\nUncommitted.\n')
 check('an uncommitted change outside what adopt copies does not block it', adoptFrom(src, makeRepo('v-elsewhere', agentsOnly), '--apply').status === 0)

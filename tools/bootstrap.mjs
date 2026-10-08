@@ -9,8 +9,9 @@
  *     node tools/bootstrap.mjs --name "Acme Portal" --private-agents --apply
  *
  *   1. Replaces <PROJECT NAME> across the templates.
- *   2. Deletes what belongs to the starter: _starter/, LICENSE,
- *      .github/README.md, the self-test workflow and tools/adopt.mjs.
+ *   2. Writes README.md, CHANGELOG.md and HANDOFF.md from _starter/templates/
+ *      over the starter's own, and deletes what else belongs to the starter:
+ *      _starter/, LICENSE, the self-test workflow and tools/adopt.mjs.
  *   3. Starts a fresh git history when the copy carries the starter's.
  *   4. Prints the slots a human still has to fill, grouped by file.
  *   5. With --private-agents, appends the .gitignore block that keeps agent
@@ -74,8 +75,13 @@ const walk = (dir, out = []) => {
 }
 
 const rel = (f) => relative(root, f).split(sep).join('/')
+const hasStarterDir = existsSync(join(root, '_starter'))
+// The starter's own README and changelog sit at its root, so a new project takes these from _starter/templates/.
+const FROM_TEMPLATES = ['README.md', 'CHANGELOG.md', 'HANDOFF.md']
+const fromTemplates = hasStarterDir ? FROM_TEMPLATES.filter((f) => existsSync(join(root, '_starter', 'templates', f))) : []
+const bodyOf = (file) => readFileSync(fromTemplates.includes(rel(file)) ? join(root, '_starter', 'templates', rel(file)) : file, 'utf8')
 const templateFiles = () => [
-  ...TEMPLATE_FILES.map((f) => join(root, f)).filter((f) => existsSync(f)),
+  ...TEMPLATE_FILES.map((f) => join(root, f)).filter((f) => existsSync(f) || fromTemplates.includes(rel(f))),
   ...TEMPLATE_DIRS.map((d) => join(root, d))
     .filter((d) => existsSync(d))
     .flatMap((d) => walk(d)),
@@ -84,17 +90,16 @@ const files = templateFiles()
 
 const touched = []
 for (const file of files) {
-  const body = readFileSync(file, 'utf8')
-  if (!body.includes(PLACEHOLDER)) continue
-  touched.push(rel(file))
+  const body = bodyOf(file)
+  if (body.includes(PLACEHOLDER)) touched.push(rel(file))
+  else if (!fromTemplates.includes(rel(file))) continue
   if (apply) writeFileSync(file, body.split(PLACEHOLDER).join(name))
 }
 
 // First run only, while _starter/ is still there: by a later run a LICENSE may
 // be the project's own. The tool files keep their SPDX notice. adopt runs only
 // from the starter.
-const STARTER_ONLY = ['_starter', 'LICENSE', '.github/README.md', '.github/workflows/selftest.yml', 'tools/adopt.mjs']
-const hasStarterDir = existsSync(join(root, '_starter'))
+const STARTER_ONLY = ['_starter', 'LICENSE', '.github/workflows/selftest.yml', 'tools/adopt.mjs']
 const starterOnly = hasStarterDir ? STARTER_ONLY.filter((p) => existsSync(join(root, p))) : []
 
 // GitHub would show a root CONTRIBUTING.md as the starter's own guide, so the
@@ -108,6 +113,9 @@ if (writeContributing && apply) {
 }
 
 if (apply) for (const p of starterOnly) rmSync(join(root, p), { recursive: true, force: true })
+// An empty workflows folder left behind reads as a CI setup waiting to be filled.
+const workflowsDir = join(root, '.github', 'workflows')
+if (apply && existsSync(workflowsDir) && readdirSync(workflowsDir).length === 0) rmSync(workflowsDir, { recursive: true })
 
 // A copy carries the starter's .git, and with it a private-agents project would
 // push AGENTS.md. Reset only on the first run, when the root commit is the starter's.
@@ -188,7 +196,8 @@ if (privateAgents && !alreadyPrivate && apply) writeFileSync(gitignorePath, giti
 
 // AGENTS.md slots block the gate; the rest are counted apart, so this number
 // always matches the gate's.
-const slotsIn = (file) => (existsSync(file) ? slotsOf(readFileSync(file, 'utf8')) : [])
+const slotsIn = (file) =>
+  !apply && fromTemplates.includes(rel(file)) ? slotsOf(bodyOf(file)) : existsSync(file) ? slotsOf(readFileSync(file, 'utf8')) : []
 
 const blocking = slotsIn(join(root, 'AGENTS.md'))
 const remaining = templateFiles()
@@ -205,6 +214,7 @@ console.log(`\n${apply ? 'DONE' : 'DRY RUN, nothing was changed'}\n`)
 console.log(`  project name      ${name}`)
 console.log(`  ${PLACEHOLDER} replaced in${verb}  ${touched.length} files`)
 for (const f of touched) console.log(`      ${f}`)
+console.log(`  project templates ${fromTemplates.length ? `${fromTemplates.join(', ')} written from _starter/templates/${verb}` : 'already in place'}`)
 console.log(`  starter files     ${hasStarterDir ? `${starterOnly.join(', ')} deleted${verb}` : 'already gone'}`)
 console.log(
   `  git               ${

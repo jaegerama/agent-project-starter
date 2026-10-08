@@ -32,9 +32,11 @@ which every tool loads at session start:
 | 4 | Turn every slot the brief does not answer into a question in `docs/QUESTIONS.md` | A guessed stack or rule reads exactly like a decided one |
 | 5 | `node .claude/tools/agent-check.mjs` until the slot check is green, then report and ask | The machine that confirms setup is finished |
 
-Bootstrap replaces `<PROJECT NAME>`, deletes `_starter/` and the other files
-that belong to the starter (`LICENSE`, `.github/README.md`, the self-test
-workflow, `tools/adopt.mjs`), and prints the slots still to fill. With
+Bootstrap replaces `<PROJECT NAME>`, writes the project's `README.md`,
+`CHANGELOG.md` and `HANDOFF.md` from `_starter/templates/` over the starter's
+own, deletes `_starter/` and the other files that belong to the starter
+(`LICENSE`, the self-test workflow, `tools/adopt.mjs`), and prints the slots
+still to fill. With
 `--private-agents` it also writes `CONTRIBUTING.md` from `_starter/templates/`,
 for the people who do not have the agent files. Duplicating in Explorer copies
 the hidden `.git` too, so on the first run it also removes the starter's
@@ -91,9 +93,9 @@ per-developer: a team remote must never receive it. In that mode git cannot
 restore the agent files, which is why adopt backs them up before it rewrites
 anything.
 
-`CHANGELOG.md` ships empty with an `## [Unreleased]` heading. The rule is that
-the entry is written **before** the code, so the file has to be there first or
-the rule is unenforceable on day one.
+A project's `CHANGELOG.md` starts empty, with an `## [Unreleased]` heading. The
+rule is that the entry is written **before** the code, so the file has to be
+there first or the rule is unenforceable on day one.
 
 ---
 
@@ -197,19 +199,18 @@ aspiration** until it is one.
 | File | Contents |
 |---|---|
 | `README.md` | What you are reading |
-| `HANDOFF.md` | The starter's own state and next steps. The root `HANDOFF.md` is the template for projects |
+| `HANDOFF.md` | The starter's own state and next steps. The template for projects is `templates/HANDOFF.md` |
 | `selftest.mjs` | The starter's tests. `node _starter/selftest.mjs` must be green before committing a change to the slot pattern, the hook, agent-check, bootstrap, adopt or the docs-drift examples |
 | `mutate.mjs` | Breaks a fix on purpose in throwaway copies and reports which cases went red: `node _starter/mutate.mjs mutations.json` |
 | `INTAKE.md` | What has to be filled, and the order to build the enforcement in |
 | `operator-profile.md` | An example operator profile, for a machine that has none: installed once per machine, not per project |
-| `CHANGELOG.md` | The starter's own history, separate from the project's changelog |
 | `AUDIT-2026-10-05.md` | The audit before the first public release: each finding, its evidence, and the commit that fixed it |
 | `AUDIT-2026-10-07-agnostic.md` | The review of whether the starter is agnostic: each finding, and the commit that fixed it |
-| `templates/CONTRIBUTING.md` | The guide bootstrap writes for a private-agents project. It waits here because GitHub would show a root one as the starter's own |
+| `templates/` | The `README.md`, `CHANGELOG.md` and `HANDOFF.md` a new project starts with, and the `CONTRIBUTING.md` bootstrap writes for a private-agents project. They wait here because the root holds the starter's own README and changelog |
 
 The other files that belong to the starter alone live outside this directory,
-and bootstrap removes them from a project with `_starter/`: `LICENSE`,
-`.github/README.md` (the repository's landing page),
+and bootstrap removes or replaces them in a project: `LICENSE`,
+`README.md` and `CHANGELOG.md` at the root (the starter's own),
 `.github/workflows/selftest.yml` and `tools/adopt.mjs`, which runs only from
 the starter.
 
@@ -302,9 +303,8 @@ local until a release is ready, and a project only ever receives a release.
    to install anything that is not a release, so a project never picks up
    work in progress.
 2. **One commit is one complete change**: the code, its test, the documents it
-   touches and its line under `[Unreleased]` in `_starter/CHANGELOG.md`. A fix
-   to work that is not released yet goes into the commit it fixes. The root
-   `CHANGELOG.md` is the template a project starts with, and stays empty here.
+   touches and its line under `[Unreleased]` in `CHANGELOG.md`. A fix to work
+   that is not released yet goes into the commit it fixes.
 3. **Green before every commit.** `node _starter/selftest.mjs` and
    `node tools/docs-drift.mjs` pass; `node .claude/tools/agent-check.mjs` is
    red here by design, because this `AGENTS.md` is the template. A fix gets a

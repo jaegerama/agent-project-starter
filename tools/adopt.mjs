@@ -82,8 +82,11 @@ const SEEDED_PRIVATE = [
 // Tracked, project-owned files: seeded only in committed mode.
 const SEEDED_TRACKED = ['CHANGELOG.md', 'tools/docs-drift.mjs', 'tools/gate.mjs']
 const VERSION_FILE = '.claude/starter-version'
+// The starter's root holds its own changelog; a project's CHANGELOG.md and HANDOFF.md come from the templates.
+const TEMPLATE_SOURCE = { 'CHANGELOG.md': '_starter/templates/CHANGELOG.md', 'HANDOFF.md': '_starter/templates/HANDOFF.md' }
+const src = (p) => TEMPLATE_SOURCE[p] ?? p
 // Everything adopt copies from the starter, and the code that decides how.
-const SOURCE = [...OWNED, ...SEEDED_PRIVATE, ...SEEDED_TRACKED, 'AGENTS.md', 'CLAUDE.md', 'HANDOFF.md', '.claude/settings.json', 'tools/adopt.mjs']
+const SOURCE = [...OWNED, ...SEEDED_PRIVATE, ...SEEDED_TRACKED, 'AGENTS.md', 'CLAUDE.md', 'HANDOFF.md', '.claude/settings.json', 'tools/adopt.mjs'].map(src)
 
 // null when git fails: a starter without git still adopts, unchecked and unversioned.
 const gitIn = (cwd, gitArgs) => {
@@ -207,7 +210,7 @@ const withImport = (body, line) =>
 // customised, so a fix to it may reach the project. Line endings do not count.
 const lf = (s) => s.replace(/\r\n/g, '\n')
 const sameText = (p) => {
-  const [a, b] = [read(starter, p), read(target, p)]
+  const [a, b] = [read(starter, src(p)), read(target, p)]
   return a !== null && b !== null && lf(a) === lf(b)
 }
 const gitShow = (commit, p) => {
@@ -219,21 +222,27 @@ const gitShow = (commit, p) => {
 }
 const untouchedSeed = (p, body) => {
   if (!starterGit) return false
-  const commits = gitIn(starter, ['log', '--format=%H', '--', p])?.split('\n').filter(Boolean) ?? []
+  const commits = gitIn(starter, ['log', '--format=%H', '--', src(p)])?.split('\n').filter(Boolean) ?? []
   return commits.some((c) => {
-    const old = gitShow(c, p)
+    const old = gitShow(c, src(p))
     return old !== null && lf(old) === lf(body)
   })
 }
 const refreshSeed = (p) => {
   backup(p)
-  write(p, read(starter, p))
+  write(p, read(starter, src(p)))
   note(p, `updated${tag}: the starter's own earlier copy, never customised; old copy backed up`)
 }
 // A kept seed gets none of the starter's later changes to it, so the report names the diff to read.
 const since = /^v\d+\.\d+\.\d+$/.test(was ?? '') && gitIn(starter, ['rev-parse', '--verify', '--quiet', `${was}^{commit}`]) !== null ? was : null
-const kept = (p, what) =>
-  note(p, since && gitIn(starter, ['diff', '--quiet', since, '--', p]) === null ? `${what}, though the starter changed it after ${since}: git diff ${since} -- ${p}` : what)
+const kept = (p, what) => {
+  // Up to 0.7.0 the templates lived at the root, so an older release holds them there.
+  const then = since && gitShow(since, src(p)) === null ? p : src(p)
+  const old = since && gitShow(since, then)
+  if (!since || (old !== null && lf(old) === lf(read(starter, src(p)) ?? ''))) return note(p, what)
+  const diff = then === src(p) ? `git diff ${since} -- ${src(p)}` : `git diff ${since}:${then} HEAD:${src(p)}`
+  note(p, `${what}, though the starter changed it after ${since}: ${diff}`)
+}
 
 // Seeded files: copied when missing, refreshed while the project has not changed them.
 const seeded = new Set()
@@ -264,7 +273,7 @@ for (const p of SEEDED_TRACKED) {
     else kept(p, 'project-owned, kept')
   } else if (privateMode) note(p, 'missing, not seeded: tracked file in a team repository')
   else {
-    write(p, read(starter, p))
+    write(p, read(starter, src(p)))
     note(p, `seeded${tag}`)
   }
 }
@@ -286,7 +295,7 @@ const handoff = existsSync(join(target, 'HANDOFF.md')) ? join(target, 'HANDOFF.m
 if (handoff) note('HANDOFF.md', `present at ${relative(target, handoff).split(sep).join('/')}, kept`)
 else if (privateMode) note('HANDOFF.md', 'missing, not seeded: tracked file in a team repository')
 else {
-  write('HANDOFF.md', read(starter, 'HANDOFF.md').split('<PROJECT NAME>').join(basename(target)))
+  write('HANDOFF.md', read(starter, src('HANDOFF.md')).split('<PROJECT NAME>').join(basename(target)))
   note('HANDOFF.md', `seeded${tag}`)
 }
 

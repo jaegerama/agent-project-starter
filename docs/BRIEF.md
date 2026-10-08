@@ -51,7 +51,8 @@ The walking skeleton, then:
 - Commit scopes: none until the code has parts worth naming
 - Tests and checks: on this machine, run by the pre-push hook before every
   push; no CI service
-- Agent skills: none
+- Agent skills: none; to use one, name it with where it comes from and how
+  you install it
 
 ---
 

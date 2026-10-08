@@ -81,7 +81,9 @@ Then:
 
 - **Verify before reporting.** A plausible-but-wrong finding costs more trust
   than a missed one. If you cannot construct the failing case, say it is
-  unverified and rank it lower.
+  unverified and rank it lower. A gap that an outer layer reliably blocks is
+  a hardening note, not a finding, except in payments, authorization and the
+  audit trail, where every entry point checks on its own.
 - **No padding.** Finding nothing is a valid result. Manufacturing a MEDIUM to
   look thorough trains the reader to skim, and a reader who skims misses the
   CRITICAL next time.

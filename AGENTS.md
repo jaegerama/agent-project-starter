@@ -71,7 +71,8 @@ only job is the brief; everything else below is the agent's.
    story-heading check does not count. A check on a file the walking skeleton
    creates SKIPs until then. Leave the rest SKIP and say why in §4.1.
 8. **Report** how many slots were filled, how many became questions, which
-   sections were deleted, and the output of `node .claude/tools/agent-check.mjs`.
+   sections were deleted, which skills §2.1 lists are not on disk, with how
+   the owner installs each, and the output of `node .claude/tools/agent-check.mjs`.
    Then ask every question in one message, ordered so that the ones deciding
    what gets built come first, each with the answer the brief suggests where
    it suggests one, so that one reply can answer them all. A brief given in
@@ -122,7 +123,9 @@ features in one leap.
    exits 0.
 3. **One story at a time.** Exactly one story is `[WIP]`. Red, then green, then
    refactor. Record the real terminal proof in `HANDOFF.md`, mark the story
-   `[DONE]`, and only then start the next.
+   `[DONE]`, and only then start the next, in a fresh session (`/clear` in
+   Claude Code): `HANDOFF.md` carries what it needs, and the last story's
+   context stays behind.
 
 `node tools/docs-drift.mjs` checks the story headings in `docs/TODO.md` for
 both rules: one story in WIP, and nothing past Epic 0 started before it is
@@ -188,7 +191,10 @@ fetches one**, and never downloads a `SKILL.md` over the network. The owner
 installs skills. The agent uses only what is already on disk, and when a skill
 listed here is missing it says so and works without it.
 
-Skills this project uses: <each with its origin, what it is for and what it is not for; or "none">
+Skills this project uses: <each with its origin, how the owner installs it, what it is for and what it is not for; or "none">
+
+A skill the owner uses in every project belongs in the operator profile, not
+here.
 
 Skills load on demand, only the ones the task at hand touches, to keep the
 context small. Where a skill and this file disagree, this file wins: it holds
@@ -346,13 +352,19 @@ This project's own CRITICAL shapes are added there, under its list, not here.
 ### Security (non-negotiable where it applies)
 
 - Never log secrets, tokens, password hashes, or full account identifiers.
+- Required configuration is checked at startup: a missing or malformed
+  variable stops the application before it serves a request.
+- A production error response carries no stack trace or internal detail; the
+  log keeps it.
 - **Where there is a server, authorization is decided there.** Client-side
   checks are cosmetic. Middleware alone is never sufficient: every entry point
   checks independently.
 - Where the system has accounts, an error never distinguishes "no such account"
   from "wrong password".
 - Where it has endpoints anyone can reach without logging in, each one is rate
-  limited.
+  limited, and a form among them has bot protection too.
+- Where files are uploaded, the server checks the size and the actual content
+  type: the file name and the declared type are the client's word, not proof.
 - Where code runs in a browser or an app, no server secret reaches it: a
   variable the build exposes to the client (`NEXT_PUBLIC_*`, `VITE_*` and the
   like) never holds a private key, a token or a service-role credential.
@@ -380,6 +392,10 @@ This project's own CRITICAL shapes are added there, under its list, not here.
   destructive down-migration.
 - <Which entities soft-delete, and which may never be hard-deleted.>
 - <Which tables are append-only, and what enforces it.>
+- What the data must never break is a database constraint (`NOT NULL`,
+  `UNIQUE`, `CHECK`, a foreign key), not only a check in application code.
+- A list runs a fixed number of queries whatever its length: related rows are
+  loaded in a batch, never one query per row.
 - Every foreign key gets an index. Every list query gets an index that covers
   its **sort**, not only its filter: a screen that paginates by keyset needs
   the index to lead with the same columns the cursor uses.
@@ -403,6 +419,12 @@ rather than style:
   types, so it is never the only one.
 - A destructive action says what it destroys in its label and asks before it
   acts; colour alone never marks it.
+- A not-found page leads back into the product, not to a framework's default
+  screen.
+- Where users set a password, its rules show while they type, not only as an
+  error after submit.
+- A one-time code field takes a pasted code and the platform's autofill
+  (`autocomplete="one-time-code"` on the web).
 
 ---
 

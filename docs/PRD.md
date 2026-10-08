@@ -44,7 +44,7 @@ a default, and becomes a question in `QUESTIONS.md` only when a story depends
 on it.
 
 - **Security**: <>
-- **Performance and budget**: <>
+- **Performance and budget**: <the budget the brief states, such as Core Web Vitals targets for a web page>
 - **Reliability**: <>
 
 ### Legal and privacy

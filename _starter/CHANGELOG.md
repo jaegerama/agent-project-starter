@@ -17,6 +17,23 @@ empty `CHANGELOG.md` at the root. History before the public import of
   project that adds its own shapes to the review ladder, as the ladder asks,
   keeps its copy, and until now received none of the starter's changes to it
   without being told.
+- `AGENTS.md` §6: required configuration checked at startup, no stack trace
+  in a production response, uploads checked on the server by size and actual
+  content, bot protection on public forms, database constraints for what the
+  data must never break, a fixed number of queries per list, a not-found page
+  that leads back, password rules shown while typing, and a one-time code
+  field that takes paste and autofill.
+- Setup's report names the skills `AGENTS.md` §2.1 lists that are not on
+  disk, with how the owner installs each, which §2.1 now asks for; a skill
+  used in every project belongs in the operator profile.
+
+### Changed
+
+- Each story starts in a fresh session, with `HANDOFF.md` carrying what the
+  next one needs.
+- The review ladder treats a gap an outer layer reliably blocks as a
+  hardening note, except in payments, authorization and the audit trail.
+- The PRD's performance slot names Core Web Vitals as one kind of budget.
 
 ### Fixed
 

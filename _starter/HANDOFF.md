@@ -203,6 +203,13 @@ Status per 2026-10-08.
   0.7.0: a project already on 0.7.0 is not told about those two. A recorded
   release the starter lacks gets no notice rather than a false one. Windows
   11, Node 24.13.1: 202 passed, 0 failed; 4 of 4 mutations caught exactly.
+- 2026-10-08: the owner's second template update, where it holds for any
+  project. `AGENTS.md` §6 checks configuration at startup, keeps production
+  errors quiet, checks uploads on the server, and adds bot protection,
+  database constraints, a fixed number of queries per list, a not-found page
+  that leads back, live password rules and a one-time code field that takes
+  paste and autofill. Each story starts in a fresh session, and Setup reports
+  the skills §2.1 lists that are not on disk, with how to install each.
 
 ## Decisions taken
 
@@ -243,7 +250,17 @@ Status per 2026-10-08.
 - A project's checks run on the machine that made the change, before every
   push, not in a CI service (2026-10-08, the owner's rule for every project).
   The template's design choices stay the owner's per project: the starter
-  names no colours, grid or component library, and no skill list.
+  names no colours, grid or component library, and no skill list. A skill an
+  owner uses in every project belongs in that owner's operator profile.
+- The owner's second update of 2026-10-08 was applied where it holds for any
+  project. Not applied: segmented one-time code boxes, which break paste,
+  autofill and screen readers; button padding, which is style and lives in
+  `DESIGN.md`; `node tools/gate.mjs` in the allow list, which would run any
+  line written into the gate block, an install included, without a prompt;
+  third-party install commands, none verified and one malformed; and an e2e
+  example naming an unverified package. The ladder's outer-layer exception
+  stops at payments, authorization and the audit trail, where §6 says
+  middleware alone is never sufficient.
 - In a private-agents project, `CONTRIBUTING.md` carries the gate and the
   commit rules only (2026-10-08): the gate and CI hold the mechanical part,
   and the security rules and the Definition of Done stay with the agents in

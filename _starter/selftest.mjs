@@ -656,6 +656,25 @@ check(
   out.status === 0 && versionIn(vLater) === 'v9.9.10\n',
   out.stdout + out.stderr,
 )
+// A project that adds its own shapes keeps its ladder, and a starter change to it once reached no project, unannounced.
+const srcSeeds = copyStarter('src-seeds')
+git(srcSeeds, 'add', '-A')
+git(srcSeeds, '-c', 'commit.gpgsign=false', 'commit', '-qm', 'wip', '--allow-empty')
+git(srcSeeds, 'tag', 'v9.9.9')
+const ladderPath = '.claude/rules/review-severity.md'
+commitIn(srcSeeds, ladderPath, '\n- A new CRITICAL shape.\n')
+git(srcSeeds, 'tag', 'v9.9.10')
+const keptSeeds = makeRepo('v-kept-seeds', { ...agentsOnly, [ladderPath]: '# our ladder\n', [hunterPath]: '# our hunter\n', '.claude/starter-version': 'v9.9.9\n' })
+out = adoptFrom(srcSeeds, keptSeeds, '--apply')
+check(
+  'a kept seed the starter changed after the recorded release: the report gives the diff to read',
+  out.stdout.includes(`customised, kept, though the starter changed it after v9.9.9: git diff v9.9.9 -- ${ladderPath}`) && read(join(keptSeeds, ladderPath)) === '# our ladder\n',
+  out.stdout + out.stderr,
+)
+check('a kept seed the starter left alone since that release: kept, nothing more', /silent-failure-hunter\.md +customised, kept$/m.test(out.stdout), out.stdout)
+const unknownRelease = makeRepo('v-unknown-release', { ...agentsOnly, [ladderPath]: '# our ladder\n', '.claude/starter-version': 'v8.8.8\n' })
+out = adoptFrom(srcSeeds, unknownRelease)
+check('a recorded release the starter does not have: kept, with no diff it cannot show', /review-severity\.md +customised, kept$/m.test(out.stdout), out.stdout)
 
 appendFileSync(join(src, '_starter', 'README.md'), '\nUncommitted.\n')
 check('an uncommitted change outside what adopt copies does not block it', adoptFrom(src, makeRepo('v-elsewhere', agentsOnly), '--apply').status === 0)

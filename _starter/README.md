@@ -276,6 +276,9 @@ keep their names.
    and `--allow-dirty` say otherwise, and they are for testing adopt.
 5. In private mode it writes no file that git would track.
 6. It never wires the docs-first hook while `AGENTS.md` has slots.
+7. It names every seeded file it keeps although the starter changed it after
+   the release in `.claude/starter-version`, with the `git diff` that shows
+   the change.
 
 ### How the version moves, from 1.0.0
 

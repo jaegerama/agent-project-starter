@@ -195,6 +195,14 @@ Status per 2026-10-08.
   calls those cases check read no global git config, so a maintainer's own
   hooks path cannot turn the suite red. Windows 11, Node 24.13.1: 199 passed,
   0 failed; 5 of 5 mutations caught exactly.
+- 2026-10-08: adopt names a kept seed that the starter changed after the
+  project's recorded release, with the `git diff` to read. The review ladder
+  asks each project for its own shapes, so its copy is customised and kept,
+  and 0.7.0's two new CRITICAL shapes reached no project that had added one,
+  with nothing to say so. The first notices come with the release after
+  0.7.0: a project already on 0.7.0 is not told about those two. A recorded
+  release the starter lacks gets no notice rather than a false one. Windows
+  11, Node 24.13.1: 202 passed, 0 failed; 4 of 4 mutations caught exactly.
 
 ## Decisions taken
 

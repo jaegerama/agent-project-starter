@@ -10,6 +10,14 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ## [Unreleased]
 
+### Added
+
+- adopt names a seeded file it keeps although the starter changed it after the
+  release the project records, with the `git diff` that shows the change. A
+  project that adds its own shapes to the review ladder, as the ladder asks,
+  keeps its copy, and until now received none of the starter's changes to it
+  without being told.
+
 ### Fixed
 
 - bootstrap no longer turns off hooks that already run: it leaves

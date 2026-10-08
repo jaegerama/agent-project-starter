@@ -12,6 +12,7 @@
  *            differ. Fix them in the starter, or the next adopt undoes it.
  *   SEEDED   files a project customises: copied when missing, and updated
  *            while they still equal one of the starter's own earlier copies.
+ *            One kept although the starter changed it is named in the report.
  *   project  everything else, AGENTS.md's content included: never touched.
  *
  * A CLAUDE.md that holds rules, with no AGENTS.md yet, moves into AGENTS.md
@@ -186,10 +187,11 @@ for (const p of OWNED) {
   }
 }
 
+// The release the project's files came from, read before this run records the new one.
+const was = read(target, VERSION_FILE)?.trim() ?? null
 if (version === null) {
   note(VERSION_FILE, 'not written: the starter is not a git checkout, so its version is unknown')
 } else {
-  const was = read(target, VERSION_FILE)?.trim() ?? null
   if (was === version) note(VERSION_FILE, `current: ${version}`)
   else {
     write(VERSION_FILE, `${version}\n`)
@@ -228,6 +230,10 @@ const refreshSeed = (p) => {
   write(p, read(starter, p))
   note(p, `updated${tag}: the starter's own earlier copy, never customised; old copy backed up`)
 }
+// A kept seed gets none of the starter's later changes to it, so the report names the diff to read.
+const since = /^v\d+\.\d+\.\d+$/.test(was ?? '') && gitIn(starter, ['rev-parse', '--verify', '--quiet', `${was}^{commit}`]) !== null ? was : null
+const kept = (p, what) =>
+  note(p, since && gitIn(starter, ['diff', '--quiet', since, '--', p]) === null ? `${what}, though the starter changed it after ${since}: git diff ${since} -- ${p}` : what)
 
 // Seeded files: copied when missing, refreshed while the project has not changed them.
 const seeded = new Set()
@@ -247,7 +253,7 @@ for (const p of SEEDED_PRIVATE) {
     write(p, withImport(body, '@./AGENTS.md'))
     note(p, `import line added${tag}, rest kept, old copy backed up`)
   } else {
-    note(p, 'customised, kept')
+    kept(p, 'customised, kept')
   }
 }
 for (const p of SEEDED_TRACKED) {
@@ -255,7 +261,7 @@ for (const p of SEEDED_TRACKED) {
   if (body !== null) {
     if (sameText(p)) note(p, 'current')
     else if (!privateMode && untouchedSeed(p, body)) refreshSeed(p)
-    else note(p, 'project-owned, kept')
+    else kept(p, 'project-owned, kept')
   } else if (privateMode) note(p, 'missing, not seeded: tracked file in a team repository')
   else {
     write(p, read(starter, p))

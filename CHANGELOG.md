@@ -43,6 +43,23 @@ public import of 2026-10-05 is not published.
   tool its own row; the brief explains its terms; the README and
   `CONTRIBUTING.md` templates say the gate runs before a push, as the hook
   does.
+- The README is written for readers new to coding agents as well as experts:
+  what the starter is for, how a project runs, how to start one and how to
+  update it to a new release, and the words it uses. It points to section 11
+  of `AGENTS.md` and to the public API instead of copying them.
+- `_starter/README.md` keeps what only it holds: what bootstrap does, the two
+  modes, the public API, which now lists the `HANDOFF.md` adopt seeds once and
+  the import line it adds to pointers, and the release steps, which now
+  publish a GitHub Release so that people who watch the repository hear of
+  each one.
+
+### Removed
+
+- `_starter/AUDIT-2026-10-05.md`, `_starter/AUDIT-2026-10-07-agnostic.md` and
+  `_starter/INTAKE.md`. Every audit finding is closed or accepted, with the
+  accepted ones and their reasons in `_starter/HANDOFF.md`; INTAKE repeated
+  `AGENTS.md` and had fallen behind it. Every tag up to v0.7.0 still holds
+  them.
 - Each story starts in a fresh session, with `HANDOFF.md` carrying what the
   next one needs.
 - The review ladder treats a gap an outer layer reliably blocks as a

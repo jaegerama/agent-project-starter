@@ -11,7 +11,7 @@
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, mkdtempSync, rmSync, cpSync, readdirSync, statSync, appendFileSync } from 'node:fs'
-import { join, relative, sep } from 'node:path'
+import { join, relative, sep, dirname } from 'node:path'
 import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 import { pathToFileURL } from 'node:url'
@@ -150,6 +150,27 @@ check('every placeholder in the templates is one the slot check counts', oneWord
 const BOM = String.fromCharCode(0xfeff)
 const withBom = git(root, 'ls-files').stdout.split('\n').filter(Boolean).filter((f) => (read(join(root, f)) ?? '').includes(BOM))
 check('no file in the starter carries an invisible U+FEFF character', withBom.length === 0, withBom.join(' '))
+// A link to a moved or deleted file still renders, so only a check finds it dead.
+const anchorsOf = (body) =>
+  body
+    .split('\n')
+    .filter((l) => /^#{1,6} /.test(l))
+    .map((l) => l.replace(/^#+ /, '').trim().toLowerCase().replace(/[^\p{L}\p{N}_ -]/gu, '').replace(/ /g, '-'))
+const documents = git(root, 'ls-files', '*.md').stdout.split('\n').filter((f) => f && existsSync(join(root, f)))
+const deadLinks = documents.flatMap((doc) =>
+  [...read(join(root, doc)).replace(/```[\s\S]*?```/g, '').matchAll(/\]\(([^)\s]+)\)/g)]
+    .map((m) => m[1])
+    .filter((link) => !/^[a-z]+:/i.test(link))
+    .filter((link) => {
+      const [path, anchor] = link.split('#')
+      // A template is written to the project's root, so its links resolve from there.
+      const from = doc.startsWith('_starter/templates/') ? '' : dirname(doc)
+      const target = path ? join(root, from, path) : join(root, doc)
+      return !existsSync(target) || (anchor !== undefined && !anchorsOf(read(target)).includes(anchor))
+    })
+    .map((link) => `${doc} -> ${link}`),
+)
+check('every relative link in the documents reaches a file and a heading that exist', deadLinks.length === 0, deadLinks.join('  '))
 
 section('docs-first hook (starter itself, AGENTS.md has slots)')
 check('application code is blocked (exit 2)', hook(root, 'src/app.ts') === 2)

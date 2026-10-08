@@ -216,6 +216,24 @@ Status per 2026-10-08.
   hook stays the project's call; a private-agents project gets no tracked
   seed, as before. Windows 11, Node 24.13.1: 203 passed, 0 failed; 1 of 1
   mutation caught exactly.
+- 2026-10-08: the starter's own README and changelog moved to its root, and
+  the project templates for `README.md`, `CHANGELOG.md` and `HANDOFF.md` to
+  `_starter/templates/`: the root had shown an empty template changelog while
+  the real history sat in `_starter/`. bootstrap writes the templates over the
+  starter's files and removes the `.github/workflows/` folder it used to leave
+  empty; adopt seeds from the templates, and its kept-seed notice reads a
+  release from before the move at the old path. Windows 11, Node 24.13.1: 209
+  passed, 0 failed; 6 of 6 mutations caught exactly.
+- 2026-10-08: every document reworked so that a reader new to coding agents
+  and an expert both find their way. The README says what the starter is for,
+  how a project runs, how to start one and how to update it, with the words
+  it uses; each rule lives in one file and the others refer to it. A
+  sentence-by-sentence comparison of all documents found 22 repeated pairs
+  before and one after: the two pointer files, which each name their own
+  tool. The self-test now fails on any relative link or heading anchor that
+  leads nowhere. The two audit reports and `_starter/INTAKE.md` are removed;
+  every tag up to v0.7.0 still holds them. Windows 11, Node 24.13.1: 210
+  passed, 0 failed; 1 of 1 mutation caught exactly.
 
 ## Decisions taken
 
@@ -271,8 +289,13 @@ Status per 2026-10-08.
   commit rules only (2026-10-08): the gate and CI hold the mechanical part,
   and the security rules and the Definition of Done stay with the agents in
   `AGENTS.md`, with no second copy to keep in step.
-- B5 and H7 of the audit before 0.1.0 are accepted limits, not open work
-  (2026-10-07); §7 of that audit gives the reasons.
+- Two findings of the audit before 0.1.0 are accepted limits, not open work
+  (2026-10-07). B5: the deny rules keep secret files from the Read tool and
+  the common shell readers, even in `bypassPermissions` mode, but an
+  interpreter one-liner still reads them; only the sandbox stops that, and it
+  does not run on native Windows. H7: nothing ties a commit to its changelog
+  entry, because entries are not keyed to commits and such a check would be
+  noise; the maintenance steps put the entry first.
 - Whether Antigravity loads `AGENTS.md` natively or through the `GEMINI.md`
   import needs no further test: adopt gives every old pointer the import, so
   it loads either way, and the tested session loaded it once with both present.
@@ -284,6 +307,11 @@ Status per 2026-10-08.
   are not installed where the starter is maintained, and no Cursor or Copilot
   session has been run there. Until one runs, §11 says documented, not yet
   observed.
+- No GitHub Release is published yet (checked 2026-10-08: 8 tags, 0
+  releases), so people who watch the repository's releases hear of none. The
+  owner publishes one per tag from the repository's Releases page, with that
+  version's changelog section as its notes; there is no `gh` CLI where the
+  starter is maintained.
 
 ## Daily commands
 

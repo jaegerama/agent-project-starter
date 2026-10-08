@@ -1,116 +1,180 @@
 # agent-project-starter
 
-A project template for working with AI coding agents (Claude Code, Codex,
-Cursor, Gemini CLI, Antigravity). It keeps one rules file, checks itself, and
-says plainly which of its rules a machine enforces and which are only written
-down.
+A starting point for software projects built with AI coding agents: Claude
+Code, Codex, Cursor, GitHub Copilot, Gemini CLI or Antigravity.
 
-It carries a process, not a stack. The stack, the commands and the business
-rules come from each project's own brief, and the template refuses to guess
-them: a rule it cannot fill from the brief becomes a question.
+It gives every project the same way of working. All the agents read one file
+of rules, you describe the project once in a short form instead of in chat,
+and checks run on your own machine before every push. It does not choose a
+language, framework or stack: each project takes those from its own brief.
 
-## What is in it
+## Why it exists
 
-| Path | What it does |
-|---|---|
-| `AGENTS.md` | The only place project rules live: a template with slots. While one slot is empty, the gate is red |
-| `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | Pointers to `AGENTS.md` that hold no rules of their own. The first two import it |
-| `.claude/hooks/guard-slots.mjs` | Claude Code hook: no application code through Write, Edit or NotebookEdit while `AGENTS.md` has slots |
-| `.claude/tools/agent-check.mjs` | Gate step: slots, pointers, and the copies of the operator profile |
-| `tools/docs-drift.mjs` | Gate step: documents against code, such as gate commands against the manifest and story markers in `docs/TODO.md` |
-| `tools/bootstrap.mjs`, `tools/adopt.mjs` | Turn a copy into a project; bring an existing project onto the starter |
-| `docs/`, `DESIGN.md`, `_starter/templates/` | Skeletons for the PRD, stories, questions and design direction, and the `README.md`, `CHANGELOG.md` and `HANDOFF.md` a project starts with |
+Work with coding agents tends to go wrong in the same few ways:
+
+- Agents forget. Whatever you explained in a chat is gone in the next
+  session, after a `/clear`, or when you switch to another tool.
+- Agents guess. A detail nobody stated, such as a pricing rule or the
+  database to use, gets a plausible answer that nobody decided.
+- Claims go unchecked. "Tests pass" is reported without the tests having run,
+  and documents keep describing what the code no longer does.
+
+The starter answers each of these. The rules live in a file that every
+session reads. Anything your brief does not answer becomes a written question
+for you instead of a guess. The claims that can be checked are checked by
+scripts, before the work leaves your machine.
+
+## How a project runs
+
+1. You fill in a short brief, `docs/BRIEF.md`: what the project is, the
+   business rules the agent must not invent, the stack, and a few conventions.
+   Whatever you have not decided yet, you write as "ask me".
+2. The agent sets the project up by following the Setup section at the top of
+   `AGENTS.md`. It writes the project's rules from your brief, lists every open
+   point in `docs/QUESTIONS.md`, and asks you all of them in one message.
+3. Work happens one story at a time. Each story has acceptance criteria that
+   can be checked from a terminal, and its proof goes into `HANDOFF.md` before
+   the next story starts.
+4. Before every push, git runs the gate: the project's list of checks, written
+   in `AGENTS.md`. When a check fails, the push stops.
+
+Every tool reads the same rules from `AGENTS.md`; the few that look for a file
+of their own get a short pointer to it. Section 11 of `AGENTS.md`
+[lists each tool](AGENTS.md#11-per-tool-notes) with the file it reads and what
+has been confirmed for it.
 
 ## Requirements
 
-- **Node.js 22 or newer**, in every project whatever its language. The hook and
-  the gate steps are Node scripts with no dependencies. Without Node the hook
-  fails open and the gate cannot run.
+- Node.js 22 or newer. The checks are small Node.js scripts with no
+  dependencies, so Node.js is needed even when the project itself is written
+  in another language.
 - git.
-- On Windows, Git Bash: Claude Code runs hooks through it.
+- On Windows, Git Bash, which Claude Code uses to run its hooks.
 
-## Start a project
+## Start a new project
 
-Once per machine, install an operator profile first: the working process every
-project follows (docs first, verification, reporting, git) lives there, not in
-each project. [`_starter/operator-profile.md`](/_starter/operator-profile.md)
-is an example to adapt; [The operator profile](#the-operator-profile) says
-where it goes.
+1. Once per machine, install an operator profile if you have none yet: your
+   own rules for every project, kept outside them.
+   [`_starter/operator-profile.md`](_starter/operator-profile.md) is an
+   example, and says where each tool reads it.
+2. Clone the starter under your project's name:
+
+   ```bash
+   git clone https://github.com/jaegerama/agent-project-starter.git my-app
+   ```
+
+3. Fill in `docs/BRIEF.md`, or be ready to describe the project in chat.
+4. Open your coding agent in the `my-app` folder and ask it to set up the
+   project. The Setup section of `AGENTS.md` gives it every step, including
+   this command:
+
+   ```bash
+   node tools/bootstrap.mjs --name "My App" --apply
+   ```
+
+`bootstrap` names the project and starts a fresh git history. It replaces
+this page and the changelog with the project's own, and removes what else
+belongs to the starter: `_starter/`, the starter's CI workflow,
+`tools/adopt.mjs` and the `LICENSE`. Without `--apply` it only shows what it
+would do. It refuses to run in a folder still called `agent-project-starter`,
+which is why step 2 clones under the project's name.
+
+## Bring in an existing project, or update one
+
+Both are done by `adopt`, run from a separate clone of the starter, not from
+inside the project:
 
 ```bash
-git clone https://github.com/jaegerama/agent-project-starter.git my-app
+node tools/adopt.mjs --into ../my-project            # dry run: reports, writes nothing
+node tools/adopt.mjs --into ../my-project --apply    # applies, backing up what it replaces
 ```
 
-Open an agent session in `my-app` and give it the brief: fill in
-`docs/BRIEF.md`, a seven-part form whose conventions hold unless you change
-them, or write it in chat. The Setup section at the top of `AGENTS.md` does
-the rest. The agent puts a chat brief into `docs/BRIEF.md`, runs
-`node tools/bootstrap.mjs --name "My App" --apply`, fills the slots the brief
-answers, and asks about the rest in one message, with the answer the brief
-suggests where it suggests one.
+`adopt` installs releases only, backs up every file it replaces, and never
+rewrites the project's own rules, code or commands; a file the project has
+changed is kept, and the report says when the starter changed it since. The
+[public API](_starter/README.md#public-api-what-a-version-number-protects)
+lists everything it promises.
 
-bootstrap starts a fresh git history, writes the project's own `README.md`,
-`CHANGELOG.md` and `HANDOFF.md` over the starter's, and removes the files that
-belong to the starter: `_starter/`, the self-test workflow, `tools/adopt.mjs`
-and the `LICENSE`. It refuses to run in a folder still named
-`agent-project-starter`, so clone under the project's name.
+`adopt` does not set up git hooks. In an existing project the gate runs before
+every push once its pre-push hook calls `node tools/gate.mjs`; a project with
+no hooks of its own can copy `.githooks/pre-push` from the starter and run
+`git config core.hooksPath .githooks` once.
 
-## Bring in an existing project
+To update a project to a new release:
 
-From a checkout of the starter:
+1. To hear about new releases, open this repository on GitHub and choose
+   Watch, then Custom, then Releases.
+2. In your clone of the starter, fetch the latest release. `main` only moves
+   when a release is made, so a pull is enough:
 
-```bash
-node tools/adopt.mjs --into ../some-project
-node tools/adopt.mjs --into ../some-project --apply
-```
+   ```bash
+   git pull
+   ```
 
-The first command is a dry run and changes nothing. adopt installs the files
-the starter owns, seeds the ones a project customises where they are missing
-or still unchanged from an earlier starter version, and never rewrites what
-the project changed or its own rules. It installs releases only, refusing a
-checkout whose files differ from the latest release tag or have uncommitted
-changes, and writes the release it installed to the project's
-`.claude/starter-version`. What a release promises, and how its version moves,
-is the Public API section of
-[`_starter/README.md`](/_starter/README.md#public-api-what-a-version-number-protects).
+3. Read [`CHANGELOG.md`](CHANGELOG.md) from the release your project records
+   in `.claude/starter-version` up to the new one. An entry that can make a
+   project's checks fail says so.
+4. Run the dry run, read its report, then run the command again with
+   `--apply`.
+5. Run the project's gate. If something is wrong, the files `adopt` replaced
+   are in the backup folder its report names.
 
-## What is enforced, and where
+While the version starts with `0.`, any minor release (0.7 to 0.8, for
+example) may change how the checks behave; from 1.0.0 only a major release
+will.
 
-| Rule | Claude Code | Codex, Cursor, Gemini CLI, Antigravity |
-|---|---|---|
-| `AGENTS.md` is in the agent's context | Import in `CLAUDE.md`, observed | Loaded at session start in Antigravity, observed; native in Codex and Cursor, and imported by `GEMINI.md` in Gemini CLI, documented but not yet observed |
-| No application code while slots remain | Hook, for the file tools only. A file written through Bash is not seen | Gate only |
-| No empty slot; pointers stay pointers | Gate | Gate |
-| One story in WIP, and Epic 0 first | Gate | Gate |
-| The gate runs before every push | Git's pre-push hook | Git's pre-push hook |
-| Secret files are not read | The Read tool and common shell readers are denied; an interpreter one-liner is not | Not enforced |
-| Docs first, changelog first, no new dependency without approval | Written down only | Written down only |
+## What is in the repository
 
-"Gate" means the block in `AGENTS.md` §4: `node .claude/tools/agent-check.mjs`,
-`node tools/docs-drift.mjs` and the project's own checks. `node tools/gate.mjs`
-runs it, and git's pre-push hook runs it before every push, so the checks
-happen on the machine that wrote the change rather than in a CI service.
+| Path | What it is for |
+|---|---|
+| `AGENTS.md` | The project's rules, with slots for the decisions each project makes. The checks fail while a slot is empty |
+| `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | Pointer files: each sends its tool to `AGENTS.md` and holds no rules |
+| `docs/BRIEF.md` | The form the owner fills in. The rest of the project is set up from it |
+| `docs/` | What is built and why, the stories, the open questions, and how the parts fit |
+| `DESIGN.md` | The design direction of an interface, written by the owner |
+| `tools/gate.mjs`, `.githooks/pre-push` | The gate runner, and the git hook that runs it on your machine before every push. Nothing runs on a server |
+| `tools/docs-drift.mjs` | A gate step that compares documents with code, such as the gate's commands with the project's manifest |
+| `.claude/` | The agent setup check, the Claude Code hook that refuses application code while slots are empty, the review severity ladder, the `/gate` and `/docs-drift` commands, and a reviewer that looks for swallowed errors |
+| `tools/bootstrap.mjs`, `tools/adopt.mjs` | Turn a copy into a new project; bring an existing project in or up to date |
+| `_starter/` | The starter's own guide, state and tests, and the `README.md`, `CHANGELOG.md` and `HANDOFF.md` a project starts with. `bootstrap` removes it |
+| `.github/workflows/` | The starter's own CI, which tests the starter on Ubuntu, macOS and Windows. `bootstrap` removes it, so a project has no CI workflow |
+| `README.md`, `CHANGELOG.md`, `LICENSE` | This page, the starter's release history, and its license |
 
-## The operator profile
+## What a machine enforces, and what is only written down
 
-Rules that hold in every project on a machine (working process, verification,
-reporting, git) live outside the project, in an operator profile:
-`~/.claude/CLAUDE.md` for Claude Code, or `~/CLAUDE.md` for projects under the
-home directory. A machine that wants the same profile in every tool copies the
-master to `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md` and
-`~/.gemini/config/AGENTS.md` (Antigravity), and marks it with the line
-`<!-- operator-profile -->`: the gate then goes red when a copy drifts from the
-master. Without the line, the gate leaves each tool's notes alone.
-[`_starter/operator-profile.md`](/_starter/operator-profile.md) is an example
-to start from.
+Every rule says which it is, because a rule that only looks enforced makes
+everyone stop watching it. In short: in every tool, the gate checks for empty
+slots, pointer files that grew rules, and the order of the stories, and git
+runs the gate before every push. Claude Code adds a hook that refuses
+application code while slots are empty. Docs first, changelog first and "no
+new dependency without approval" are written down only.
+[The full table](AGENTS.md#which-of-these-is-a-mechanism-and-which-is-still-an-intention)
+is in section 11 of `AGENTS.md`.
+
+`git push --no-verify` skips the hook: it guards against forgetting, not
+against intent.
+
+## Words used in this repository
+
+| Word | Meaning |
+|---|---|
+| Agent | An AI coding assistant that reads and changes the files of a project |
+| Harness | The program an agent runs in, such as Claude Code or Codex. It decides which files the agent reads and which checks run |
+| Brief | The owner's description of the project, in `docs/BRIEF.md` |
+| Slot | A decision a template still leaves open, written in angle brackets. The checks fail while one is empty |
+| Pointer file | A short file that sends one tool to `AGENTS.md` and holds no rules of its own |
+| Gate | The list of checks every change must pass, in section 4 of `AGENTS.md` |
+| Docs drift | A document that no longer matches the code it describes |
+| Story | One small piece of work, with acceptance criteria that can be checked |
+| Walking skeleton | The smallest version of the project that runs end to end with one passing test. It is always the first story |
+| Operator profile | Your own rules for every project on one machine, kept outside the projects |
+| Private agents | A mode for team repositories: the agent files stay on each developer's machine and are never pushed |
 
 ## Changing the starter
 
-[`_starter/README.md`](/_starter/README.md) explains the design and how to
-change it, and [`_starter/AUDIT-2026-10-05.md`](/_starter/AUDIT-2026-10-05.md)
-is the audit before the first release, with the evidence for every finding.
-Two commands must be green before any commit, and CI runs them on Ubuntu,
-macOS and Windows:
+[`_starter/README.md`](_starter/README.md) explains how the starter is built,
+what each release promises, and how it is changed and released. Before every
+commit both of these must pass, and CI runs them on Ubuntu, macOS and Windows:
 
 ```bash
 node _starter/selftest.mjs
@@ -119,5 +183,5 @@ node tools/docs-drift.mjs
 
 ## License
 
-MIT. A project created with bootstrap does not inherit this `LICENSE`; the tool
-files keep their MIT notice.
+MIT. A project created with `bootstrap` does not inherit this `LICENSE`; the
+tool files keep their MIT notice.

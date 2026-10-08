@@ -5,6 +5,9 @@ description: Run the full verification gate and report pass/fail per check.
 # Gate
 
 Run every check in `AGENTS.md` §4, in order, and report the result of each.
+`node tools/gate.mjs` runs the same block but stops at the first failure,
+which is right before a push; this command runs them all, so that one report
+shows every problem.
 
 ## Rules
 

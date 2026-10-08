@@ -46,11 +46,8 @@ Deliberate swallowing is legitimate and common. The test is whether the reason i
 - No comment → report it, even if you suspect it is deliberate. An undocumented
   trade-off is one the next person will undo, or duplicate.
 
-Report against the severity ladder in `.claude/rules/review-severity.md`. For
-each: `file:line`, the concrete failing case with inputs, one-sentence fix.
-
-**Verify before reporting**, and say so where you could not. **Finding nothing is
-a valid result**: say so plainly rather than padding.
+Report against the severity ladder in `.claude/rules/review-severity.md`,
+which also says how to write each finding.
 
 You can read and search, and nothing else: no shell, no edits. Work from the
 files or the diff the caller names, and report. The caller fixes.

@@ -18,10 +18,8 @@ Find every place a document and the code disagree, and name which side is wrong.
 
 ## The pairs to compare
 
-They live in **`AGENTS.md` §4.1**, not in this file. The reason: that table is a
-project decision, and a project rule lives in exactly one place. In `AGENTS.md`
-it is also covered by the unfilled-slot check in `.claude/tools/agent-check.mjs`; here it
-would never be checked at all.
+They live in **`AGENTS.md` §4.1**, which also says why they are kept there
+and not in this file.
 
 If that table still holds empty slots, that is the first finding to report.
 

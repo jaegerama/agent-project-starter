@@ -36,6 +36,13 @@ public import of 2026-10-05 is not published.
   `HANDOFF.md` come from `_starter/templates/`: bootstrap writes them, and
   adopt seeds `CHANGELOG.md` and `HANDOFF.md` from there. What a project
   receives is unchanged.
+- The template documents state each rule once: why a decision needs its
+  reason, the rules for stories and questions, and why pointer files hold no
+  rules each live in one file, and the others refer to it. `AGENTS.md` opens
+  with what it is, who reads it and what a slot is, and section 11 gives each
+  tool its own row; the brief explains its terms; the README and
+  `CONTRIBUTING.md` templates say the gate runs before a push, as the hook
+  does.
 - Each story starts in a fresh session, with `HANDOFF.md` carrying what the
   next one needs.
 - The review ladder treats a gap an outer layer reliably blocks as a

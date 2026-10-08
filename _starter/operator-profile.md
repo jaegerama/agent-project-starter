@@ -31,8 +31,8 @@ Everything below the line is the profile.
 - **Docs first.** No application code before the relevant part of `docs/`
   exists and is still true. The documents are the specification; the code
   implements them.
-- **Scope.** Work on the active story. Do not read, refactor or fix files
-  outside its blast radius.
+- **Scope.** Work on the active story. Do not read, refactor or fix files the
+  story does not need to change.
 - **Targeted reads.** Find the location first, then read that range. Never
   dump long logs or a full test run into the conversation: write it to a file
   and give the path.
@@ -58,21 +58,17 @@ Everything below the line is the profile.
 
 # Reporting
 
-- **Verify before reporting a finding.** A plausible wrong finding costs more
-  than a missed one. If you cannot construct the failing case, say it is
-  unverified and rank it lower.
-- **Finding nothing is a valid result.** A review padded with findings teaches
-  its reader to skim.
 - **Report what happened.** A failing test is reported as failing, with its
   output; a skipped step as skipped.
+- **Findings follow the review ladder** each project carries in
+  `.claude/rules/review-severity.md`: verified first, ranked, never padded.
 - **Fix what breaks an existing rule; ask before changing a rule.** If a
   rule's written reason turns out wrong, fix the reason, not the rule.
 
 # Git
 
 - Commit with the identity configured on the machine. Never override it.
-- Conventional Commits 1.0.0: `type(scope)!: summary`, imperative, lowercase,
-  no trailing period. The body says why.
 - Co-author and tool trailers in commits and pull requests: decide once, write
   the decision here, and keep to it.
-- The changelog entry is written before the change it describes.
+- Each project's commit, branch and changelog rules are in section 7 of its
+  `AGENTS.md`.

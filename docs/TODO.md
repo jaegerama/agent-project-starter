@@ -13,15 +13,18 @@ their shape: `### [STATUS] S<epic>.<n>: title`.
 
 ---
 
-## Epic 0: Walking Skeleton (Harness & Verification)
+## Epic 0: Walking skeleton
 
-### [TODO] S0.1: Scaffold minimal project & prove verification gate
+The smallest version of the project that runs end to end, with the gate and
+one passing test.
+
+### [TODO] S0.1: Set up the smallest runnable project and prove the gate
 
 **Acceptance criteria**
 
-- [ ] Minimal project structure and runtime configuration in place
-- [ ] At least one automated assertion/test runs and passes
-- [ ] Full gate command exits 0 with all checks green
+- [ ] The project's structure and runtime configuration are in place
+- [ ] At least one automated test runs and passes
+- [ ] `node tools/gate.mjs` exits 0, with every check green
 
 **Out of scope for this story:** business logic, database entities, UI styling.
 

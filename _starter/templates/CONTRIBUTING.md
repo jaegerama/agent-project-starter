@@ -5,9 +5,9 @@ developer's machine, so the rules people follow are written here.
 
 ## The gate
 
-Every change passes it before it is committed. `node tools/gate.mjs` runs the
-block below; run `git config core.hooksPath .githooks` once in your clone, and
-git runs it before every push as well.
+The checks every change passes before it is pushed. `node tools/gate.mjs`
+runs the block below; run `git config core.hooksPath .githooks` once in your
+clone, and git also runs it before every push.
 
 ```bash
 <the gate from AGENTS.md §4, without the agent-check step>

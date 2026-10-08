@@ -11,8 +11,8 @@
 
 ## Gate
 
-Every change passes the gate before it is committed:
-<AGENTS.md §4, or CONTRIBUTING.md where agent files are private>.
+Every change passes the gate, this project's list of checks, before it is
+pushed: <AGENTS.md §4, or CONTRIBUTING.md where agent files are private>.
 
 ## Documents
 
@@ -25,5 +25,4 @@ Every change passes the gate before it is committed:
 
 ---
 
-> This file is still a template: replace it during setup. bootstrap has already
-> removed the starter's own documentation, `_starter/`, if it has run.
+> This file is still a template: setup replaces it.

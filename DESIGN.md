@@ -3,8 +3,8 @@
 > **Delete this file if the project has no user interface.** An API, CLI,
 > library or job has nothing here to decide.
 
-The design direction of this project's interface. Without it, any UI is a
-draft, not a deliverable (`AGENTS.md` §6).
+The design direction of this project's interface, which `AGENTS.md` §6
+requires before any interface work counts as finished.
 
 **The owner writes this file, or answers the questions and the agent transcribes
 the answers.** The agent never invents the content: a direction an agent picks

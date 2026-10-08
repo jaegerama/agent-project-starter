@@ -20,9 +20,8 @@ new to the project ask about first.
 
 ## Decisions
 
-Decisions **with their reason**. A decision with no reason gets reopened by the
-next person, including the next session of an agent. A decision with a reason
-gets reopened only when the reason stops being true, which is correct.
+Each decision with its reason, and the condition that would make it worth
+revisiting.
 
 | # | Decision | Reason | Date | What would overturn it |
 |---|---|---|---|---|

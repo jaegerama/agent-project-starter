@@ -1,23 +1,25 @@
 # AGENTS.md: <PROJECT NAME>
 
-> **This is the only place project rules live.** `CLAUDE.md` and `GEMINI.md` are
-> pointers to this file and deliberately carry no rules of their own: two
-> copies of a rule are two sources of truth, and that is exactly the defect the
-> tooling in this repo exists to catch.
+> **What this file is.** The rules every AI coding agent follows in this
+> project, written in one place. Agents read it at the start of every session,
+> so a decision recorded here survives a new session, a `/clear` and a switch
+> to another tool. People read it to see what the agents were told.
 >
-> Read automatically by: Codex, Antigravity, Cursor, Copilot. Claude Code loads
-> it through the `@AGENTS.md` import in `CLAUDE.md`, Gemini CLI through the
-> `@./AGENTS.md` import in `GEMINI.md`.
+> **Who reads it.** Codex, Cursor, GitHub Copilot and Antigravity read this
+> file directly. Claude Code reads `CLAUDE.md` and Gemini CLI reads
+> `GEMINI.md`; each of those imports this file and holds no rules of its own,
+> because two copies of a rule are two sources of truth and they drift apart.
+> Section 11 lists every tool and what has been confirmed for it.
 >
-> Read it in full at session start. Do not re-scan the repo to rediscover facts
-> recorded here.
->
-> **Every `<slot>` must be filled before the first line of application code.** A
-> slot left as a placeholder is a rule that reads as satisfied and is not,
-> which is worse than no rule, because it gets quoted back in reviews.
-> `node .claude/tools/agent-check.mjs` fails while any slot remains. A
+> **Slots.** Text in angle brackets, such as `<slot>`, is a slot: a decision
+> this project has not written down yet. Every slot is filled before the first
+> line of application code, because an empty one looks like a rule but decides
+> nothing. `node .claude/tools/agent-check.mjs` fails while any slot is left. A
 > placeholder meant to stay, such as a command's argument, is written without
-> angle brackets (`NOTES_DIR`): inside them it counts as a slot.
+> angle brackets (`NOTES_DIR`); inside them it counts as a slot.
+>
+> **For agents:** read this file in full at session start, and do not search
+> the repository again for facts recorded here.
 
 ---
 
@@ -176,13 +178,12 @@ services. Never infer a server fact from a compose file, a Dockerfile or a
 local image. What the servers run is recorded in the two rows above, or it is
 a question.
 
-**Tooling harness vs application runtime:** Node.js is the harness for repository
-governance scripts (`tools/*.mjs` and `.claude/`), regardless of whether the
-application itself is written in Python, Go, Rust, or Node. For non-Node
-projects, Node.js remains present only for repository gates; application code
-obeys its own runtime. Node.js 22 or newer must be installed wherever an agent
-works on this project: without it the docs-first hook fails open and the gate
-cannot run.
+**Node.js runs the repository's own checks** (`tools/*.mjs` and `.claude/`),
+whatever language the application is written in. In a project that is not
+written for Node.js, it is there only for those checks, and the application
+keeps its own runtime. Node.js 22 or newer must be installed wherever an agent
+works on this project: without it the docs-first hook lets every change
+through, and the gate cannot run.
 
 ### 2.1 Agent skills (optional, installed by the owner)
 
@@ -467,7 +468,7 @@ Conventional Commits defines them.
 2. Story executed atomically (strictly ONE story in `[WIP]` at any time).
 3. Epic 0, the walking skeleton, verified before feature stories began.
 4. The gate is green: every command in §4.
-5. Authorization enforced server-side, with a negative test: a request without the permission ⇒ denied.
+5. Authorization enforced on the server, with a negative test: a request without the permission is denied.
 6. Mutating paths emit an audit row, where §6 names an audit trail.
 7. Empty and error states handled; with an interface, a loading state too,
    and each one visible.
@@ -522,36 +523,38 @@ itself says so.
 
 ## 11. Per-tool notes
 
-| Tool | Reads | Status |
+| Tool | Reads at session start | Status |
 |---|---|---|
-| Claude Code | `CLAUDE.md`, which imports this file with `@AGENTS.md`; plus `.claude/` (rules auto-load; commands, agents, settings) | **Verified 2026-09-24**: four sessions' transcripts list `AGENTS.md` among the files loaded through the import. The earlier pointer asked in words, and this file was never loaded |
-| Codex | `AGENTS.md` (this file) + `~/.codex/AGENTS.md` | **Documented, not yet observed**: Codex's own convention, not yet checked in a Codex session. Confirm it once (ask which files it loaded), then mark it verified |
-| Cursor / Copilot | `AGENTS.md` (this file) | **Documented, not yet observed**: their own convention, not yet checked in a session. Confirm it once, then mark it verified |
-| Gemini CLI | `GEMINI.md`, which imports this file with `@./AGENTS.md`; plus `~/.gemini/GEMINI.md` | **Documented, not yet observed**: Gemini CLI documents `@` imports in `GEMINI.md`, but no Gemini CLI session has been checked for it yet. Confirm it once (ask which files it loaded), then mark it verified |
-| Antigravity | `AGENTS.md` and `GEMINI.md` as workspace rules, loaded at session start; global rules from `~/.gemini/config/AGENTS.md` | **Verified 2026-10-06**: a fresh session quoted the last sentence of this file before using any tool. Not yet separated: whether `AGENTS.md` loads natively or through the import in `GEMINI.md` |
+| Claude Code | `CLAUDE.md`, which imports this file with `@AGENTS.md`, and `.claude/` (rules load automatically; commands, agents, settings) | **Observed 2026-09-24**: four sessions' transcripts list `AGENTS.md` among the files loaded through the import. An earlier pointer that only asked in words was never acted on |
+| Codex | This file, and `~/.codex/AGENTS.md` | **Documented, not yet observed**: Codex's own convention |
+| Cursor | This file | **Documented, not yet observed**: Cursor's own convention |
+| GitHub Copilot | This file, or `.github/copilot-instructions.md`, a pointer to it, in setups that read that file | **Documented, not yet observed**: Copilot's own convention |
+| Gemini CLI | `GEMINI.md`, which imports this file with `@./AGENTS.md`, and `~/.gemini/GEMINI.md` | **Documented, not yet observed**: Gemini CLI documents `@` imports in `GEMINI.md` |
+| Antigravity | This file and `GEMINI.md` as workspace rules, and `~/.gemini/config/AGENTS.md` as global rules | **Observed 2026-10-06**: a fresh session quoted the last sentence of this file before using any tool. Not yet separated: whether this file loads natively or through the import in `GEMINI.md` |
 
-**Another harness.** This table tracks harnesses, the programs that load files
-and run tools. The model behind one changes nothing here: another model run
-through Claude Code is a Claude Code session. To add a harness, find what it
-loads at session start. If that is not `AGENTS.md`, give it a pointer file
-with its import line, where it has one; a pointer that only asks in words is
-the weakest form. Add its row above as documented, not yet observed, and mark
-it observed once a fresh session, before using any tool, quotes the last
-sentence of this file.
+A tool that reads this file needs no file of its own. A tool that reads
+another file gets a pointer: a short file with nothing in it but a reference
+to this one, as an import line where the tool has one. To confirm a
+documented row, ask a fresh session, before it uses any tool, to quote the
+last sentence of this file, then mark the row observed, with the date.
 
-The operator profile (working process, verification, reporting, git) is not
-shared across tools: each reads its own file, `~/.claude/CLAUDE.md`,
+**Another tool.** The table lists harnesses, the programs that load files and
+run tools. The model behind one changes nothing: another model run through
+Claude Code is a Claude Code session. To add a harness, find what it loads at
+session start, give it a pointer if it does not read this file, and add its
+row as documented, not yet observed.
+
+Each tool also reads its own operator profile: `~/.claude/CLAUDE.md`,
 `~/.codex/AGENTS.md`, `~/.gemini/GEMINI.md`, and `~/.gemini/config/AGENTS.md`
-for Antigravity. A machine that wants one profile in all of them keeps a
-master, copies it over the others, and marks it with the `operator-profile`
-comment line the starter's README describes; agent-check then compares the
-copies with it.
+for Antigravity. When the master copy starts with the line
+`<!-- operator-profile -->`, agent-check fails as soon as another copy differs
+from it.
 
 ### Which of these is a mechanism, and which is still an intention
 
-| Rule | Claude Code | Codex / Antigravity / Gemini |
+| Rule | Claude Code | The other tools |
 |---|---|---|
-| This file is in the agent's context | **Mechanism** (observed 2026-09-24): the `@AGENTS.md` import | Codex, Cursor: native, documented, not yet observed. Gemini: the `@./AGENTS.md` import, documented, not yet observed. Antigravity: loaded at session start (observed 2026-10-06) |
+| This file is in the agent's context | **Mechanism** (observed 2026-09-24): the `@AGENTS.md` import | Codex, Cursor, Copilot: native, documented, not yet observed. Gemini: the `@./AGENTS.md` import, documented, not yet observed. Antigravity: loaded at session start (observed 2026-10-06) |
 | No application code until `AGENTS.md` is filled | **Mechanism for the file tools**: the PreToolUse hook `.claude/hooks/guard-slots.mjs` blocks Write, Edit and NotebookEdit from any working directory. A file written through Bash is not seen | **Intention**: no hook, only `node .claude/tools/agent-check.mjs` |
 | Zero unfilled slots in `AGENTS.md` | **Mechanism**: gate goes red | **Mechanism**: same gate, run by hand |
 | Pointer files carry no rules, and `CLAUDE.md` keeps its import line | **Mechanism**: gate goes red | **Mechanism** |
@@ -561,9 +564,8 @@ copies with it.
 | No new dependency without approval | **Partial**: in the default permission mode, a command that is not allowlisted asks first. `bypassPermissions` and a direct edit of the manifest are not guarded | **Intention** |
 | Docs-first, scope containment, CHANGELOG first | **Intention** | **Intention** |
 | The interface rules in §6 | **Intention**: no check runs them | **Intention** |
-| Agent files match the current starter | **Mechanism only when** `node tools/adopt.mjs` is re-run from the starter; otherwise they drift silently | same |
+| Agent files match the current starter | **Mechanism only when** `node tools/adopt.mjs` is re-run from a clone of the starter, which records the release in `.claude/starter-version`; otherwise they drift silently | same |
 
 Hooks are a Claude Code feature. Working in Codex or Antigravity, the hook row
-guards nothing: run the gate yourself. Relaxing against a net that is not
-strung in the tool you are actually using is the most expensive failure mode in
-this repo.
+guards nothing: run the gate yourself. Relying on a check that the tool you
+are using does not run is the most expensive mistake in this repository.

@@ -10,6 +10,23 @@ empty `CHANGELOG.md` at the root. History before the public import of
 
 ## [Unreleased]
 
+### Added
+
+- `AGENTS.md` §6 keeps server secrets out of client code, scopes every query
+  to the user or tenant of the session, keeps a browser-facing database behind
+  its row-level rules, and lets production migrations only move forward.
+- The review ladder names both new security shapes as CRITICAL.
+- `docs/PRD.md` has a Legal and privacy section for a product that keeps
+  personal data or takes payments; Setup deletes it otherwise.
+- `DESIGN.md` asks the owner for the spacing scale and how surfaces show depth.
+
+### Changed
+
+- The interface rules ask for a visible label on every field, a loading state
+  in the shape of what loads, and a destructive action named in its label and
+  confirmed, never marked by colour alone.
+- Skills load only when the task at hand touches them.
+
 ## [0.6.0] - 2026-10-08
 
 ### Added

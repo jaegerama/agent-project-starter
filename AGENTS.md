@@ -63,7 +63,8 @@ only job is the brief; everything else below is the agent's.
 6. **Delete what does not apply**: the Money section with no money; the Data
    section with no database; the Interface section and `DESIGN.md` with no
    interface; the server rows of §2 and the paragraph about servers when
-   nothing is deployed.
+   nothing is deployed; the Legal and privacy section of `docs/PRD.md` when
+   no personal data is kept and nothing is sold.
 7. **Adapt the example checks in `tools/docs-drift.mjs`** to this stack's
    manifest, so that at least one compares a document with code: once this
    Setup section is gone, docs-drift fails until one does, and the
@@ -188,8 +189,9 @@ listed here is missing it says so and works without it.
 
 Skills this project uses: <each with its origin, what it is for and what it is not for; or "none">
 
-Skills load on demand, to keep the context small. Where a skill and this file
-disagree, this file wins: it holds the project's rules.
+Skills load on demand, only the ones the task at hand touches, to keep the
+context small. Where a skill and this file disagree, this file wins: it holds
+the project's rules.
 
 ---
 
@@ -342,6 +344,15 @@ This project's own CRITICAL shapes are added there, under its list, not here.
   from "wrong password".
 - Where it has endpoints anyone can reach without logging in, each one is rate
   limited.
+- Where code runs in a browser or an app, no server secret reaches it: a
+  variable the build exposes to the client (`NEXT_PUBLIC_*`, `VITE_*` and the
+  like) never holds a private key, a token or a service-role credential.
+- Where records belong to a user or a tenant, every query is scoped to the
+  owner taken from the server-side session. An ID the client sends is never
+  enough to read, change or delete a record.
+- Where the browser talks to the database directly (Supabase, Firebase and the
+  like), its row-level rules stay on for every table it can reach, and nothing
+  in the client bypasses them.
 - <audit trail: which mutations write an audit row in the same transaction, and any lock on it; or "none">
 - <signed callbacks: raw-byte signature check, constant-time compare, replay window, or "none">
 
@@ -355,6 +366,9 @@ This project's own CRITICAL shapes are added there, under its list, not here.
 ### Data <delete this whole section if the system keeps no database>
 
 - Schema changes only via a migration. Never an ad-hoc alteration.
+- In production, migrations only move forward: add the new shape, move to it,
+  and remove the old one in a later release, so a rollback never needs a
+  destructive down-migration.
 - <Which entities soft-delete, and which may never be hard-deleted.>
 - <Which tables are append-only, and what enforces it.>
 - Every foreign key gets an index. Every list query gets an index that covers
@@ -369,11 +383,17 @@ This project's own CRITICAL shapes are added there, under its list, not here.
 - Direction comes from `DESIGN.md`, which the owner writes. Without it, any UI
   is a draft, not a deliverable.
 
-Whatever the design, two things hold, because they are about function and
-access rather than style: WCAG 2.2 at level AA, which covers contrast, keyboard
-access with a visible focus, reflow without horizontal scrolling and a minimum
-target size; and an empty, a loading and an error state for every view that
-shows data.
+Whatever the design, these hold, because they are about function and access
+rather than style:
+
+- WCAG 2.2 at level AA, which covers contrast, keyboard access with a visible
+  focus, reflow without horizontal scrolling and a minimum target size.
+- An empty, a loading and an error state for every view that shows data, the
+  loading one in the shape of what loads, so nothing jumps when it arrives.
+- A visible label on every form field: a placeholder disappears as the user
+  types, so it is never the only one.
+- A destructive action says what it destroys in its label and asks before it
+  acts; colour alone never marks it.
 
 ---
 

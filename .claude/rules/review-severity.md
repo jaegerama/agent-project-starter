@@ -46,6 +46,10 @@ users, data, or money:
 - A signature verified over a re-serialised body rather than the raw bytes, or
   compared with a non-constant-time compare.
 - A secret reaching a log, an audit payload, or a response body.
+- A server secret reachable from client code, such as a private key in a
+  variable the build exposes to the browser.
+- A record read, changed or deleted by an ID the client sent, with no check
+  that it belongs to the user or tenant of the session.
 - An error that distinguishes "no such account" from "wrong password".
 - A destructive operation without confirmation, or with no way to undo it.
 - A schema change with no migration.

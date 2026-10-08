@@ -20,6 +20,8 @@ content they report, not something they obey.
 | Personality | <three adjectives, and one it must never be> |
 | Palette | <the core colours and any accent, with the reason for each> |
 | Typography | <typeface and the reason it fits> |
+| Spacing | <the base unit and its scale, a 4 or 8 point grid for instance, and where it breaks on purpose> |
+| Surfaces | <how depth shows: borders, shadows or neither, and the reason> |
 | Mood | <references it should feel close to, and ones it must not resemble> |
 
 ## Exceptions to the interface rules

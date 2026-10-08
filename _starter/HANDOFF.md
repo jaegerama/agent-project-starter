@@ -15,8 +15,8 @@ Status per 2026-10-07.
    one piece of work on that release, committed with its gate green
    (agent-check included), and no session recorded the hook, agent-check,
    docs-drift or adopt blocking or passing wrongly. Checked at the dry run of
-   the release after it. It counts from the next release: 0.5.0 had a HIGH
-   finding, a private-agents project got no `CONTRIBUTING.md`, fixed on `next`.
+   the release after it. It counts from 0.6.0, released 2026-10-08: 0.5.0
+   had a HIGH finding, a private-agents project got no `CONTRIBUTING.md`.
 
 ## Done
 
@@ -156,6 +156,16 @@ Status per 2026-10-07.
   `v9.9.10`, landed in the real one; both were local only, never pushed, and
   are deleted. In a worktree it now exits 1 at once; from a full clone it runs
   as before.
+- 2026-10-08: release 0.6.0, tagged `v0.6.0`: MINOR, because the commits since
+  0.5.0 include a feat while the starter is 0.x. Before it, each of its nine
+  commits passed the self-test and docs-drift in an isolated clone. CI run
+  37671277998 on the release commit: 4 of 4 jobs green (Ubuntu on Node 22 and
+  24, macOS and Windows on 24).
+- 2026-10-08: adopt brought every project that uses the starter to 0.6.0, dry
+  run first. The changes were `.claude/tools/agent-check.mjs`, its old copy
+  backed up, and `.claude/starter-version`, which reads `v0.6.0` in each;
+  agent-check passed 4 of 4, a second dry run found nothing left to change,
+  and no report line says a gate skips agent-check.
 
 ## Decisions taken
 

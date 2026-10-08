@@ -47,6 +47,20 @@ on it.
 - **Performance and budget**: <>
 - **Reliability**: <>
 
+### Legal and privacy
+
+Delete this section when the product keeps no personal data and takes no
+payments. The owner states each line; an agent never assumes which law
+applies. Consent is never pre-ticked, and declining takes no more steps than
+accepting.
+
+- **Personal data**: <each field collected, and why it is needed>
+- **Legal pages**: <privacy policy, terms of service, refund policy where it sells>
+- **Consent**: <what is asked before cookies, tracking or marketing, and how the answer is kept>
+- **Retention and deletion**: <how long data is kept, and how a person has theirs deleted>
+- **Laws that apply**: <for instance GDPR or UU PDP>
+- **Marketing email**: <none, or how its one-click unsubscribe works>
+
 ## Unverified assumptions
 
 What is believed true but not checked. Move it to `QUESTIONS.md` when it needs

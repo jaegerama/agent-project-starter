@@ -74,7 +74,7 @@ has been confirmed for it.
 
 `bootstrap` names the project and starts a fresh git history. It replaces
 this page and the changelog with the project's own, and removes what else
-belongs to the starter: `_starter/`, the starter's CI workflow,
+belongs to the starter: `_starter/`, the starter's two workflows,
 `tools/adopt.mjs` and the `LICENSE`. Without `--apply` it only shows what it
 would do. It refuses to run in a folder still called `agent-project-starter`,
 which is why step 2 clones under the project's name.
@@ -137,7 +137,7 @@ will.
 | `.claude/` | The agent setup check, the Claude Code hook that refuses application code while slots are empty, the review severity ladder, the `/gate` and `/docs-drift` commands, and a reviewer that looks for swallowed errors |
 | `tools/bootstrap.mjs`, `tools/adopt.mjs` | Turn a copy into a new project; bring an existing project in or up to date |
 | `_starter/` | The starter's own guide, state and tests, and the `README.md`, `CHANGELOG.md` and `HANDOFF.md` a project starts with. `bootstrap` removes it |
-| `.github/workflows/` | The starter's own CI, which tests the starter on Ubuntu, macOS and Windows. `bootstrap` removes it, so a project has no CI workflow |
+| `.github/workflows/` | The starter's own workflows: its tests on Ubuntu, macOS and Windows, and the GitHub Release each version tag publishes. `bootstrap` removes both, so a project has no workflow at all |
 | `README.md`, `CHANGELOG.md`, `LICENSE` | This page, the starter's release history, and its license |
 
 ## What a machine enforces, and what is only written down

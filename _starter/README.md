@@ -19,8 +19,8 @@ owner's part is the brief in `docs/BRIEF.md`. Step 2 of Setup runs
 - Writes `README.md`, `CHANGELOG.md` and `HANDOFF.md` from `templates/` over
   the starter's own README and changelog.
 - Deletes what else belongs to the starter: this folder, `LICENSE`, the
-  self-test workflow with the `.github/workflows/` folder it leaves empty, and
-  `tools/adopt.mjs`.
+  self-test and release workflows with the `.github/workflows/` folder they
+  leave empty, and `tools/adopt.mjs`.
 - Starts a fresh git history when the copy carries the starter's own. A copy
   made in a file manager includes the hidden `.git` folder, and without the
   reset a private-agents project would push `AGENTS.md` and `.claude/` on its
@@ -241,9 +241,10 @@ local until a release is ready, and a project only ever receives a release.
    Ubuntu, macOS and Windows, and only then tag `vX.Y.Z` and push the tag. A
    defect found before the tag is fixed inside the release, not in a new
    version.
-5. **Publish a GitHub Release from the tag**, with that version's section of
-   `CHANGELOG.md` as its notes. People who watch the repository are notified
-   of releases, not of tags.
+5. **The tag publishes its GitHub Release**: `.github/workflows/release.yml`
+   runs on the pushed tag and uses that version's section of `CHANGELOG.md`
+   as the notes. People who watch the repository are notified of releases,
+   not of tags, so check that the release appeared.
 6. **Bring the projects up to date** with adopt from the tagged release, dry
    run first.
 

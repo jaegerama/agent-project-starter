@@ -377,8 +377,8 @@ check(
 )
 check('_starter/ deleted', !existsSync(join(committed, '_starter')))
 check(
-  'the other starter-only files are gone: LICENSE, the self-test workflow',
-  ['LICENSE', '.github/workflows/selftest.yml'].every((p) => !existsSync(join(committed, p))),
+  "the other starter-only files are gone: LICENSE, the starter's two workflows",
+  ['LICENSE', '.github/workflows/selftest.yml', '.github/workflows/release.yml'].every((p) => !existsSync(join(committed, p))),
 )
 check('no empty .github/workflows/ is left behind, so a project starts with no CI setup at all', !existsSync(join(committed, '.github', 'workflows')))
 // The starter's own README and changelog sit at its root; a project once received the starter's history as its own.

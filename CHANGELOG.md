@@ -10,6 +10,13 @@ public import of 2026-10-05 is not published.
 
 ## [Unreleased]
 
+### Added
+
+- Pushing a version tag publishes its GitHub Release, with that version's
+  section of this changelog as the notes, so people who watch the repository
+  hear of each release. bootstrap removes the workflow from projects, as it
+  does the self-test workflow.
+
 ## [0.8.0] - 2026-10-08
 
 ### Added

@@ -11,7 +11,7 @@
  *   1. Replaces <PROJECT NAME> across the templates.
  *   2. Writes README.md, CHANGELOG.md and HANDOFF.md from _starter/templates/
  *      over the starter's own, and deletes what else belongs to the starter:
- *      _starter/, LICENSE, the self-test workflow and tools/adopt.mjs.
+ *      _starter/, LICENSE, the starter's two workflows and tools/adopt.mjs.
  *   3. Starts a fresh git history when the copy carries the starter's.
  *   4. Prints the slots a human still has to fill, grouped by file.
  *   5. With --private-agents, appends the .gitignore block that keeps agent
@@ -99,7 +99,7 @@ for (const file of files) {
 // First run only, while _starter/ is still there: by a later run a LICENSE may
 // be the project's own. The tool files keep their SPDX notice. adopt runs only
 // from the starter.
-const STARTER_ONLY = ['_starter', 'LICENSE', '.github/workflows/selftest.yml', 'tools/adopt.mjs']
+const STARTER_ONLY = ['_starter', 'LICENSE', '.github/workflows/selftest.yml', '.github/workflows/release.yml', 'tools/adopt.mjs']
 const starterOnly = hasStarterDir ? STARTER_ONLY.filter((p) => existsSync(join(root, p))) : []
 
 // GitHub would show a root CONTRIBUTING.md as the starter's own guide, so the

@@ -15,9 +15,10 @@ Status per 2026-10-08.
    one piece of work on that release, committed with its gate green
    (agent-check included), and no session recorded the hook, agent-check,
    docs-drift or adopt blocking or passing wrongly. Checked at the dry run of
-   the release after it. It counts from the release after 0.7.0, which had a
-   HIGH finding: bootstrap turned off the hooks a repository already ran.
-   0.5.0 had one as well: a private-agents project got no `CONTRIBUTING.md`.
+   the release after it. It counts from 0.8.0, released 2026-10-08: 0.7.0
+   had a HIGH finding, bootstrap turned off the hooks a repository already
+   ran, and 0.5.0 had one as well, a private-agents project got no
+   `CONTRIBUTING.md`.
 
 ## Done
 
@@ -234,6 +235,30 @@ Status per 2026-10-08.
   leads nowhere. The two audit reports and `_starter/INTAKE.md` are removed;
   every tag up to v0.7.0 still holds them. Windows 11, Node 24.13.1: 210
   passed, 0 failed; 1 of 1 mutation caught exactly.
+- 2026-10-08: release 0.8.0, tagged `v0.8.0`: MINOR, because the commits since
+  0.7.0 include a feat while the starter is 0.x. Before it, the README and the
+  guide were read against every changelog entry, which found two defects that
+  were fixed inside the release: three entries filed under Removed, and a
+  README that promised the pre-push gate to adopted projects, which adopt does
+  not wire. CI run 37798246151 on the release commit: 4 of 4 jobs green
+  (Ubuntu on Node 22 and 24, macOS and Windows on 24).
+- 2026-10-08: adopt brought every project that uses the starter to 0.8.0, dry
+  run first. It refreshed the copies of `.claude/agents/silent-failure-hunter.md`
+  and `.github/copilot-instructions.md` that were never customised, seeded
+  `tools/gate.mjs` where agent files are committed, and named every customised
+  file the starter had changed since v0.7.0, with its `git diff`: the review
+  ladder, `/gate`, `/docs-drift` and `GEMINI.md` everywhere, and the hunter
+  where it was customised. Nothing tracked changed where agent files are
+  private; agent-check passed 4 of 4 in each, and a second dry run found
+  nothing left to change.
+- 2026-10-09: a pushed version tag now publishes its GitHub Release, through
+  `.github/workflows/release.yml`, with the version's changelog section as
+  the notes: no release had ever been published, so "watch releases" reached
+  no one. Its notes step was run by hand against this changelog: v0.8.0 gives
+  that section, word for word, and a version with no section fails. bootstrap
+  removes the workflow from projects with the self-test workflow. It first
+  runs at the next tag. Windows 11, Node 24.13.1: 210 passed, 0 failed; 1 of 1
+  mutation caught exactly.
 
 ## Decisions taken
 
@@ -307,11 +332,10 @@ Status per 2026-10-08.
   are not installed where the starter is maintained, and no Cursor or Copilot
   session has been run there. Until one runs, §11 says documented, not yet
   observed.
-- No GitHub Release is published yet (checked 2026-10-08: 8 tags, 0
-  releases), so people who watch the repository's releases hear of none. The
-  owner publishes one per tag from the repository's Releases page, with that
-  version's changelog section as its notes; there is no `gh` CLI where the
-  starter is maintained.
+- v0.8.0 has no GitHub Release (checked 2026-10-09: 9 tags, 0 releases), and
+  the release workflow first runs at the next tag. The owner publishes
+  v0.8.0's from the repository's Releases page, with that version's changelog
+  section as its notes; there is no `gh` CLI where the starter is maintained.
 
 ## Daily commands
 

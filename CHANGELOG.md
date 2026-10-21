@@ -10,12 +10,13 @@ public import of 2026-10-05 is not published.
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-10-21
+
+Template rules and a release workflow only: nothing here adds a feature to
+the tools or fixes a defect in them, so this is a patch release.
+
 ### Added
 
-- Pushing a version tag publishes its GitHub Release, with that version's
-  section of this changelog as the notes, so people who watch the repository
-  hear of each release. bootstrap removes the workflow from projects, as it
-  does the self-test workflow.
 - `AGENTS.md` §6: baseline security headers for an HTTP service, a version
   for every production dependency with the lockfile committed, an idempotency
   key checked before a webhook changes state, tabular figures for numbers in
@@ -26,6 +27,10 @@ public import of 2026-10-05 is not published.
   and money or metrics shown without tabular figures.
 - `docs/PRD.md` asks which third parties process user data, how a breach is
   notified, and which dependency licenses the project accepts.
+- Pushing a version tag publishes its GitHub Release, with that version's
+  section of this changelog as the notes, so people who watch the repository
+  hear of each release. bootstrap removes the workflow from projects, as it
+  does the self-test workflow.
 
 ## [0.8.0] - 2026-10-08
 
@@ -337,7 +342,8 @@ The first public release.
   The denies hold in `bypassPermissions` mode, but do not stop an interpreter.
 - Agents never install, update or fetch a skill; the owner installs skills.
 
-[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.8.1...HEAD
+[0.8.1]: https://github.com/jaegerama/agent-project-starter/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.5.0...v0.6.0

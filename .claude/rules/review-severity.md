@@ -45,6 +45,8 @@ users, data, or money:
   `float`, `double`, and JavaScript `number`.
 - A signature verified over a re-serialised body rather than the raw bytes, or
   compared with a non-constant-time compare.
+- A retried webhook or callback that changes state twice, a payment above
+  all, because nothing checks its idempotency key.
 - A secret reaching a log, an audit payload, or a response body.
 - A server secret reachable from client code, such as a private key in a
   variable the build exposes to the browser.
@@ -64,6 +66,19 @@ finding.
 Add this project's own concrete shapes below that list: that specificity is the
 whole value of the file. Keep additions as specific as the ones above: name the
 file, the layer, or the type, not the abstract category.
+
+---
+
+## What HIGH means in THIS system
+
+These are real defects wherever they appear, so a review ranks them HIGH:
+
+- A dependency on `*` or `latest` in a production manifest, or a manifest with
+  no committed lockfile: the next install can pull a version nobody reviewed.
+- Money, quantities or metrics in a table or summary set in proportional
+  figures: the columns misalign, and the values jump as they update.
+
+Add this project's own HIGH shapes below this list.
 
 ---
 

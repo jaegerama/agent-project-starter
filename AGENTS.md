@@ -357,6 +357,9 @@ This project's own CRITICAL shapes are added there, under its list, not here.
   variable stops the application before it serves a request.
 - A production error response carries no stack trace or internal detail; the
   log keeps it.
+- Where there is an HTTP service, it sends baseline security headers, itself
+  or through its reverse proxy: HSTS, `X-Content-Type-Options: nosniff`, a
+  Content Security Policy with `frame-ancestors`, and a `Referrer-Policy`.
 - **Where there is a server, authorization is decided there.** Client-side
   checks are cosmetic. Middleware alone is never sufficient: every entry point
   checks independently.
@@ -375,6 +378,11 @@ This project's own CRITICAL shapes are added there, under its list, not here.
 - Where the browser talks to the database directly (Supabase, Firebase and the
   like), its row-level rules stay on for every table it can reach, and nothing
   in the client bypasses them.
+- A production manifest gives every dependency a version, never `*` or
+  `latest`, and the lockfile is committed, so every install resolves the same
+  versions.
+- Where a webhook or callback changes state, it checks an idempotency key
+  before it does, so a retried delivery never applies twice.
 - <audit trail: which mutations write an audit row in the same transaction, and any lock on it; or "none">
 - <signed callbacks: raw-byte signature check, constant-time compare, replay window, or "none">
 
@@ -426,6 +434,12 @@ rather than style:
   error after submit.
 - A one-time code field takes a pasted code and the platform's autofill
   (`autocomplete="one-time-code"` on the web).
+- Money, quantities and metrics in tables and summaries use tabular figures
+  (`font-variant-numeric: tabular-nums` on the web), so columns align and
+  values do not shift as they update.
+- A missing value shows a neutral mark, such as a dash, never a zero or an
+  empty box that reads as data.
+- A chart names the unit of what it plots, on its axis or in its tooltip.
 
 ---
 

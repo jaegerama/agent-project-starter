@@ -16,6 +16,16 @@ public import of 2026-10-05 is not published.
   section of this changelog as the notes, so people who watch the repository
   hear of each release. bootstrap removes the workflow from projects, as it
   does the self-test workflow.
+- `AGENTS.md` §6: baseline security headers for an HTTP service, a version
+  for every production dependency with the lockfile committed, an idempotency
+  key checked before a webhook changes state, tabular figures for numbers in
+  tables and summaries, a neutral mark for a missing value, and the unit on
+  every chart.
+- The review ladder ranks a webhook processed without its idempotency key as
+  CRITICAL, and lists its first HIGH shapes: a floating dependency version,
+  and money or metrics shown without tabular figures.
+- `docs/PRD.md` asks which third parties process user data, how a breach is
+  notified, and which dependency licenses the project accepts.
 
 ## [0.8.0] - 2026-10-08
 

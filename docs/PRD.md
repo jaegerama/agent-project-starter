@@ -46,6 +46,7 @@ on it.
 - **Security**: <>
 - **Performance and budget**: <the budget the brief states, such as Core Web Vitals targets for a web page>
 - **Reliability**: <>
+- **Third-party licenses**: <the license policy, for instance permissive only (MIT, Apache-2.0, BSD)>
 
 ### Legal and privacy
 
@@ -55,9 +56,11 @@ applies. Consent is never pre-ticked, and declining takes no more steps than
 accepting.
 
 - **Personal data**: <each field collected, and why it is needed>
+- **Third-party processors**: <none, or which AI models and external APIs process user data, and their retention policies>
 - **Legal pages**: <privacy policy, terms of service, refund policy where it sells>
 - **Consent**: <what is asked before cookies, tracking or marketing, and how the answer is kept>
 - **Retention and deletion**: <how long data is kept, and how a person has theirs deleted>
+- **Incident notification**: <the breach notification window and contact path, for instance within 72 hours>
 - **Laws that apply**: <for instance GDPR or UU PDP>
 - **Marketing email**: <none, or how its one-click unsubscribe works>
 

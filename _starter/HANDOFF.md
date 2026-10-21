@@ -259,6 +259,13 @@ Status per 2026-10-08.
   removes the workflow from projects with the self-test workflow. It first
   runs at the next tag. Windows 11, Node 24.13.1: 210 passed, 0 failed; 1 of 1
   mutation caught exactly.
+- 2026-10-21: the owner's third template update, where it holds for any
+  project: baseline security headers, a version for every production
+  dependency with the lockfile committed, an idempotency key before a webhook
+  changes state, tabular figures, a neutral mark for a missing value, the
+  unit on every chart, three PRD slots, and the review ladder's first HIGH
+  shapes. Windows 11, Node 24.13.1: 210 passed, 0 failed; prose only, so no
+  new case.
 
 ## Decisions taken
 
@@ -310,6 +317,15 @@ Status per 2026-10-08.
   example naming an unverified package. The ladder's outer-layer exception
   stops at payments, authorization and the audit trail, where §6 says
   middleware alone is never sufficient.
+- The owner's third update of 2026-10-21 was applied where it holds for any
+  project. Not applied: a rule against a greeting banner and one toolbar row
+  for data controls, which are layout choices for `DESIGN.md`, the second
+  able to break reflow on a narrow screen; and metric cards joined in a strip
+  with 1px dividers, which is style. The manifest rule bans floating versions
+  and asks for the lockfile, without exact pins in the manifest, which the
+  lockfile already gives. The license policy is a non-functional requirement
+  rather than a legal-and-privacy line, because Setup deletes that section
+  from a product that keeps no personal data.
 - In a private-agents project, `CONTRIBUTING.md` carries the gate and the
   commit rules only (2026-10-08): the gate and CI hold the mechanical part,
   and the security rules and the Definition of Done stay with the agents in

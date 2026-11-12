@@ -10,18 +10,24 @@ public import of 2026-10-05 is not published.
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-11-12
+
+Template documents and rules only; bootstrap changes just to place the new
+document in its report. No feature or fix in the tools, so this is a patch
+release.
+
 ### Added
 
-- `docs/DEPLOYMENT.md`: what a release must not lose, what a deploy can
-  break, and how a release is made, checked and rolled back. bootstrap lists
-  it as work for before the first deploy, and Setup deletes it when nothing
-  is deployed.
 - `AGENTS.md` §6 Security: absolute URLs start from the public base URL,
   client code imports no server module, and `.dockerignore` keeps out of the
   image what `.gitignore` keeps out of the repository.
 - `AGENTS.md` §6 Reliability, a new section: a timeout on every child process
   and network call, and a failed read reported as a failure, never as an
   empty result.
+- `docs/DEPLOYMENT.md`: what a release must not lose, what a deploy can
+  break, and how a release is made, checked and rolled back. bootstrap lists
+  it as work for before the first deploy, and Setup deletes it when nothing
+  is deployed.
 - `AGENTS.md` §6 Interface: every control and link works, and a button or
   link says what it does.
 - `docs/ARCHITECTURE.md` holds the API conventions, the data model with the
@@ -371,7 +377,8 @@ The first public release.
   The denies hold in `bypassPermissions` mode, but do not stop an interpreter.
 - Agents never install, update or fetch a skill; the owner installs skills.
 
-[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/jaegerama/agent-project-starter/compare/v0.8.2...HEAD
+[0.8.2]: https://github.com/jaegerama/agent-project-starter/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/jaegerama/agent-project-starter/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/jaegerama/agent-project-starter/compare/v0.6.0...v0.7.0

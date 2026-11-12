@@ -561,7 +561,7 @@ itself says so.
 
 | Tool | Reads at session start | Status |
 |---|---|---|
-| Claude Code | `CLAUDE.md`, which imports this file with `@AGENTS.md`, and `.claude/` (rules load automatically; commands, agents, settings) | **Observed 2026-09-24**: four sessions' transcripts list `AGENTS.md` among the files loaded through the import. An earlier pointer that only asked in words was never acted on |
+| Claude Code | `CLAUDE.md`, which imports this file with `@AGENTS.md`, and `.claude/` (rules load automatically; commands, agents, settings) | **Observed 2026-09-24**: four sessions' transcripts list `AGENTS.md` among the files loaded through the import |
 | Codex | This file, and `~/.codex/AGENTS.md` | **Documented, not yet observed**: Codex's own convention |
 | Cursor | This file | **Documented, not yet observed**: Cursor's own convention |
 | GitHub Copilot | This file, or `.github/copilot-instructions.md`, a pointer to it, in setups that read that file | **Documented, not yet observed**: Copilot's own convention |

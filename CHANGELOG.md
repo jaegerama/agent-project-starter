@@ -35,6 +35,9 @@ public import of 2026-10-05 is not published.
 - `docs/README.md` names the testing document a project adds when someone
   other than the author tests it `TESTING.md`: a matrix of test id, category,
   scenario, preconditions, input, expected result and status.
+- `AGENTS.md`, `CLAUDE.md`, `docs/BRIEF.md` and the two READMEs no longer
+  repeat each other on the slot hook, the import line, the brief given in
+  chat, and "ask me".
 
 ## [0.8.1] - 2026-10-21
 

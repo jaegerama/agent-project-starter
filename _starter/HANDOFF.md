@@ -286,6 +286,12 @@ Status per 2026-11-12.
   absolute URLs, client imports, `.dockerignore`, timeouts, failed reads,
   working controls and button labels. Windows 11, Node 24.13.1: 210 passed,
   0 failed; the changed case caught 2 of 2 mutations, each red alone.
+- 2026-11-12: a scan for near-duplicate sentences and clauses across the
+  tracked documents. The slot hook, the brief given in chat, the import
+  line's history and "ask me" now each have one home. The pairs left are the
+  two pointer files, the WIP rule `docs/TODO.md` keeps for readers without
+  `AGENTS.md`, the hunter's own list, and documents bootstrap deletes from a
+  project. Windows 11, Node 24.13.1: 210 passed, 0 failed.
 
 ## Decisions taken
 

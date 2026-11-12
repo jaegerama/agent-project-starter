@@ -38,10 +38,9 @@ Without `--apply` it is a dry run that changes nothing. It refuses to run in a
 folder named `project-starter` or `agent-project-starter`, so the starter
 itself is never taken apart.
 
-In Claude Code, the hook `.claude/hooks/guard-slots.mjs` refuses Write, Edit
-and NotebookEdit on application code while `AGENTS.md` has empty slots; a file
-written through the shell does not reach it. The other tools have no such
-hook, so there the rule depends on the gate.
+In Claude Code a hook also refuses application code while `AGENTS.md` has
+slots; section 11 of `AGENTS.md` says what it misses, and what the other tools
+rely on instead.
 
 ## An existing project, or an update: adopt
 

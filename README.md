@@ -28,7 +28,6 @@ scripts, before the work leaves your machine.
 
 1. You fill in a short brief, `docs/BRIEF.md`: what the project is, the
    business rules the agent must not invent, the stack, and a few conventions.
-   Whatever you have not decided yet, you write as "ask me".
 2. The agent sets the project up by following the Setup section at the top of
    `AGENTS.md`. It writes the project's rules from your brief, lists every open
    point in `docs/QUESTIONS.md`, and asks you all of them in one message.
@@ -172,9 +171,8 @@ against intent.
 
 ## Changing the starter
 
-[`_starter/README.md`](_starter/README.md) explains how the starter is built,
-what each release promises, and how it is changed and released. Before every
-commit both of these must pass, and CI runs them on Ubuntu, macOS and Windows:
+The maintainer's guide is [`_starter/README.md`](_starter/README.md). Before
+every commit both of these must pass, and CI runs them on Ubuntu, macOS and Windows:
 
 ```bash
 node _starter/selftest.mjs

@@ -1,9 +1,7 @@
 # Brief
 
 The owner's description of the project, in any language. Setup fills every
-other template from this file. A brief given in chat is copied under "The
-brief", verbatim, before anything else: one that lives only in a chat message
-is lost on the next session.
+other template from this file.
 
 Answer the sections below, or write freely under "The brief" instead. You do
 not need the technical terms: write what you know, and "ask me" where you are
@@ -20,8 +18,7 @@ is not.
 The business rules you already know: who may do what, what counts as what,
 what happens when something is late, wrong or missing, what must never be lost
 or changed, and anything it must agree with outside this repository, such as
-an API another team uses, a file format or a law. Write "ask me" where you
-have not decided.
+an API another team uses, a file format or a law.
 
 ## 3. Stack and where it runs
 

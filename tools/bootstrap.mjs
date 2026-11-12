@@ -204,10 +204,13 @@ const remaining = templateFiles()
   .filter((f) => rel(f) !== 'AGENTS.md')
   .map((f) => [rel(f), slotsIn(f).filter((s) => !(apply && s === PLACEHOLDER))])
   .filter(([, slots]) => slots.length > 0)
-// ARCHITECTURE.md is written when the second component appears, not before the first line of code.
-const LATER = ['docs/ARCHITECTURE.md']
-const beforeCode = remaining.filter(([f]) => !LATER.includes(f))
-const later = remaining.filter(([f]) => LATER.includes(f))
+// Written when the project reaches them, not before the first line of code.
+const LATER = new Map([
+  ['docs/ARCHITECTURE.md', 'when the second component appears'],
+  ['docs/DEPLOYMENT.md', 'before the first deploy'],
+])
+const beforeCode = remaining.filter(([f]) => !LATER.has(f))
+const later = remaining.filter(([f]) => LATER.has(f))
 
 const verb = apply ? '' : ' (would be)'
 console.log(`\n${apply ? 'DONE' : 'DRY RUN, nothing was changed'}\n`)
@@ -275,8 +278,8 @@ if (beforeCode.length) {
 }
 
 if (later.length) {
-  console.log('\n  Later, when the second component appears:\n')
-  for (const [file, slots] of later) show(file, slots)
+  console.log('\n  Later, when the project reaches them:\n')
+  for (const [file, slots] of later) show(`${file}, ${LATER.get(file)}`, slots)
 }
 
 if (!blocking.length && !remaining.length) console.log('\n  No slots left.')

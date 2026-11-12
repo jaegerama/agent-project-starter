@@ -64,9 +64,9 @@ only job is the brief; everything else below is the agent's.
    a question too.
 6. **Delete what does not apply**: the Money section with no money; the Data
    section with no database; the Interface section and `DESIGN.md` with no
-   interface; the server rows of §2 and the paragraph about servers when
-   nothing is deployed; the Legal and privacy section of `docs/PRD.md` when
-   no personal data is kept and nothing is sold.
+   interface; the server rows of §2, the paragraph about servers and
+   `docs/DEPLOYMENT.md` when nothing is deployed; the Legal and privacy
+   section of `docs/PRD.md` when no personal data is kept and nothing is sold.
 7. **Adapt the example checks in `tools/docs-drift.mjs`** to this stack's
    manifest, so that at least one compares a document with code: once this
    Setup section is gone, docs-drift fails until one does, and the
@@ -360,6 +360,9 @@ This project's own CRITICAL shapes are added there, under its list, not here.
 - Where there is an HTTP service, it sends baseline security headers, itself
   or through its reverse proxy: HSTS, `X-Content-Type-Options: nosniff`, a
   Content Security Policy with `frame-ancestors`, and a `Referrer-Policy`.
+- An absolute URL the application builds, for a redirect or in an email,
+  starts from the configured public base URL, never from the request's
+  `Host`: behind a proxy that host is internal, and a client can forge it.
 - **Where there is a server, authorization is decided there.** Client-side
   checks are cosmetic. Middleware alone is never sufficient: every entry point
   checks independently.
@@ -372,6 +375,13 @@ This project's own CRITICAL shapes are added there, under its list, not here.
 - Where code runs in a browser or an app, no server secret reaches it: a
   variable the build exposes to the client (`NEXT_PUBLIC_*`, `VITE_*` and the
   like) never holds a private key, a token or a service-role credential.
+- Client code imports no server module, one that reads a secret or queries
+  the database: the bundler ships every module the client imports. Where the
+  framework can fail the build on such an import, through a server-only
+  marker or a `.server` file name, the project uses it.
+- Where a container image is built, `.dockerignore` excludes everything
+  `.gitignore` does, and `.git`: Docker does not read `.gitignore`, so
+  `COPY . .` would put a local `.env` into the image.
 - Where records belong to a user or a tenant, every query is scoped to the
   owner taken from the server-side session. An ID the client sends is never
   enough to read, change or delete a record.
@@ -385,6 +395,14 @@ This project's own CRITICAL shapes are added there, under its list, not here.
   before it does, so a retried delivery never applies twice.
 - <audit trail: which mutations write an audit row in the same transaction, and any lock on it; or "none">
 - <signed callbacks: raw-byte signature check, constant-time compare, replay window, or "none">
+
+### Reliability
+
+- Every child process the code starts and every network call it makes has a
+  timeout: one that hangs holds its worker, or the whole job, until something
+  else kills it.
+- A read that fails is reported as a failure, never as an empty result: a
+  monitor that cannot reach its source says so, instead of showing no alerts.
 
 ### Money <delete this whole section if the system holds none>
 
@@ -424,8 +442,12 @@ rather than style:
   focus, reflow without horizontal scrolling and a minimum target size.
 - An empty, a loading and an error state for every view that shows data, the
   loading one in the shape of what loads, so nothing jumps when it arrives.
+- Every control and link works: one whose feature or page does not exist yet
+  is left out, or visibly marked as not available yet.
 - A visible label on every form field: a placeholder disappears as the user
   types, so it is never the only one.
+- A button or link says what it does, not "Learn more" or "Click here": a
+  screen reader lists them out of context.
 - A destructive action says what it destroys in its label and asks before it
   acts; colour alone never marks it.
 - A not-found page leads back into the product, not to a framework's default

@@ -10,6 +10,32 @@ public import of 2026-10-05 is not published.
 
 ## [Unreleased]
 
+### Added
+
+- `docs/DEPLOYMENT.md`: what a release must not lose, what a deploy can
+  break, and how a release is made, checked and rolled back. bootstrap lists
+  it as work for before the first deploy, and Setup deletes it when nothing
+  is deployed.
+- `AGENTS.md` §6 Security: absolute URLs start from the public base URL,
+  client code imports no server module, and `.dockerignore` keeps out of the
+  image what `.gitignore` keeps out of the repository.
+- `AGENTS.md` §6 Reliability, a new section: a timeout on every child process
+  and network call, and a failed read reported as a failure, never as an
+  empty result.
+- `AGENTS.md` §6 Interface: every control and link works, and a button or
+  link says what it does.
+- `docs/ARCHITECTURE.md` holds the API conventions, the data model with the
+  constraints the database enforces, the auth and tenancy design, and each
+  entity's lifecycle; `docs/TODO.md` has milestones and a working set per
+  story; `DESIGN.md` has the dials and the layout per breakpoint; `docs/PRD.md`
+  lists the other user journeys.
+
+### Changed
+
+- `docs/README.md` names the testing document a project adds when someone
+  other than the author tests it `TESTING.md`: a matrix of test id, category,
+  scenario, preconditions, input, expected result and status.
+
 ## [0.8.1] - 2026-10-21
 
 Template rules and a release workflow only: nothing here adds a feature to

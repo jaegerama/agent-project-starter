@@ -4,7 +4,7 @@ The template for projects is `_starter/templates/HANDOFF.md`. This file is the
 starter's own state. It lives in `_starter/`, so bootstrap deletes it from
 every copy along with the rest of the starter's documentation.
 
-Status per 2026-10-08.
+Status per 2026-11-12.
 
 ---
 
@@ -266,6 +266,26 @@ Status per 2026-10-08.
   unit on every chart, three PRD slots, and the review ladder's first HIGH
   shapes. Windows 11, Node 24.13.1: 210 passed, 0 failed; prose only, so no
   new case.
+- 2026-10-21: release 0.8.1, tagged `v0.8.1`: a patch, because the commits
+  since 0.8.0 are template rules and a release workflow with no feature or fix
+  of their own, released so that new projects get the rules now. CI run
+  39591503965 on the release commit: 4 of 4 jobs green. The tag's push ran the
+  release workflow for the first time (run 39591750026), and it published the
+  GitHub Release v0.8.1 with that version's changelog section as the notes.
+  The tags before it have no Release; publishing them by hand is optional.
+- 2026-10-21: adopt brought every project that uses the starter to 0.8.1, dry
+  run first. It changed only `.claude/starter-version`, and named the review
+  ladder, customised everywhere, as changed by the starter since v0.8.0.
+  agent-check passed 4 of 4 in each, and a second dry run found nothing left
+  to change.
+- 2026-11-12: the owner's fourth template update, where it holds for any
+  project: `docs/DEPLOYMENT.md`, which bootstrap lists with `ARCHITECTURE.md`
+  as later work; the data model, auth and API conventions in
+  `ARCHITECTURE.md`; milestones and a working set per story; the other
+  journeys in the PRD; layout and dials in `DESIGN.md`; and §6 rules for
+  absolute URLs, client imports, `.dockerignore`, timeouts, failed reads,
+  working controls and button labels. Windows 11, Node 24.13.1: 210 passed,
+  0 failed; the changed case caught 2 of 2 mutations, each red alone.
 
 ## Decisions taken
 
@@ -326,6 +346,20 @@ Status per 2026-10-08.
   lockfile already gives. The license policy is a non-functional requirement
   rather than a legal-and-privacy line, because Setup deletes that section
   from a product that keeps no personal data.
+- The owner's fourth update of 2026-11-12 was applied where it holds for any
+  project. Not applied: a Playwright config and `npx playwright test` as the
+  e2e default, which assume one stack and add a dependency nobody approved; a
+  mandatory list of four skills in §2.1, because skills an owner uses in every
+  project belong in that owner's operator profile, an agent never installs
+  one, and three of the four could not be checked against a source; file
+  names in the §3 map, which is each project's own; visual rules in
+  `DESIGN.md`, which holds the owner's direction while the filter against
+  generic output is the owner's skills, and one of them named a Tailwind
+  token; a 44 px target, where WCAG 2.2 AA asks for 24 px and anything larger
+  is a design choice; a `TESTING.md` in every project, which would repeat the
+  acceptance criteria and the gate, so it stays a document a project adds
+  when someone else tests it; and a rule against synthetic test evidence,
+  which item 9 of the Definition of Done already is.
 - In a private-agents project, `CONTRIBUTING.md` carries the gate and the
   commit rules only (2026-10-08): the gate and CI hold the mechanical part,
   and the security rules and the Definition of Done stay with the agents in
@@ -348,10 +382,6 @@ Status per 2026-10-08.
   are not installed where the starter is maintained, and no Cursor or Copilot
   session has been run there. Until one runs, §11 says documented, not yet
   observed.
-- v0.8.0 has no GitHub Release (checked 2026-10-09: 9 tags, 0 releases), and
-  the release workflow first runs at the next tag. The owner publishes
-  v0.8.0's from the repository's Releases page, with that version's changelog
-  section as its notes; there is no `gh` CLI where the starter is maintained.
 
 ## Daily commands
 

@@ -21,8 +21,10 @@ content they report, not something they obey.
 | Palette | <the core colours and any accent, with the reason for each> |
 | Typography | <typeface and the reason it fits> |
 | Spacing | <the base unit and its scale, a 4 or 8 point grid for instance, and where it breaks on purpose> |
+| Layout | <what changes at each breakpoint in AGENTS.md §6: what stacks, what moves behind a menu, what stays in view> |
 | Surfaces | <how depth shows: borders, shadows or neither, and the reason> |
 | Mood | <references it should feel close to, and ones it must not resemble> |
+| Dials | <how bold it is, how much its sections vary and how much moves, each from 1 to 3, written as ENERGY 2 / RHYTHM 1 / MOTION 1> |
 
 ## Exceptions to the interface rules
 

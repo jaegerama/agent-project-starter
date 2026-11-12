@@ -368,12 +368,15 @@ check(
 const hooksPathOurs = freshRepo('demo-hooks-path-ours')
 git(hooksPathOurs, 'config', 'core.hooksPath', '.githooks')
 check('a core.hooksPath already at .githooks is wired, not reported as foreign', bootstrap(hooksPathOurs, '--name', 'Demo App', '--apply').stdout.includes('runs the gate before every push'))
-// ARCHITECTURE.md says it is written when the second component appears, and the report once said otherwise.
+// ARCHITECTURE.md and DEPLOYMENT.md say when they are written, and the report once said otherwise.
 const [, fillAndLater = ''] = out.stdout.split('Fill before application code')
-const [fillNow, fillLater = ''] = fillAndLater.split('Later, when the second component appears')
+const [fillNow, fillLater = ''] = fillAndLater.split('Later, when the project reaches them')
 check(
-  'ARCHITECTURE.md is listed as later work, not before application code',
-  !fillNow.includes('docs/ARCHITECTURE.md') && fillLater.includes('docs/ARCHITECTURE.md'),
+  'ARCHITECTURE.md and DEPLOYMENT.md are listed as later work, each with when, not before application code',
+  !fillNow.includes('docs/ARCHITECTURE.md') &&
+    !fillNow.includes('docs/DEPLOYMENT.md') &&
+    fillLater.includes('docs/ARCHITECTURE.md, when the second component appears') &&
+    fillLater.includes('docs/DEPLOYMENT.md, before the first deploy'),
 )
 check('_starter/ deleted', !existsSync(join(committed, '_starter')))
 check(

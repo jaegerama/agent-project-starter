@@ -17,6 +17,7 @@ with its reason, and the brief stays as what was asked for at the start.
 | `TODO.md` | The epics, their stories, and each story's acceptance criteria | Before each story |
 | `QUESTIONS.md` | Everything that still needs a human answer, each with a stable id | From day one |
 | `ARCHITECTURE.md` | How the parts fit, and which decisions are settled | When the second component appears |
+| `DEPLOYMENT.md` | What a release must not lose, what it can break, and how it is made, checked and rolled back | Before the first deploy |
 
 Each file states its own rules at the top. Delete the ones this project does
 not need: a document nobody maintains is worse than none, because it still
@@ -29,5 +30,5 @@ gets quoted.
 | `DATABASE_SCHEMA.md` | The schema has enough tables that the reasons for its indexes need a home |
 | `adr/ADR-000N-*.md` | A decision is big enough that its alternatives are worth recording |
 | `runbook/*.md` | Someone other than you has to operate it, or you will have to learn it again in six months |
-| `QA-CHECKLIST.md` | Somebody other than the author tests it. Give every screen a stable id (`BIL-3`, `CUS-7`), so that feedback names the screen |
+| `TESTING.md` | Somebody other than the author tests it: one row per case, with its id, category, scenario, preconditions, input, expected result and status. Give every screen a stable id too (`BIL-3`, `CUS-7`), so that feedback names the screen |
 | `contracts/*.md` | Another team writes a client against you |

@@ -11,6 +11,15 @@ One story in WIP at a time, and nothing past Epic 0 before it is DONE.
 `node tools/docs-drift.mjs` checks both against the headings below, so keep
 their shape: `### [STATUS] S<epic>.<n>: title`.
 
+## Milestones
+
+A milestone is a group of epics worth showing to someone. With only one,
+delete this section.
+
+| Milestone | Epics | Done when |
+|---|---|---|
+| <the first milestone> | <the epics it needs> | <what someone can do with it then> |
+
 ---
 
 ## Epic 0: Walking skeleton
@@ -25,6 +34,9 @@ one passing test.
 - [ ] The project's structure and runtime configuration are in place
 - [ ] At least one automated test runs and passes
 - [ ] `node tools/gate.mjs` exits 0, with every check green
+
+**Working set:** the manifest, the entrypoint, the first test, and the gate's
+commands.
 
 **Out of scope for this story:** business logic, database entities, UI styling.
 
@@ -41,6 +53,8 @@ be checked by looking at something is a wish, not a criterion.
 
 - [ ] <what can be seen / run / queried to prove it>
 - [ ] <>
+
+**Working set:** <the files and folders this story reads and changes, so the session that builds it starts there instead of searching>
 
 **Out of scope for this story:** <what is deliberately untouched, so the blast radius is explicit>
 

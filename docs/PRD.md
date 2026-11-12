@@ -17,6 +17,13 @@ it to one: a booking site books a stay, a ride app gets you a ride.
 
 <the one main job, from input to completion>
 
+## Other journeys
+
+The paths besides the main job, one line each, the most frequent first:
+signing up, resetting a password, exporting data.
+
+1. <a journey: who takes it, where it starts and where it ends>
+
 ## Scope
 
 What gets built, each item concrete enough to be declared done or not done.
